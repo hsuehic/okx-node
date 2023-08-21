@@ -79,8 +79,10 @@
     "@changesets/cli": "^2.26.2",
     "@commitlint/cli": "^17.7.1",
     "@commitlint/config-conventional": "^17.7.0",
+    "@types/crypto-js": "^4.1.1",
     "@types/jest": "^27.5.2",
     "@types/node": "^12.20.11",
+    "@types/ws": "^8.5.5",
     "conventional-changelog-conventionalcommits": "^5.0.0",
     "eslint": "^8.45.0",
     "eslint-config-cnp": "^1.1.0",
@@ -100,5 +102,10 @@
   },
   "respository": {
     "type": "git"
+  },
+  "dependencies": {
+    "crypto-js": "^4.1.1",
+    "dotenv": "^16.3.1",
+    "ws": "^8.13.0"
   }
 }
