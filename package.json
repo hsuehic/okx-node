@@ -1,0 +1,104 @@
+{
+  "name": "okx-node",
+  "version": "0.0.0-development",
+  "description": "A template for creating npm packages using TypeScript and VSCode",
+  "main": "./dist/cjs/index.js",
+  "types": "./dist/cjs/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/mjs/index.d.ts",
+        "default": "./dist/mjs/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/index.d.ts",
+        "default": "./dist/cjs/index.js"
+      }
+    },
+    "./*": {
+      "import": {
+        "types": "./dist/mjs/*.d.ts",
+        "default": "./dist/mjs/*.js"
+      },
+      "require": {
+        "types": "./dist/cjs/*.d.ts",
+        "default": "./dist/cjs/*.js"
+      }
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "add-package": "ts-node-esm ./scripts/add-package.mts",
+    "build": "npm run build:cjs && npm run build:mjs",
+    "build:cjs": "tsc --project tsconfig.cjs.json",
+    "build:mjs": "tsc --project tsconfig.mjs.json",
+    "clean": "rm -rf ./lib/ && rm -rf ./dist/",
+    "postbuild:cjs": "echo '{\"type\":\"commonjs\"}' > ./dist/cjs/package.json",
+    "postbuild:mjs": "echo '{\"type\":\"module\"}' > ./dist/mjs/package.json",
+    "eslint": "eslint .",
+    "npmPkgJsonLint": "npmPkgJsonLint .",
+    "prepare": "husky intall",
+    "release": "npx changeset publish",
+    "test:watch": "jest --watch",
+    "test": "jest --coverage",
+    "typecheck": "tsc --noEmit",
+    "eslint:fix": "npm run eslint -- --fix"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hsuehic/okx-node.git"
+  },
+  "license": "MIT",
+  "author": {
+    "name": "Xiaowei Xue",
+    "email": "xiaowei.xue@shopee.com",
+    "url": "https://github.com/hsuehic"
+  },
+  "engines": {
+    "node": ">=12.0"
+  },
+  "keywords": [
+    "boilerplate",
+    "template",
+    "typescript",
+    "vscode",
+    "jest",
+    "husky",
+    "commitlint",
+    "changesets",
+    "codecov"
+  ],
+  "bugs": {
+    "url": "https://github.com/hsuehic/okx-node/issues"
+  },
+  "homepage": "https://github.com/hsuehic/okx-node#readme",
+  "devDependencies": {
+    "@changesets/cli": "^2.26.2",
+    "@commitlint/cli": "^17.7.1",
+    "@commitlint/config-conventional": "^17.7.0",
+    "@types/jest": "^27.5.2",
+    "@types/node": "^12.20.11",
+    "conventional-changelog-conventionalcommits": "^5.0.0",
+    "eslint": "^8.45.0",
+    "eslint-config-cnp": "^1.1.0",
+    "husky": "^8.0.3",
+    "jest": "^27.2.0",
+    "lint-staged": "^14.0.0",
+    "markdownlint-cli2": "^0.8.1",
+    "markdownlint-rule-search-replace": "^1.1.0",
+    "npm-package-json-lint": "^7.0.0",
+    "npm-package-json-lint-config-default": "^6.0.0",
+    "prettier": "^2.8.8",
+    "prompts": "^2.4.2",
+    "ts-jest": "^27.0.5",
+    "ts-node": "^10.2.1",
+    "typescript": "^4.2.4",
+    "zx": "^7.2.3"
+  },
+  "respository": {
+    "type": "git"
+  }
+}
