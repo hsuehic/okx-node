@@ -7,7 +7,7 @@
     "moduleResolution": "NodeNext",
     "declaration": true,
   },
-  "exclude": [
-    "test/**/*.spec.ts",
+  "include": [
+    "packages/*/src/**/*.ts", "scripts", "src/**/*.ts", "test/**/*.ts"
   ]
 }

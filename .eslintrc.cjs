@@ -3,9 +3,10 @@ module.exports = {
   extends: ['cnp', 'cnp/typescript', 'cnp/jest'],
   overrides: [
     {
-      files: '*.ts?(x)',
+      files: '*.{ts,cts,mts,tsx}',
       parserOptions: {
-        project: './tsconfig.json',
+        tsconfigRootDir: __dirname,
+        project: 'tsconfig.eslint.json',
       },
     },
   ],
