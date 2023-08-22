@@ -40,7 +40,7 @@
     "postbuild:mjs": "echo '{\"type\":\"module\"}' > ./dist/mjs/package.json",
     "eslint": "eslint .",
     "npmPkgJsonLint": "npmPkgJsonLint .",
-    "prepare": "husky intall",
+    "prepare": "husky install",
     "release": "npx changeset publish",
     "test:watch": "jest --watch",
     "test": "jest --coverage",

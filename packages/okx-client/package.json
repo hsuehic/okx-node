@@ -1,0 +1,75 @@
+{
+  "name": "okx-client",
+  "version": "0.0.0-development",
+  "description": "A template for creating npm packages using TypeScript and VSCode",
+  "main": "./dist/cjs/index.js",
+  "types": "./dist/cjs/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/mjs/index.d.ts",
+        "default": "./dist/mjs/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/index.d.ts",
+        "default": "./dist/cjs/index.js"
+      }
+    },
+    "./*": {
+      "import": {
+        "types": "./dist/mjs/*.d.ts",
+        "default": "./dist/mjs/*.js"
+      },
+      "require": {
+        "types": "./dist/cjs/*.d.ts",
+        "default": "./dist/cjs/*.js"
+      }
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist/**/*"
+  ],
+  "scripts": {
+    "build:cjs": "tsc --project tsconfig.cjs.json",
+    "build:cjs:watch": "tsc --project tsconfig.cjs.json -w",
+    "build:mjs": "tsc --project tsconfig.mjs.json",
+    "build:mjs:watch": "tsc --project tsconfig.mjs.json -w",
+    "clean": "rm -rf ./lib/ && rm -rf ./dist/",
+    "eslint": "eslint ./src/ --fix",
+    "lintpackagejson": "npmPkgJsonLint .",
+    "release": "npx changeset publish",
+    "test:watch": "jest --watch",
+    "test": "jest --coverage",
+    "typecheck": "tsc --noEmit",
+    "start": "electron ./dist/main.js"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": ">=12.0"
+  },
+  "keywords": [
+    "boilerplate",
+    "template",
+    "typescript",
+    "vscode",
+    "jest",
+    "husky",
+    "commitlint",
+    "changesets",
+    "codecov"
+  ],
+  "repository": {
+    "type": "git"
+  },
+  "bugs": {
+    "url": "https://github.com/hsuehic/okx-node/issues"
+  },
+  "homepage": "https://github.com/hsuehic/okx-node#readme",
+  "devDependencies": {
+    "electron": "^26.0.0"
+  },
+  "dependencies": {
+    "okx-node": "workspace:0.0.0-development"
+  }
+}

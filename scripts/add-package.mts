@@ -1,6 +1,6 @@
 import { $, cd } from 'zx';
 
-$.verbose = false;
+$.verbose = true;
 
 const PACKAGE_NAME = process.argv[2];
 
@@ -28,7 +28,6 @@ const init = async () => {
   });
   await Promise.all(promises);
   cd(PACKAGE_DIR);
-
   await $`npm pkg set name=${PACKAGE_NAME} -ws=false`;
   const setPromises = PACKAGE_JSON_FIELDS.map(async key => {
     await $`npm pkg set ${key}=${

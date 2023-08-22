@@ -1,9 +1,10 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "target": "ES2016",
+    "lib": ["ES2016", "DOM"],
+    "target": "ES6",
     "module": "CommonJS",
-    "outDir": "./dist/cjs",
+    "outDir": "./dist",
     "declaration": true
   },
   "exclude": [

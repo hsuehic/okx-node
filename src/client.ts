@@ -1,14 +1,92 @@
+import { EventEmitter } from 'events';
+
 import { HmacSHA256, enc } from 'crypto-js';
 import WebSocket from 'ws';
 
 import { URL_WEBSOCKET, WebSocketChannelKey } from './constant';
+
+export type WebSocketRequestType = 'login' | 'subscribe' | 'unsubscribe';
+export type WebSocketReqponseType = WebSocketRequestType | 'error';
+
+export type Channel =
+  | 'account'
+  | 'orders'
+  | 'rfqs'
+  | 'quotes'
+  | 'struc-block-trades'
+  | 'tickers'
+  | 'public-struc-block-trades'
+  | 'instruments'
+  | 'open-interest'
+  | 'funding-rate'
+  | 'price-limit'
+  | 'opt-summary'
+  | 'estimated-price'
+  | 'deposit-info'
+  | 'withdrawal-info'
+  | 'liquidation-orders'
+  | 'balance_and_position';
+
+export interface Arg {
+  channel?: Channel;
+}
+
+export interface WebSocketRequest<T extends Arg> {
+  op: WebSocketRequestType;
+  args: T[];
+}
+
+export interface WebSocketResponse<T extends Arg> {
+  event: WebSocketReqponseType;
+  arg: T;
+}
+
+export interface WebSocketLoginResponse {
+  event: 'login';
+  code: string;
+  msg: string;
+}
+
+export interface WebSocketPush<T extends Arg, TD> {
+  arg: T;
+  data: TD[];
+}
 
 export interface Options {
   apiKey: string;
   passphrase: string;
   secretKey: string;
 }
-export class OkxWebSocketClient {
+
+export interface ResponseEventData<T extends Arg> {
+  channel: WebSocketChannelKey;
+  data: WebSocketResponse<T>;
+}
+
+export interface PushEventData<T extends Arg, TD> {
+  channel: WebSocketChannelKey;
+  data: WebSocketPush<T, TD>;
+}
+
+export declare interface OkxWebSocketClient {
+  emit(event: 'authorized'): boolean;
+  emit<T extends Arg, TD>(event: 'push', data: PushEventData<T, TD>): boolean;
+  emit<T extends Arg>(event: 'response', data: ResponseEventData<T>): boolean;
+  on(event: 'authorized', listener: () => void): this;
+  on(
+    event: 'push',
+    listener: <T extends Arg, TD>(data: PushEventData<T, TD>) => void
+  ): this;
+  on(
+    event: 'response',
+    listener: <T extends Arg>(data: {
+      channel: WebSocketChannelKey;
+      data: WebSocketResponse<T>;
+    }) => void
+  ): this;
+}
+
+export class OkxWebSocketClient extends EventEmitter {
   /**
    * WebSocket clients for different channels
    */
@@ -17,11 +95,13 @@ export class OkxWebSocketClient {
   private _apiKey: string;
   private _passphrase: string;
   private _secretKey: string;
+  private _authorized = false;
 
   /**
    * @deprecated use `OkxWebSocket.getInstance` instead to ensure the application will use the same clients all the time.
    */
   constructor(options: Options) {
+    super();
     this._apiKey = options.apiKey;
     this._secretKey = options.secretKey;
     this._passphrase = options.passphrase;
@@ -89,12 +169,32 @@ export class OkxWebSocketClient {
    * @param message Message content
    */
   private _handleMessage(
-    key: WebSocketChannelKey,
-    message: WebSocket.RawData,
+    channel: WebSocketChannelKey,
+    data: WebSocket.RawData,
     isBinary: boolean
   ) {
     if (!isBinary) {
-      console.log(key, message.toString());
+      const msg = JSON.parse(data.toString()) as
+        | WebSocketResponse<Arg>
+        | WebSocketPush<Arg, unknown>;
+      console.log(msg);
+      if (Object.prototype.hasOwnProperty.bind(msg)('event')) {
+        const res: WebSocketResponse<object> = msg as WebSocketResponse<object>;
+        if (res.event === 'login') {
+          if ((res as unknown as WebSocketLoginResponse).code === '0') {
+            this.emit('authorized');
+          }
+        }
+        this.emit('response', {
+          channel,
+          data: res,
+        });
+      } else {
+        this.emit<object, object>('push', {
+          channel,
+          data: msg as WebSocketPush<object, object>,
+        });
+      }
     }
   }
 
@@ -112,6 +212,19 @@ export class OkxWebSocketClient {
       this._clients[key].on('open', () => {
         this._clients[key].send(msg);
       });
+    }
+  }
+
+  public async privateChannelReady(): Promise<boolean> {
+    if (this._authorized) {
+      return true;
+    } else {
+      const p = new Promise<boolean>(resolve => {
+        this.on('authorized', () => {
+          resolve(true);
+        });
+      });
+      return p;
     }
   }
 
