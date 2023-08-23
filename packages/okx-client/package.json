@@ -31,10 +31,8 @@
     "dist/**/*"
   ],
   "scripts": {
-    "build:cjs": "tsc --project tsconfig.cjs.json",
-    "build:cjs:watch": "tsc --project tsconfig.cjs.json -w",
-    "build:mjs": "tsc --project tsconfig.mjs.json",
-    "build:mjs:watch": "tsc --project tsconfig.mjs.json -w",
+    "build": "tsc --project tsconfig.mjs.json",
+    "build:watch": "npm run build -- -w",
     "clean": "rm -rf ./lib/ && rm -rf ./dist/",
     "eslint": "eslint ./src/ --fix",
     "lintpackagejson": "npmPkgJsonLint .",

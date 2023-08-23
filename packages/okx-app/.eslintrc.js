@@ -1,11 +1,15 @@
 module.exports = {
   root: true,
-  extends: ['cnp', 'cnp/typescript', 'cnp/jest'],
+  env: {
+    browser: true,
+    es6: true,
+    node: true,
+  },
+  extends: ['cnp', 'cnp/typescript', 'cnp/react'],
   overrides: [
     {
-      files: '*.{ts,cts,mts,tsx}',
+      files: ['*.{ts,tsx}'],
       parserOptions: {
-        tsconfigRootDir: __dirname,
         project: 'tsconfig.eslint.json',
       },
       rules: {

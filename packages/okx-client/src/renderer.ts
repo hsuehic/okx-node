@@ -1,5 +1,5 @@
 /* eslint-disable */
-import { OkxWebSocketClient } from '../../../dist/cjs/client';
+import { OkxWebSocketClient } from 'okx-node';
 window.onload = () => {
   // @ts-ignore
   console.log(window.okxWsClient);
@@ -8,6 +8,7 @@ window.onload = () => {
   const client = window.okxWsClient as OkxWebSocketClient;
 
   const element = document.getElementById('ts');
+  // @ts-ignore
   client.on('push', data => {
     // @ts-ignore
     if (element) element.innerHTML = data.data.data[0].ts;

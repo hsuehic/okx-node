@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 // preload.js
 
@@ -30,14 +31,14 @@ window.addEventListener('DOMContentLoaded', () => {
     if (priceElement) priceElement.innerText = price;
   };
   okxWsClient.on('push', data => {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     updatePrice(data.data.data[0].last);
     console.log(data);
   });
 
   contextBridge.exposeInMainWorld('okxWsClient', {
-    on: (...args) => {
+    on: (...args: unknown[]) => {
+      // @ts-ignore
       okxWsClient.on(...args);
     },
   });
