@@ -1,0 +1,43 @@
+.book {
+  box-sizing: border-box;
+  width: 298px;
+  height: 252px;
+  padding: 0 4px 0 4px;
+  margin: 0;
+  list-style: none;
+  & > li {
+    height: 20px;
+    font-size: 14px;
+    line-height: 20px;
+    list-style: none;
+  }
+}
+
+.bookLevel,
+.bookHeader {
+  display: flex;
+  flex-direction: row;
+
+  & > span {
+    display: block;
+    flex: 1;
+    flex-grow: 1;
+    text-align: right;
+  }
+
+  & > span:first-child {
+    text-align: left;
+  }
+}
+
+.bookHeader {
+  color: var(--color-text-light);
+}
+
+.currentPrice {
+  height: 32px !important;
+  font-size: 16px;
+  font-weight: bold;
+  line-height: 32px !important;
+  text-align: left;
+}

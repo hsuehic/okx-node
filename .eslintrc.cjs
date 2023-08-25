@@ -10,6 +10,7 @@ module.exports = {
       },
       rules: {
         '@typescript-eslint/naming-convention': 'off',
+        '@typescript-eslint/ban-ts-comment': 'off',
       },
     },
   ],

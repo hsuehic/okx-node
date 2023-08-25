@@ -1,5 +1,3 @@
-
-
 # okx-node
 
 [![npm package][npm-img]][npm-url]
@@ -49,8 +47,14 @@ Default: `rainbows`
 
 Lorem ipsum.
 
+## Use Case
+
+- okx-app [Crypto Master](./packages/okx-app/README.md)
+  [!](./asset/screenshot.gif)
+  [!](./asset/snapshot.png)
 
 <!--badge-variables-->
+
 [lint-img]: https://github.com/hsuehic/okx-node/actions/workflows/lint.yaml/badge.svg
 [lint-url]: https://github.com/hsuehic/okx-node/workflows/lint.yaml
 [test-img]: https://github.com/hsuehic/okx-node/actions/workflows/test.yaml/badge.svg
@@ -67,4 +71,5 @@ Lorem ipsum.
 [issues-url]: https://github.com/hsuehic/okx-node/issues
 [codecov-img]: https://codecov.io/gh/hsuehic/okx-node/branch/main/graph/badge.svg
 [codecov-url]: https://codecov.io/gh/hsuehic/okx-node
+
 <!--badge-variables-->

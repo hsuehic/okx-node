@@ -25,4 +25,14 @@
  *  });
  * ```
  */
-import './web/index';
+import './election.d.ts';
+import './renderer/app';
+
+window.onload = () => {
+  // window.wsClient.account.on('push-account', data => {
+  //   console.log(data);
+  // });
+  // window.wsClient.market.on('push-tickers', data => {
+  //   console.log(data);
+  // });
+};

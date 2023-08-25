@@ -9,3 +9,25 @@ declare module '*.module.scss' {
   // eslint-disable-next-line import/no-default-export
   export default classes;
 }
+
+type ExposableObject<T extends object> = Omit<T, 'constructor'>;
+type ExposablePropName<T extends object> = keyof ExposableObject<T>;
+
+type ExposableType<T extends object> = {
+  [P in keyof T]: T[P] extends (...args) => any ? T[P] : () => T[P];
+};
+
+type CryptoCurrency =
+  | 'BTC'
+  | 'ETH'
+  | 'LTC'
+  | 'XRP'
+  | 'SOL'
+  | 'BCH'
+  | 'DOGE'
+  | 'FIL'
+  | 'ADA'
+  | 'ETC';
+type Quote = 'USDC' | 'USDT';
+
+type InstId = `${CryptoCurrency}-${Quote}`;

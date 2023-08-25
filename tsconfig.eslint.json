@@ -9,5 +9,6 @@
   },
   "include": [
     "packages/**/*.ts", "packages/**/*.tsx", "scripts", "src/**/*.ts", "test/**/*.ts"
-  ]
+  ],
+  "exclude": ["dist"]
 }

@@ -34,6 +34,9 @@ jobs:
       - name: ESLint
         run: pnpm run eslint
 
+      - name: Stylelint
+        run: pnpm -r run stylelint
+
  
   typecheck: 
     name: Typecheck

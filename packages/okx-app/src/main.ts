@@ -1,6 +1,10 @@
 import path from 'path';
 
-import { BrowserWindow, app } from 'electron';
+import { BrowserWindow, app, screen } from 'electron';
+import installExtension, {
+  REACT_DEVELOPER_TOOLS,
+  REDUX_DEVTOOLS,
+} from 'electron-extension-installer';
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) {
@@ -8,12 +12,16 @@ if (require('electron-squirrel-startup')) {
 }
 
 const createWindow = () => {
+  const { width, height } = screen.getPrimaryDisplay().workAreaSize;
   // Create the browser window.
   const mainWindow = new BrowserWindow({
-    width: 800,
-    height: 600,
+    fullscreen: false,
+    width,
+    height,
+    titleBarStyle: 'default',
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
+      nodeIntegration: true,
     },
   });
 
@@ -50,6 +58,15 @@ app.on('activate', () => {
   if (BrowserWindow.getAllWindows().length === 0) {
     createWindow();
   }
+});
+
+void app.whenReady().then(async () => {
+  await installExtension(REACT_DEVELOPER_TOOLS, {
+    loadExtensionOptions: {
+      allowFileAccess: true,
+    },
+  });
+  await installExtension(REDUX_DEVTOOLS);
 });
 
 // In this file you can include the rest of your app's specific main process
