@@ -17,7 +17,6 @@ import {
 const getExposableObject = <T extends object>(origin: T): ExposableType<T> => {
   const exposableObject = {} as ExposableType<T>;
   for (const key of Object.getOwnPropertyNames(Object.getPrototypeOf(origin))) {
-    console.log(key);
     if (key !== 'constructor') {
       const k = key as ExposablePropName<T>;
       const fun = origin[k];

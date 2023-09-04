@@ -48,6 +48,8 @@ export type LogType =
   | PushChannel;
 export type LogSettings = Partial<Record<LogType, boolean>>;
 
+export const WS_KEYS: WsKey[] = ['business', 'private', 'public'];
+
 /**
  * declare overrote methods of OkxWebSocketClient
  */
@@ -99,16 +101,18 @@ export class OkxWebSocketClient extends EventEmitter {
     lastReceived: Record<WsKey, number>;
   } = {
     lastSend: {
-      business: Date.now() / 1000,
-      private: Date.now() / 1000,
-      public: Date.now() / 1000,
+      business: Date.now(),
+      private: Date.now(),
+      public: Date.now(),
     },
     lastReceived: {
-      business: Date.now() / 1000,
-      private: Date.now() / 1000,
-      public: Date.now() / 1000,
+      business: Date.now(),
+      private: Date.now(),
+      public: Date.now(),
     },
   };
+
+  private _heartbeatInterval: number;
 
   private _verbose: LogSettings = {
     errorResponse: true,
@@ -135,10 +139,11 @@ export class OkxWebSocketClient extends EventEmitter {
       private: this._initClient('private'),
       public: this._initClient('public'),
     };
-    const { heartbeatInterval = 2000 } = options;
+    this._heartbeatInterval = options.heartbeatInterval || 3000;
     this._timerId = setInterval(() => {
       this._sendPing();
-    }, heartbeatInterval);
+      this._checkHeartbeat();
+    }, this._heartbeatInterval);
   }
 
   /**
@@ -147,9 +152,11 @@ export class OkxWebSocketClient extends EventEmitter {
    * @returns {WebSocket}
    */
   private _initClient(key: WsKey, reassign = false): WebSocket {
+    console.log(reassign ? 're-init' : 'init', key);
     const wsUrl = getWsUrl(this._market, key);
     const socket = new WebSocket(wsUrl);
     socket.on('close', () => {
+      console.log(key, 'closed');
       if (key === 'private' || key === 'business') {
         this._privateChannelReady[key] = false;
       }
@@ -159,19 +166,28 @@ export class OkxWebSocketClient extends EventEmitter {
       if (key !== 'public') {
         this._loginToWsClient(key);
       }
+      if (reassign) {
+        if (key === 'public') {
+          this._reSubAfterReconnect(key);
+        } else {
+          void this.privateChannelReady(key).then(() => {
+            this._reSubAfterReconnect(key);
+          });
+        }
+      }
     });
     socket.on('message', (data: WebSocket.RawData, isBinary: boolean) => {
       this._onMessage(key, data, isBinary);
     });
     if (reassign) {
-      this._clients[key] = new WebSocket(wsUrl);
+      console.log('re-assign', key);
+      this._clients[key] = socket;
     }
     return socket;
   }
 
   private _sendPing() {
-    const keys: WsKey[] = ['business', 'private', 'public'];
-    for (const key of keys) {
+    for (const key of WS_KEYS) {
       if (this._clients[key].readyState === WebSocket.OPEN) {
         this._clients[key].send('ping');
         this._log('ping', `[${key}]`, 'ping');
@@ -188,7 +204,7 @@ export class OkxWebSocketClient extends EventEmitter {
     const record = isReceived
       ? this._pingPongTimer.lastReceived
       : this._pingPongTimer.lastSend;
-    record[wsKey] = Date.now() / 1000;
+    record[wsKey] = Date.now();
   }
 
   /**
@@ -221,7 +237,7 @@ export class OkxWebSocketClient extends EventEmitter {
    * @param message Message content
    */
   private _onMessage(wsKey: WsKey, data: WebSocket.RawData, isBinary: boolean) {
-    this._pingPongTimer.lastReceived[wsKey] = Date.now() / 1000;
+    this._pingPongTimer.lastReceived[wsKey] = Date.now();
     if (!isBinary) {
       const msgStr = data.toString();
       if (msgStr !== 'pong') {
@@ -251,6 +267,7 @@ export class OkxWebSocketClient extends EventEmitter {
           this._handlePush(msgObj as WsPush);
         }
       } else {
+        this._logTimer(wsKey, true);
         this._log('pong', `[${wsKey}] pong`);
       }
     }
@@ -343,6 +360,41 @@ export class OkxWebSocketClient extends EventEmitter {
       }
     }
     this._send(wsKey, req);
+  }
+
+  private _checkHeartbeat() {
+    const { lastReceived, lastSend } = this._pingPongTimer;
+    for (const key of WS_KEYS) {
+      const now = Date.now();
+      if (lastSend[key] - lastReceived[key] > this._heartbeatInterval * 3) {
+        console.log(key, 'force closed');
+        const socket = this._clients[key];
+        // close the client to force re-connect
+        socket.close(1);
+        // reset loger timestamp to avoid forcing closing again when re-connecting and re-subscribing
+        lastSend[key] = now;
+        lastReceived[key] = now;
+      }
+    }
+  }
+
+  /**
+   * re-subscribe all when re-connect worksocked client
+   * @param wsKey
+   */
+  private _reSubAfterReconnect(wsKey: WsKey) {
+    console.log(wsKey, 're-subscribe');
+    const subscribtions = this._subscribes.get(wsKey);
+    console.log([...subscribtions]);
+    subscribtions.forEach((subscription: WsSubscriptionTopic) => {
+      this._subUnsub(
+        {
+          op: 'subscribe',
+          args: [subscription],
+        },
+        true
+      );
+    });
   }
 
   /**
