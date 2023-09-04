@@ -50,8 +50,8 @@ Lorem ipsum.
 ## Use Case
 
 - okx-app [Crypto Master](./packages/okx-app/README.md)
-  [!](./asset/screenshot.gif)
-  [!](./asset/snapshot.png)
+  ![screenshot](./asset/screenshot.gif)
+  ![snapshot](./asset/snapshot.png)
 
 <!--badge-variables-->
 
