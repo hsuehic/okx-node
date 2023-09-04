@@ -13,15 +13,10 @@
       "windows": {
         "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/electron-forge-vscode-win.cmd"
       },
-      // runtimeArgs will be passed directly to your Electron application
-      "runtimeArgs": [
-        "foo",
-        "bar"
-      ],
       "cwd": "${workspaceFolder}/packages/okx-app"
     },
     {
-      "name": "Current TS CJS File",
+      "name": "Current CJS TS File",
       "type": "node",
       "request": "launch",
       "runtimeExecutable": "${workspaceRoot}/node_modules/.bin/ts-node",
@@ -33,7 +28,7 @@
       "skipFiles": ["<node_internals>/**", "node_modules/**"]
     },
     {
-      "name": "Current TS ESM File",
+      "name": "Current ESM TS File",
       "type": "node",
       "request": "launch",
       "runtimeExecutable": "${workspaceRoot}/node_modules/.bin/ts-node-esm",
