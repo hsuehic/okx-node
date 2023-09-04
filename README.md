@@ -20,10 +20,42 @@ npm install okx-node
 ## Usage
 
 ```ts
-import { myPackage } from 'okx-node';
+import { OkxRestClient, OkxWebSocketClient } from 'okx-node';
 
-myPackage('hello');
-//=> 'hello from my package'
+const okxRestClient = new OkxRestClient(
+  {
+    apiKey: API_KEY,
+    apiPass: PASSPHRASE,
+    apiSecret: SECRET_KEY,
+  },
+  MARKET
+);
+
+const okxWsClient = OkxWebSocketClient.getInstance({
+  apiKey: API_KEY,
+  passphrase: PASSPHRASE,
+  secretKey: SECRET_KEY,
+  market: MARKET,
+});
+
+void okxRestClient.getPositions().then(data => console.log(data));
+void okxRestClient
+  .getIndexTickers({ instId: 'BTC-USDT' })
+  .then(data => console.log(data));
+
+const channel = 'index-candle15m';
+const eventName = `push-${channel}` as const;
+const args: WsPublicChannelArgInstId[] = [
+  {
+    channel,
+    instId: 'BTC-USDT',
+  },
+];
+okxWsClient.subscribe({
+  op: 'subscribe',
+  args,
+});
+okxWsClient.on(eventName, data => console.log(data));
 ```
 
 ## API
@@ -55,14 +87,14 @@ Lorem ipsum.
 
 <!--badge-variables-->
 
-[lint-img]: https://github.com/hsuehic/okx-node/actions/workflows/lint.yaml/badge.svg
-[lint-url]: https://github.com/hsuehic/okx-node/workflows/lint.yaml
-[test-img]: https://github.com/hsuehic/okx-node/actions/workflows/test.yaml/badge.svg
-[test-url]: https://github.com/hsuehic/okx-node/workflows/test.yaml
-[build-img]: https://github.com/hsuehic/okx-node/actions/workflows/build.yaml/badge.svg
-[build-url]: https://github.com/hsuehic/okx-node/workflows/build.yaml
-[release-img]: https://github.com/hsuehic/okx-node/actions/workflows/release.yaml/badge.svg
-[release-url]: https://github.com/hsuehic/okx-node/workflows/release.yaml
+[lint-img]: https://github.com/hsuehic/okx-node/actions/workflows/lint.yml/badge.svg
+[lint-url]: https://github.com/hsuehic/okx-node/workflows/lint.yml
+[test-img]: https://github.com/hsuehic/okx-node/actions/workflows/test.yml/badge.svg
+[test-url]: https://github.com/hsuehic/okx-node/workflows/test.yml
+[build-img]: https://github.com/hsuehic/okx-node/actions/workflows/build.yml/badge.svg
+[build-url]: https://github.com/hsuehic/okx-node/workflows/build.yml
+[release-img]: https://github.com/hsuehic/okx-node/actions/workflows/release.yml/badge.svg
+[release-url]: https://github.com/hsuehic/okx-node/workflows/release.yml
 [downloads-img]: https://img.shields.io/npm/dt/okx-node
 [downloads-url]: https://www.npmtrends.com/okx-node
 [npm-img]: https://img.shields.io/npm/v/okx-node
