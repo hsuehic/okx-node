@@ -101,6 +101,16 @@ export const Chart = ({ className, instId, channel }: ChartProps) => {
 
   useEffect(() => {
     const chart = echarts.init(elRef.current);
+    const resizeHandler = () => {
+      chart.resize();
+    };
+    window.addEventListener('resize', resizeHandler);
+    return () => {
+      window.removeEventListener('resize', resizeHandler);
+    };
+  }, []);
+  useEffect(() => {
+    const chart = echarts.getInstanceByDom(elRef.current);
     const bar = channel.replace('index-candle', '') as Bar;
     let candlestickChartData: CandlestickChartData = {
       xAxis: [],
@@ -134,12 +144,7 @@ export const Chart = ({ className, instId, channel }: ChartProps) => {
         subscribeIndex(instId, channel, handler);
       }
     );
-    const resizeHandler = () => {
-      chart.resize();
-    };
-    window.addEventListener('resize', resizeHandler);
     return () => {
-      window.removeEventListener('resize', resizeHandler);
       unsubscribeIndex(instId, channel, handler);
     };
   }, [channel, instId]);
