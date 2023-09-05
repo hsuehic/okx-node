@@ -10,12 +10,22 @@ import {
   WsCancelOrderResponse,
   WsInstrumentType,
   WsMassCancelResponse,
+  WsOrderSide,
   WsPlaceOrderParams,
   WsPlaceOrderRequest,
   WsPlaceOrderResponse,
   WsPush,
+  WsQuickMgnType,
+  WsTradeMode,
   WsTradeResponse,
 } from './type';
+
+export type WsOrderState =
+  | 'canceled'
+  | 'live'
+  | 'partially_filled'
+  | 'filled'
+  | 'mmp_canceled';
 
 export interface WsPushOrdersArg {
   channel: 'orders';
@@ -24,23 +34,44 @@ export interface WsPushOrdersArg {
   uid: string;
 }
 export interface WsOrder {
+  /**
+   * accumulative filled size
+   */
   accFillSz: string;
   amendResult: string;
+  /**
+   * average fill price
+   */
   avgPx: string;
   cTime: string;
   category: string;
   ccy: string;
   clOrdId: string;
+  /**
+   * error code, default '0' withou error
+   */
   code: string;
   execType: string;
+  /**
+   * accumulative fee
+   */
   fee: string;
   feeCcy: string;
   fillFee: string;
   fillFeeCcy: string;
   fillNotionalUsd: string;
+  /**
+   * latest fill price
+   */
   fillPx: string;
+  /**
+   * latest fill size
+   */
   fillSz: string;
   fillPnl: string;
+  /**
+   * latest fill time
+   */
   fillTime: string;
   instId: string;
   instType: string;
@@ -51,29 +82,50 @@ export interface WsOrder {
   ordType: string;
   pnl: string;
   posSide: string;
+  /**
+   * book price
+   */
   px: string;
+  /**
+   * accumulative rebate
+   */
   rebate: string;
   rebateCcy: string;
   reduceOnly: string;
   reqId: string;
-  side: string;
+  side: WsOrderSide;
   attachAlgoClOrdId: string;
   slOrdPx: string;
   slTriggerPx: string;
   slTriggerPxType: string;
   source: string;
-  state: string;
+  state: WsOrderState;
   stpId: string;
   stpMode: string;
   sz: string;
+  /**
+   * tag of the order
+   */
   tag: string;
-  tdMode: string;
-  tgtCcy: string;
+  /**
+   * trade mode
+   */
+  tdMode: WsTradeMode;
+  /**
+   * sz's `unit` for market price trade type
+   */
+  tgtCcy: 'base_ccy' | 'quote_ccy';
   tpOrdPx: string;
   tpTriggerPx: string;
   tpTriggerPxType: string;
+  /**
+   * latest trade id
+   */
   tradeId: string;
-  quickMgnType: string;
+  /**
+   * Margin Type
+   */
+  quickMgnType: WsQuickMgnType;
   algoClOrdId: string;
   algoId: string;
   amendSource: string;
@@ -83,10 +135,7 @@ export interface WsOrder {
 
 export type WsPushOrders = WsPush<WsPushOrdersArg, WsOrder>;
 
-export type OrderEvent = 'push-orders';
-
 export interface Order {
-  emit(event: OrderEvent, data: WsOrder[]): boolean;
   emit(event: 'order' | 'batch-orders', data: WsPlaceOrderResponse): boolean;
   emit(
     event: 'cancel-order' | 'batch-cancel-orders',
@@ -98,7 +147,6 @@ export interface Order {
   ): boolean;
   emit(event: 'mass-cancel', data: WsMassCancelResponse): boolean;
 
-  on(event: OrderEvent, listener: (push: WsOrder) => void): this;
   on(
     event: 'order' | 'batch-orders',
     listener: (push: WsPlaceOrderResponse) => void
@@ -115,7 +163,6 @@ export interface Order {
     event: 'mass-cancel',
     listener: (push: WsMassCancelResponse) => void
   ): this;
-  off(event: OrderEvent, listener: (push: WsOrder) => void): this;
   off(
     event: 'order' | 'batch-orders',
     listener: (push: WsPlaceOrderResponse) => void
@@ -143,26 +190,12 @@ export class Order extends EventEmitter {
   }
   private async _subscribe() {
     await okxWsClient.privateChannelReady('private');
-    this._okxWsClient.subscribe({
-      channel: 'orders',
-      instType: 'ANY',
-    });
+
     await okxWsClient.privateChannelReady('business');
-    this._okxWsClient.subscribe({
-      channel: 'orders-algo',
-      instType: 'FUTURES',
-    });
-    this._okxWsClient.on('push-orders', (push: WsPush) => {
-      this._handleOrdersPush(push as WsPushOrders);
-    });
     this._okxWsClient.on('trade', (push: WsTradeResponse) => {
       // @ts-ignore known event emitter
       this.emit(push.op, push);
     });
-  }
-  private _handleOrdersPush(push: WsPushOrders) {
-    const { data } = push;
-    this.emit('push-orders', data);
   }
   public async placeOrder(params: WsPlaceOrderParams[]): Promise<string> {
     const id = Order.getUuid();

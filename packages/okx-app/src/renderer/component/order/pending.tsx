@@ -116,7 +116,12 @@ export const PendingOrder = () => {
           minHeight: `calc(100% - 136px)`,
         }}
       >
-        <Table columns={columns} dataSource={orders || []} loading={!orders} />
+        <Table
+          rowKey={'ordId'}
+          columns={columns}
+          dataSource={orders || []}
+          loading={!orders}
+        />
       </ProCard>
 
       <OrderForm

@@ -22,9 +22,9 @@ declare global {
     restClient: ExposableType<OkxRestClient>;
     wsClient: ExposableType<OkxWebSocketClient> & {
       updateVoberseSettings(settings: LogSettings): void;
-      account: ExposableType<Account>;
-      market: ExposableType<Market>;
-      order: ExposableType<Order> & {
+      account: Account;
+      market: Market;
+      order: Order & {
         getUuid: () => string;
       };
     };

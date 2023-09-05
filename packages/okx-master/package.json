@@ -1,0 +1,71 @@
+{
+  "name": "okx-master",
+  "version": "0.0.0-development",
+  "description": "A template for creating npm packages using TypeScript and VSCode",
+  "main": "./dist/cjs/index.js",
+  "types": "./dist/cjs/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/mjs/index.d.ts",
+        "default": "./dist/mjs/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/index.d.ts",
+        "default": "./dist/cjs/index.js"
+      }
+    },
+    "./*": {
+      "import": {
+        "types": "./dist/mjs/*.d.ts",
+        "default": "./dist/mjs/*.js"
+      },
+      "require": {
+        "types": "./dist/cjs/*.d.ts",
+        "default": "./dist/cjs/*.js"
+      }
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist/**/*"
+  ],
+  "scripts": {
+    "build": "npm run build:cjs && npm run build:mjs",
+    "build:cjs": "tsc --project tsconfig.cjs.json",
+    "build:mjs": "tsc --project tsconfig.mjs.json",
+    "clean": "rm -rf ./lib/ && rm -rf ./dist/",
+    "eslint": "eslint ./src/ --fix",
+    "lintpackagejson": "npmPkgJsonLint .",
+    "release": "npx changeset publish",
+    "test:watch": "jest --watch",
+    "test": "jest --coverage",
+    "typecheck": "tsc --noEmit"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": ">=12.0"
+  },
+  "keywords": [
+    "boilerplate",
+    "template",
+    "typescript",
+    "vscode",
+    "jest",
+    "husky",
+    "commitlint",
+    "changesets",
+    "codecov"
+  ],
+  "bugs": {
+    "url": "https://github.com/hsuehic/okx-node/issues"
+  },
+  "homepage": "https://github.com/hsuehic/okx-node#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hsuehic/okx-node.git"
+  },
+  "dependencies": {
+    "okx-node": "workspace:0.0.0-development"
+  }
+}

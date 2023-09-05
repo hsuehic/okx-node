@@ -340,9 +340,12 @@ export class OkxWebSocketClient extends EventEmitter {
       arg: WsSubscriptionTopic
     ): WsSubscriptionTopic | void => {
       subscriptions?.forEach(storedArg => {
+        console.log(storedArg, arg);
         if (deepObjectMatch(storedArg, arg)) {
+          console.log(true);
           return storedArg;
         }
+        console.log(false);
       });
     };
     if (op === 'unsubscribe') {

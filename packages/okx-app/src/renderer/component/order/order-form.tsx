@@ -150,6 +150,7 @@ export const OrderForm = (props: OrderFormProps) => {
         name="sz"
         label={`Size(${unit})`}
         min={0}
+        placeholder={''}
         extra={
           (avail &&
             (side == 'buy'
@@ -159,12 +160,23 @@ export const OrderForm = (props: OrderFormProps) => {
         }
       />
       {ordType === 'limit' && (
-        <ProFormDigit required name="px" label="Price" min={0} />
+        <ProFormDigit
+          placeholder={''}
+          required
+          name="px"
+          label="Price"
+          min={0}
+        />
       )}
-      <ProFormDateTimePicker name="expTime" label="Expire Time" />
+      <ProFormDateTimePicker
+        placeholder={''}
+        name="expTime"
+        label="Expire Time"
+      />
       <ProFormText
         label="Tag"
         name="tag"
+        placeholder={''}
         fieldProps={{
           maxLength: 16,
         }}

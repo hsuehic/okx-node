@@ -127,5 +127,25 @@ export const route = {
         },
       ],
     },
+    {
+      path: 'trade',
+      name: 'Trade',
+      icon: <GlobalOutlined />,
+      element: <Outlet />,
+      children: [
+        {
+          path: 'high-frequency/:instId',
+          name: 'High Frequency',
+          defaultPath: '/trade/high-frequency/BTC-USDC',
+          icon: <DollarOutlined />,
+          lazy: async () => {
+            const { HighFrequencyTrade } = await import('./trade');
+            return {
+              Component: HighFrequencyTrade,
+            };
+          },
+        },
+      ],
+    },
   ],
 };

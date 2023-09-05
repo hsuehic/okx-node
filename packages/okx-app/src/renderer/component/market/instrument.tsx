@@ -5,7 +5,6 @@ import { PageContainer, ProCard } from '@ant-design/pro-components';
 import { Button } from 'antd';
 import { Ticker, WsOrderSide, WsPushArg } from 'okx-node';
 
-import '../../../election.d.ts';
 import { CandleStick } from '../chart/candle-stick';
 import { InstPageSubTitle, InstPageTitle } from '../common';
 import { usePush, useSubscribe } from '../hooks';

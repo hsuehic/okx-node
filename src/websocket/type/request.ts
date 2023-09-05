@@ -1,6 +1,7 @@
 import {
   WsInstrumentType,
   WsInstrumentTypeWithAny,
+  WsOrdType,
   WsOrderSide,
   WsPublicIndexKlineChannel,
   WsPublicKlineChannel,
@@ -242,7 +243,7 @@ fok: Fill or kill order. If the order cannot be fully filled, the order will be 
 ioc: Immediate or cancel order. Immediately execute the transaction at the order price, cancel the remaining unfilled quantity of the order, and the order quantity will not be displayed in the order book.
 optimal_limit_ioc：Market order with ioc (immediate or cancel). Immediately execute the transaction of this market order, cancel the remaining unfilled quantity of the order, and the order quantity will not be displayed in the order book. Only applicable to FUTURES and SWAP.
    */
-  ordType: string;
+  ordType: WsOrdType;
   /**
    * Quantity to buy or sell.
    */
@@ -307,10 +308,8 @@ export type WsCancelOrderParameter = {
 } & (
   | {
       ordId: string;
-      clOrdId: never;
     }
   | {
-      ordId: never;
       clOrdId: string;
     }
 );
