@@ -6,6 +6,7 @@ import resolve from 'vite-plugin-resolve';
 export default defineConfig({
   build: {
     sourcemap: true,
+    minify: false,
   },
   resolve: {
     // Some libs that can run in both Web and Node.js, such as `axios`, we need to tell Vite to build them in Node.js.

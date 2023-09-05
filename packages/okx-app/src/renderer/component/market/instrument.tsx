@@ -23,9 +23,7 @@ export const Instrument = () => {
   const params = useParams<{ instId: InstId }>();
   const [instId, setInstId] = useState<InstId>(params.instId || 'BTC-USDC');
 
-  useSubscribe(['books5', 'index-candle15m', 'trades', 'tickers'], instId, [
-    instId,
-  ]);
+  useSubscribe(['books5', 'trades', 'tickers'], instId, [instId]);
   const [ticker] = usePush<WsPushArg & { instId: InstId }, Ticker>(
     'tickers',
     (arg: { channel: 'tickers'; instId: InstId }) => {
