@@ -69,7 +69,7 @@ export const OrderHistory = () => {
         instId,
       });
     },
-    1000,
+    2000,
     [instId]
   );
 
@@ -116,7 +116,7 @@ export const OrderHistory = () => {
         }}
       >
         <Table
-          rowKey={'ordId'}
+          rowKey={'billId'}
           columns={columns}
           dataSource={orders || []}
           loading={!orders}
