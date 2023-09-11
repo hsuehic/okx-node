@@ -1,1 +1,1 @@
-export { OkxMaster } from './master';
+export { IOkxTrader } from './Trader';

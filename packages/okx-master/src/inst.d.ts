@@ -12,3 +12,5 @@ type CryptoCurrency =
 type Quote = 'USDC' | 'USDT';
 
 type InstId = `${CryptoCurrency}-${Quote}`;
+
+type TraderType = 'price' | 'change';

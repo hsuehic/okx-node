@@ -66,6 +66,13 @@
     "url": "git+https://github.com/hsuehic/okx-node.git"
   },
   "dependencies": {
-    "okx-node": "workspace:0.0.0-development"
+    "koa": "^2.14.2",
+    "koa-route": "^3.2.0",
+    "okx-node": "workspace:0.0.0-development",
+    "ws": "^8.13.0"
+  },
+  "devDependencies": {
+    "@types/koa": "^2.13.8",
+    "@types/koa-route": "^3.2.5"
   }
 }

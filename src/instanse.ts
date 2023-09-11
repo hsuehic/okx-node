@@ -1,9 +1,8 @@
 import { config } from 'dotenv';
 
 // import { WsPublicChannelArgInstId } from './type/request';
+import { OkxRestClient } from './rest';
 import { OkxWebSocketClient } from './websocket/ws-client';
-
-import { OkxRestClient } from '.';
 
 config();
 const { API_KEY, PASSPHRASE, SECRET_KEY, MARKET } = process.env;

@@ -118,9 +118,6 @@ export class OkxWebSocketClient extends EventEmitter {
     errorResponse: true,
   };
 
-  /**
-   * @deprecated use `OkxWebSocket.getInstance` instead to ensure the application will use the same clients all the time.
-   */
   constructor(options: Options) {
     super();
     this._apiKey = options.apiKey;

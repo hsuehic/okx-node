@@ -1,12 +1,18 @@
 import {
+  OkxWebSocketClient,
   Order,
   WsCancelOrderResponse,
   WsOrder,
   WsOrderSide,
   WsPlaceOrderParams,
   WsPlaceOrderResponse,
+  WsPush,
   WsPushOrders,
+  WsSubscriptionTopic,
+  okxWsClient,
 } from 'okx-node';
+
+import { IOkxTrader } from './Trader';
 
 export interface HighFrequencyConfigs {
   basePx: number;
@@ -14,6 +20,7 @@ export interface HighFrequencyConfigs {
   gap: number;
   levelCount: number;
   coefficient: number;
+  onOrders?: (pendingOrders: WsOrder[], filledOrders: WsOrder[]) => void;
 }
 
 /**
@@ -23,16 +30,21 @@ export interface HighFrequencyConfigs {
  * e.g. the base price is `0.50`. and gap is `0.005`. 2 books will be initialized when starting, the sell book is at price `0.505`, the buy book will be at price `0.495`.
  * if the buy book is filled, the new books will be buy book at 0.49 and sell book at 0.50. the size of the books will be determined by `coefficient`, using formula `size = Math.pow(coeffient, Math.abs(orderPx - basePx)/gap) * baseSz`;
  */
-export class HighFrequency extends EventTarget {
+export class HighFrequency extends EventTarget implements IOkxTrader {
   private _instId: InstId;
-  private _configs: HighFrequencyConfigs;
   private _px: number;
   private _ccy: CryptoCurrency;
+  private _basePx: number;
+  private _baseSz: number;
+  private _gap: number;
+  private _coefficient: number;
+  private _levelCount: number;
   private _quote: Quote;
-  private _onOrders: (
-    pendingOrders: WsOrder[],
-    filledOrders: WsOrder[]
-  ) => void | undefined;
+  private _orderClient: Order;
+  private _okxWsClient: OkxWebSocketClient;
+  private _onOrders:
+    | ((pendingOrders: WsOrder[], filledOrders: WsOrder[]) => void)
+    | undefined;
   private _buyOrder: {
     clOrdId: string;
     order?: WsOrder;
@@ -51,25 +63,43 @@ export class HighFrequency extends EventTarget {
    */
   constructor(
     instId: InstId,
-    configs: HighFrequencyConfigs,
-    onOrders?: (pendingOrders: WsOrder[], filledOrders: WsOrder[]) => void
+    {
+      basePx,
+      baseSz,
+      coefficient,
+      gap,
+      levelCount,
+      onOrders,
+    }: HighFrequencyConfigs
   ) {
     super();
     this._instId = instId;
     const [ccy, quote] = instId.split('-');
     this._ccy = ccy as CryptoCurrency;
     this._quote = quote as Quote;
-    this._configs = configs;
-    this._px = this._configs.basePx;
+    this._px = basePx;
+    this._basePx = basePx;
+    this._baseSz = baseSz;
+    this._coefficient = coefficient;
+    this._gap = gap;
+    this._levelCount = levelCount;
     this._onOrders = onOrders;
+    this._okxWsClient = okxWsClient;
+    this._orderClient = new Order();
+    this._buyOrder = {
+      clOrdId: '',
+    };
+    this._sellOrder = {
+      clOrdId: '',
+    };
+    void this._initializeBooks();
   }
 
   /**
    * subscribe events
    */
   private _on() {
-    const { wsClient } = window;
-    const { order: orderClient } = wsClient;
+    const { _orderClient: orderClient, _okxWsClient: wsClient } = this;
     orderClient.on('order', this._handlePlaceOrderResponse);
     orderClient.on('cancel-order', this._handleCancelOrderResponse);
     wsClient.on('push-orders', this._handlePushOrders);
@@ -78,8 +108,7 @@ export class HighFrequency extends EventTarget {
    * unsubscribe events
    */
   private _off() {
-    const { wsClient } = window;
-    const { order: orderClient } = wsClient;
+    const { _orderClient: orderClient, _okxWsClient: wsClient } = this;
     orderClient.off('order', this._handlePlaceOrderResponse);
     orderClient.off('cancel-order', this._handleCancelOrderResponse);
     wsClient.off('push-orders', this._handlePushOrders);
@@ -92,9 +121,9 @@ export class HighFrequency extends EventTarget {
   private _handlePlaceOrderResponse = (res: WsPlaceOrderResponse) => {
     const { clOrdId } = res.data[0];
     if (res.code === '0') {
-      if (clOrdId === this._buyOrder.clOrdId) {
+      if (this._buyOrder && clOrdId === this._buyOrder.clOrdId) {
         console.log('Buy order was placed');
-      } else if (clOrdId === this._sellOrder.clOrdId) {
+      } else if (this._sellOrder && clOrdId === this._sellOrder.clOrdId) {
         console.log('Sell order was placed');
       }
     }
@@ -107,16 +136,16 @@ export class HighFrequency extends EventTarget {
   private _handleCancelOrderResponse = (res: WsCancelOrderResponse) => {
     const { clOrdId } = res.data[0];
     if (res.code === '0') {
-      if (clOrdId === this._buyOrder.clOrdId) {
+      if (this._buyOrder && clOrdId === this._buyOrder.clOrdId) {
         this._buyOrder.order = undefined;
-      } else if (clOrdId === this._sellOrder.clOrdId) {
+      } else if (this._sellOrder && clOrdId === this._sellOrder.clOrdId) {
         this._sellOrder.order = undefined;
       }
     }
   };
 
-  private _handlePushOrders = (push: WsPushOrders) => {
-    const { data } = push;
+  private _handlePushOrders = (push: WsPush) => {
+    const { data } = push as WsPushOrders;
     const order = data[0];
     switch (order.state) {
       case 'live':
@@ -135,10 +164,10 @@ export class HighFrequency extends EventTarget {
 
   private _handlePushCanceledOrders(order: WsOrder) {
     const { clOrdId } = order;
-    if (clOrdId === this._buyOrder.clOrdId) {
+    if (this._buyOrder && clOrdId === this._buyOrder.clOrdId) {
       this._buyOrder.order = undefined;
       this._triggerOnOrders();
-    } else if (clOrdId === this._sellOrder.clOrdId) {
+    } else if (this._sellOrder && clOrdId === this._sellOrder.clOrdId) {
       this._sellOrder.order = undefined;
       this._triggerOnOrders();
     }
@@ -157,22 +186,19 @@ export class HighFrequency extends EventTarget {
 
   private _handlePushFilledOrder(order: WsOrder) {
     const { clOrdId } = order;
-    let newPrice: number;
-    let clOrdIdToBeCancelled: string;
+    let newPrice: number | undefined = undefined;
+    let clOrdIdToBeCancelled = '';
     if (clOrdId === this._buyOrder.clOrdId) {
       clOrdIdToBeCancelled = this._sellOrder.clOrdId;
-      newPrice = this._px - this._configs.gap;
+      newPrice = this._px - this._gap;
     } else if (clOrdId === this._sellOrder.clOrdId) {
       clOrdIdToBeCancelled = this._buyOrder.clOrdId;
-      newPrice = this._px + this._configs.gap;
+      newPrice = this._px + this._gap;
     }
     if (newPrice) {
       this._filledOrders.push(order);
       this._px = newPrice;
-      if (
-        Math.abs(this._px - this._configs.basePx) / this._configs.gap <
-        this._configs.levelCount
-      ) {
+      if (Math.abs(this._px - this._basePx) / this._gap < this._levelCount) {
         this._cancelOrder(clOrdIdToBeCancelled);
         void this._initializeBooks();
       }
@@ -187,9 +213,9 @@ export class HighFrequency extends EventTarget {
   }
 
   private async _initializeBooks() {
-    const orderClient = this._getOrderClient();
-    const buyOrderId = orderClient.getUuid();
-    const { baseSz, gap } = this._configs;
+    const { _orderClient: orderClient } = this;
+    const buyOrderId = Order.getUuid();
+    const { _baseSz: baseSz, _gap: gap } = this;
     this._buyOrder = {
       clOrdId: buyOrderId,
     };
@@ -201,7 +227,7 @@ export class HighFrequency extends EventTarget {
     );
     await orderClient.placeOrder([buyOrderParams]);
 
-    const sellOrdId = orderClient.getUuid();
+    const sellOrdId = Order.getUuid();
     this._sellOrder = {
       clOrdId: sellOrdId,
     };
@@ -235,7 +261,7 @@ export class HighFrequency extends EventTarget {
   };
 
   private _cancelOrder(clOrdId: string) {
-    const orderClient = this._getOrderClient();
+    const { _orderClient: orderClient } = this;
     void orderClient.cancelOrder([
       {
         instId: this._instId,
@@ -244,10 +270,6 @@ export class HighFrequency extends EventTarget {
     ]);
   }
 
-  private _getOrderClient(): Order & { getUuid: () => string } {
-    const { wsClient } = window;
-    return wsClient.order;
-  }
   public start() {
     this._on();
     void this._initializeBooks();
@@ -276,5 +298,12 @@ export class HighFrequency extends EventTarget {
     this._buyOrder.order && value.push(this._buyOrder.order);
     this._sellOrder.order && value.push(this._sellOrder.order);
     return value;
+  }
+
+  get type(): TraderType {
+    return 'price';
+  }
+  get subscriptions(): WsSubscriptionTopic[] {
+    return [];
   }
 }
