@@ -9,10 +9,25 @@ import {
 } from 'okx-node';
 
 export interface HighFrequencyConfigs {
+  /**
+   * Maximun decimal precision is 3
+   */
   basePx: number;
+  /**
+   * Maximun decimal precision is 3
+   */
   baseSz: number;
+  /**
+   * Maximun decimal precision is 3
+   */
   gap: number;
+  /**
+   * Maximun unfilled orders
+   */
   levelCount: number;
+  /**
+   * Unused currently, 1 is the default value
+   */
   coefficient: number;
 }
 
@@ -27,8 +42,14 @@ export class HighFrequency extends EventTarget {
   private _instId: InstId;
   private _configs: HighFrequencyConfigs;
   private _px: number;
+  private _basePx: number;
+  private _gap: number;
   private _ccy: CryptoCurrency;
   private _quote: Quote;
+  /**
+   * Used for price calculator
+   */
+  private _factor = 1000;
   private _onOrders: (
     pendingOrders: WsOrder[],
     filledOrders: WsOrder[]
@@ -60,7 +81,9 @@ export class HighFrequency extends EventTarget {
     this._ccy = ccy as CryptoCurrency;
     this._quote = quote as Quote;
     this._configs = configs;
-    this._px = this._configs.basePx;
+    this._px = this._configs.basePx * this._factor;
+    this._basePx = this._configs.basePx * this._factor;
+    this._gap = this._configs.gap * this._factor;
     this._onOrders = onOrders;
   }
 
@@ -161,16 +184,16 @@ export class HighFrequency extends EventTarget {
     let clOrdIdToBeCancelled: string;
     if (clOrdId === this._buyOrder.clOrdId) {
       clOrdIdToBeCancelled = this._sellOrder.clOrdId;
-      newPrice = this._px - this._configs.gap;
+      newPrice = this._px - this._gap;
     } else if (clOrdId === this._sellOrder.clOrdId) {
       clOrdIdToBeCancelled = this._buyOrder.clOrdId;
-      newPrice = this._px + this._configs.gap;
+      newPrice = this._px + this._gap;
     }
     if (newPrice) {
       this._filledOrders.push(order);
       this._px = newPrice;
       if (
-        Math.abs(this._px - this._configs.basePx) / this._configs.gap <
+        Math.abs(this._px - this._basePx) / this._gap <
         this._configs.levelCount
       ) {
         this._cancelOrder(clOrdIdToBeCancelled);
@@ -189,7 +212,7 @@ export class HighFrequency extends EventTarget {
   private async _initializeBooks() {
     const orderClient = this._getOrderClient();
     const buyOrderId = orderClient.getUuid();
-    const { baseSz, gap } = this._configs;
+    const { baseSz } = this._configs;
     this._buyOrder = {
       clOrdId: buyOrderId,
     };
@@ -197,7 +220,7 @@ export class HighFrequency extends EventTarget {
       buyOrderId,
       'buy',
       baseSz,
-      this._px - gap
+      (this._px - this._gap) / this._factor
     );
     await orderClient.placeOrder([buyOrderParams]);
 
@@ -209,7 +232,7 @@ export class HighFrequency extends EventTarget {
       sellOrdId,
       'sell',
       baseSz,
-      this._px + gap
+      (this._px + this._gap) / this._factor
     );
     await orderClient.placeOrder([sellOrderParams]);
   }

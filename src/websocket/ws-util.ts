@@ -194,3 +194,21 @@ export function deepObjectMatch(object1: object, object2: object): boolean {
   }
   return true;
 }
+
+/**
+ * find deep matched object in iterator, return the object if found, otherwise return undefined.
+ * @param arr iterator
+ * @param obj object
+ * @returns deep matched object in the iterator
+ */
+export const deepObjectMatchInArr = (
+  arr: Iterable<object>,
+  obj: object
+): object | undefined => {
+  for (const o of arr) {
+    if (deepObjectMatch(o, obj)) {
+      return o;
+    }
+  }
+  return undefined;
+};

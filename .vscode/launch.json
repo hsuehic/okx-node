@@ -25,6 +25,7 @@
       "envFile": "${workspaceFolder}/.env",
       "cwd": "${workspaceRoot}",
       "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
       "skipFiles": ["<node_internals>/**", "node_modules/**"]
     },
     {

@@ -12,15 +12,16 @@ import {
   okxWsClient,
 } from 'okx-node';
 
-import { IOkxTrader } from './Trader';
+import { OkxTrader, OkxTraderConfig } from './Trader';
 
-export interface HighFrequencyConfigs {
+export interface OkxPriceTraderConfig extends OkxTraderConfig {
+  type: 'price';
+  instId: InstId;
   basePx: number;
   baseSz: number;
   gap: number;
   levelCount: number;
   coefficient: number;
-  onOrders?: (pendingOrders: WsOrder[], filledOrders: WsOrder[]) => void;
 }
 
 /**
@@ -30,21 +31,21 @@ export interface HighFrequencyConfigs {
  * e.g. the base price is `0.50`. and gap is `0.005`. 2 books will be initialized when starting, the sell book is at price `0.505`, the buy book will be at price `0.495`.
  * if the buy book is filled, the new books will be buy book at 0.49 and sell book at 0.50. the size of the books will be determined by `coefficient`, using formula `size = Math.pow(coeffient, Math.abs(orderPx - basePx)/gap) * baseSz`;
  */
-export class HighFrequency extends EventTarget implements IOkxTrader {
+export class OkxPriceTrader extends EventTarget implements OkxTrader {
+  private _id: string;
+  private _config: OkxPriceTraderConfig;
   private _instId: InstId;
   private _px: number;
   private _ccy: CryptoCurrency;
   private _basePx: number;
   private _baseSz: number;
   private _gap: number;
+  private _factor = 1000;
   private _coefficient: number;
   private _levelCount: number;
   private _quote: Quote;
   private _orderClient: Order;
   private _okxWsClient: OkxWebSocketClient;
-  private _onOrders:
-    | ((pendingOrders: WsOrder[], filledOrders: WsOrder[]) => void)
-    | undefined;
   private _buyOrder: {
     clOrdId: string;
     order?: WsOrder;
@@ -53,6 +54,7 @@ export class HighFrequency extends EventTarget implements IOkxTrader {
     clOrdId: string;
     order?: WsOrder;
   };
+  private _started = false;
   private _filledOrders: WsOrder[] = [];
 
   /**
@@ -61,29 +63,21 @@ export class HighFrequency extends EventTarget implements IOkxTrader {
    * @param configs Configurations of trading
    * @param onOrders Handler of order changes
    */
-  constructor(
-    instId: InstId,
-    {
-      basePx,
-      baseSz,
-      coefficient,
-      gap,
-      levelCount,
-      onOrders,
-    }: HighFrequencyConfigs
-  ) {
+  constructor(config: OkxPriceTraderConfig) {
     super();
+    const { instId, basePx, baseSz, coefficient, gap, levelCount } = config;
+    this._id = Order.getUuid();
+    this._config = config;
     this._instId = instId;
     const [ccy, quote] = instId.split('-');
     this._ccy = ccy as CryptoCurrency;
     this._quote = quote as Quote;
-    this._px = basePx;
-    this._basePx = basePx;
+    this._px = basePx * this._factor;
+    this._basePx = this._px;
     this._baseSz = baseSz;
     this._coefficient = coefficient;
-    this._gap = gap;
+    this._gap = gap * this._factor;
     this._levelCount = levelCount;
-    this._onOrders = onOrders;
     this._okxWsClient = okxWsClient;
     this._orderClient = new Order();
     this._buyOrder = {
@@ -92,7 +86,7 @@ export class HighFrequency extends EventTarget implements IOkxTrader {
     this._sellOrder = {
       clOrdId: '',
     };
-    void this._initializeBooks();
+    this.start();
   }
 
   /**
@@ -166,10 +160,8 @@ export class HighFrequency extends EventTarget implements IOkxTrader {
     const { clOrdId } = order;
     if (this._buyOrder && clOrdId === this._buyOrder.clOrdId) {
       this._buyOrder.order = undefined;
-      this._triggerOnOrders();
     } else if (this._sellOrder && clOrdId === this._sellOrder.clOrdId) {
       this._sellOrder.order = undefined;
-      this._triggerOnOrders();
     }
   }
 
@@ -177,10 +169,8 @@ export class HighFrequency extends EventTarget implements IOkxTrader {
     const { clOrdId } = order;
     if (clOrdId === this._buyOrder.clOrdId) {
       this._buyOrder.order = order;
-      this._triggerOnOrders();
     } else if (clOrdId === this._sellOrder.clOrdId) {
       this._sellOrder.order = order;
-      this._triggerOnOrders();
     }
   }
 
@@ -202,20 +192,18 @@ export class HighFrequency extends EventTarget implements IOkxTrader {
         this._cancelOrder(clOrdIdToBeCancelled);
         void this._initializeBooks();
       }
-      this._triggerOnOrders();
-    }
-  }
-
-  private _triggerOnOrders() {
-    if (this._onOrders) {
-      this._onOrders(this.pendingOrders, [...this._filledOrders]);
     }
   }
 
   private async _initializeBooks() {
-    const { _orderClient: orderClient } = this;
     const buyOrderId = Order.getUuid();
-    const { _baseSz: baseSz, _gap: gap } = this;
+    const {
+      _orderClient: orderClient,
+      _baseSz: baseSz,
+      _gap: gap,
+      _px: px,
+      _factor: factor,
+    } = this;
     this._buyOrder = {
       clOrdId: buyOrderId,
     };
@@ -223,7 +211,7 @@ export class HighFrequency extends EventTarget implements IOkxTrader {
       buyOrderId,
       'buy',
       baseSz,
-      this._px - gap
+      (px - gap) / factor
     );
     await orderClient.placeOrder([buyOrderParams]);
 
@@ -235,7 +223,7 @@ export class HighFrequency extends EventTarget implements IOkxTrader {
       sellOrdId,
       'sell',
       baseSz,
-      this._px + gap
+      (px + gap) / factor
     );
     await orderClient.placeOrder([sellOrderParams]);
   }
@@ -273,6 +261,7 @@ export class HighFrequency extends EventTarget implements IOkxTrader {
   public start() {
     this._on();
     void this._initializeBooks();
+    this._started = true;
   }
 
   public stop() {
@@ -283,6 +272,11 @@ export class HighFrequency extends EventTarget implements IOkxTrader {
     if (this._sellOrder.order) {
       this._cancelOrder(this._sellOrder.clOrdId);
     }
+    this._started = false;
+  }
+
+  get config(): OkxPriceTraderConfig {
+    return this._config;
   }
 
   get instId(): InstId {
@@ -305,5 +299,13 @@ export class HighFrequency extends EventTarget implements IOkxTrader {
   }
   get subscriptions(): WsSubscriptionTopic[] {
     return [];
+  }
+
+  get started(): boolean {
+    return this._started;
+  }
+
+  get id(): string {
+    return this._id;
   }
 }

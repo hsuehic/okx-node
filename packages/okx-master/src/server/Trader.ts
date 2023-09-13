@@ -1,6 +1,11 @@
 import { WsOrder, WsSubscriptionTopic } from 'okx-node';
 
-export interface IOkxTrader {
+export interface OkxTraderConfig {
+  type: TraderType;
+  instId: InstId;
+}
+
+export interface OkxTrader {
   /**
    * Trader type
    */
@@ -29,4 +34,17 @@ export interface IOkxTrader {
    * push subscriptions used by this trader
    */
   subscriptions: WsSubscriptionTopic[];
+
+  /**
+   * Whether the trader is started or not
+   */
+  started: boolean;
+  /**
+   * Configuration
+   */
+  config: OkxTraderConfig;
+  /**
+   * Unique ID
+   */
+  id: string;
 }
