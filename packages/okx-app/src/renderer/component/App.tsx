@@ -18,7 +18,7 @@ import {
 import { ConfigProvider, Dropdown, Input, theme } from 'antd';
 import enUS from 'antd/locale/en_US';
 
-import { route } from './route';
+import { routes } from './routes';
 
 import './App.scss';
 
@@ -96,7 +96,7 @@ export const App = () => {
           locale={enUS}
         >
           <ProLayout
-            route={route}
+            route={{ children: routes }}
             location={{
               pathname,
             }}

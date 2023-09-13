@@ -68,7 +68,7 @@ export const CurrencyList = ({ dataSource }: CurrencyListProps) => {
           loading={!dataSource}
           columns={columns}
           dataSource={dataSource}
-          rowKey={'instId'}
+          rowKey={'ccy'}
           pagination={false}
         />
       </ProCard>

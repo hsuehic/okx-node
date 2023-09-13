@@ -1,5 +1,11 @@
 import { createHashRouter } from 'react-router-dom';
 
-import { route } from './route';
+import { App } from './App';
+import { routes } from './routes';
 
-export const router = createHashRouter([route]);
+export const router = createHashRouter([
+  {
+    element: <App />,
+    children: routes,
+  },
+]);

@@ -220,9 +220,24 @@ importers:
       koa-static:
         specifier: ^5.0.0
         version: 5.0.0
+      koa2-connect:
+        specifier: ^1.0.2
+        version: 1.0.2
       okx-node:
         specifier: workspace:0.0.0-development
         version: link:../..
+      react:
+        specifier: ^18.2.0
+        version: 18.2.0
+      react-dom:
+        specifier: ^18.2.0
+        version: 18.2.0(react@18.2.0)
+      react-router:
+        specifier: ^6.15.0
+        version: 6.15.0(react@18.2.0)
+      react-router-dom:
+        specifier: ^6.15.0
+        version: 6.15.0(react-dom@18.2.0)(react@18.2.0)
       ws:
         specifier: ^8.13.0
         version: 8.13.0
@@ -233,6 +248,18 @@ importers:
       '@types/koa__router':
         specifier: ^12.0.0
         version: 12.0.0
+      '@types/react':
+        specifier: ^18.2.21
+        version: 18.2.21
+      '@types/react-dom':
+        specifier: ^18.2.7
+        version: 18.2.7
+      '@vitejs/plugin-react':
+        specifier: ^4.0.4
+        version: 4.0.4(vite@4.4.9)
+      vite:
+        specifier: ^4.4.9
+        version: 4.4.9(@types/node@18.0.0)(sass@1.66.1)
 
 packages:
 
@@ -7724,6 +7751,11 @@ packages:
       koa-send: 5.0.1
     transitivePeerDependencies:
       - supports-color
+    dev: false
+
+  /koa2-connect@1.0.2:
+    resolution: {integrity: sha512-Subc/t9vJaMtorZ/Z/yqjRaZZ4RQ8ew+aacQhYXzL6oVuaYaUGqhh3UMRB5gcpu7t9hu1QBwbJezHohLNohr3g==}
+    engines: {node: '>=4'}
     dev: false
 
   /koa@2.14.2:
