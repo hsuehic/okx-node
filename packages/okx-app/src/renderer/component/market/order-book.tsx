@@ -25,20 +25,20 @@ const renderBookLevels = (currentPrice: string, books?: WsOrderBook) => {
         {asks.reverse().map(([price, amount, _, orders], index) => {
           return (
             <li className={styles.bookLevel} key={`ask-${index}`}>
-              <span className="color-up">{price}</span>
+              <span className="color-down">{price}</span>
               <span>{amount}</span>
               <span>{orders}</span>
             </li>
           );
         })}
-        <li className={`${styles.currentPrice} color-down`}>
+        <li className={`${styles.currentPrice} color-up`}>
           {(currentPrice && parseFloat(currentPrice).toLocaleString()) || ' '}
         </li>
 
         {bids.map(([price, amount, _, orders], index) => {
           return (
             <li className={styles.bookLevel} key={`bid-${index}`}>
-              <span className="color-down">{price}</span>
+              <span className="color-up">{price}</span>
               <span>{amount}</span>
               <span>{orders}</span>
             </li>
