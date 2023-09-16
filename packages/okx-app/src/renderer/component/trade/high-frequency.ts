@@ -8,7 +8,56 @@ import {
   WsPushOrders,
 } from 'okx-node';
 
+export interface TraderStatusEventDetail {
+  started: boolean;
+}
+
+export interface OrderEventDetail {
+  pendingOrders: WsOrder[];
+  filledOrders: WsOrder[];
+}
+
+export type OrderEventInit = CustomEventInit<OrderEventDetail>;
+export type TraderStatusEventInit = CustomEventInit<TraderStatusEventDetail>;
+export type OrderEventName = 'orders';
+export type TraderStatusEventName = 'started' | 'stoped';
+
+export class OrderEvent extends CustomEvent<OrderEventDetail> {
+  constructor(eventName: OrderEventName, init: OrderEventInit) {
+    super(eventName, init);
+  }
+}
+
+export class TraderStatusEvent extends CustomEvent<TraderStatusEventDetail> {
+  constructor(eventName: TraderStatusEventName, init: TraderStatusEventInit) {
+    super(eventName, init);
+  }
+}
+
+export interface HighFrequency {
+  dispatchEvent(evnt: OrderEvent): boolean;
+  dispatchEvent(evnt: TraderStatusEvent): boolean;
+  addEventListener(
+    eventName: OrderEventName,
+    listerner: (evnt: OrderEvent) => void
+  ): boolean;
+
+  addEventListener(
+    eventName: TraderStatusEventName,
+    listerner: (evnt: TraderStatusEvent) => void
+  ): boolean;
+  removeEventListener(
+    eventName: OrderEventName,
+    listener: (evnt: OrderEvent) => void
+  ): boolean;
+  removeEventListener(
+    eventName: TraderStatusEventName,
+    listener: (evnt: TraderStatusEvent) => void
+  ): boolean;
+}
+
 export interface HighFrequencyConfigs {
+  instId: InstId;
   /**
    * Maximun decimal precision is 3
    */
@@ -50,10 +99,6 @@ export class HighFrequency extends EventTarget {
    * Used for price calculator
    */
   private _factor = 1000;
-  private _onOrders: (
-    pendingOrders: WsOrder[],
-    filledOrders: WsOrder[]
-  ) => void | undefined;
   private _buyOrder: {
     clOrdId: string;
     order?: WsOrder;
@@ -64,27 +109,23 @@ export class HighFrequency extends EventTarget {
   };
   private _filledOrders: WsOrder[] = [];
 
+  public _started = false;
+
   /**
    * Construct and start high frequency trade
-   * @param instId {InstId}
    * @param configs Configurations of trading
-   * @param onOrders Handler of order changes
    */
-  constructor(
-    instId: InstId,
-    configs: HighFrequencyConfigs,
-    onOrders?: (pendingOrders: WsOrder[], filledOrders: WsOrder[]) => void
-  ) {
+  constructor(configs: HighFrequencyConfigs) {
     super();
+    const { instId, basePx, gap } = configs;
     this._instId = instId;
     const [ccy, quote] = instId.split('-');
     this._ccy = ccy as CryptoCurrency;
     this._quote = quote as Quote;
     this._configs = configs;
-    this._px = this._configs.basePx * this._factor;
-    this._basePx = this._configs.basePx * this._factor;
-    this._gap = this._configs.gap * this._factor;
-    this._onOrders = onOrders;
+    this._px = basePx * this._factor;
+    this._basePx = basePx * this._factor;
+    this._gap = gap * this._factor;
   }
 
   /**
@@ -204,9 +245,14 @@ export class HighFrequency extends EventTarget {
   }
 
   private _triggerOnOrders() {
-    if (this._onOrders) {
-      this._onOrders(this.pendingOrders, [...this._filledOrders]);
-    }
+    this.dispatchEvent(
+      new CustomEvent<OrderEventDetail>('orders', {
+        detail: {
+          pendingOrders: this.pendingOrders,
+          filledOrders: [...this._filledOrders],
+        },
+      })
+    );
   }
 
   private async _initializeBooks() {
@@ -274,6 +320,14 @@ export class HighFrequency extends EventTarget {
   public start() {
     this._on();
     void this._initializeBooks();
+    this._started = true;
+    this.dispatchEvent(
+      new TraderStatusEvent('started', {
+        detail: {
+          started: true,
+        },
+      })
+    );
   }
 
   public stop() {
@@ -284,6 +338,14 @@ export class HighFrequency extends EventTarget {
     if (this._sellOrder.order) {
       this._cancelOrder(this._sellOrder.clOrdId);
     }
+    this._started = false;
+    this.dispatchEvent(
+      new TraderStatusEvent('stoped', {
+        detail: {
+          started: false,
+        },
+      })
+    );
   }
 
   get instId(): InstId {
@@ -299,5 +361,13 @@ export class HighFrequency extends EventTarget {
     this._buyOrder.order && value.push(this._buyOrder.order);
     this._sellOrder.order && value.push(this._sellOrder.order);
     return value;
+  }
+
+  get started(): boolean {
+    return this._started;
+  }
+
+  get config(): HighFrequencyConfigs {
+    return this._configs;
   }
 }

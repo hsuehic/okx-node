@@ -1,103 +1,58 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 
-import {
-  PageContainer,
-  ProCard,
-  ProForm,
-  ProFormDigit,
-  ProFormInstance,
-} from '@ant-design/pro-components';
-import { Button, Col, Row, Space, Table, TableColumnType } from 'antd';
-import { Ticker, WsOrder, WsPushArg } from 'okx-node';
+import { PlusCircleOutlined } from '@ant-design/icons';
+import { PageContainer, ProCard } from '@ant-design/pro-components';
+import { Button, Space } from 'antd';
+import { Ticker, WsPushArg } from 'okx-node';
 
 import { InstPageSubTitle, InstPageTitle } from '../common';
 import { usePush, useSubscribe } from '../hooks';
 import { LastTrades } from '../market/last-trades';
 import { OrderBookContainer } from '../market/order-book';
 
-import { HighFrequency, HighFrequencyConfigs } from './high-frequency';
+import { HighFrequency } from './high-frequency';
+import { TraderDetail } from './trader-detail';
+import { TraderForm } from './trader-form';
+import { TraderEvent, traderManager } from './trader-manager';
 
 import styles from './high-frequency-trade.module.scss';
 
-const columns: TableColumnType<WsOrder>[] = [
-  {
-    title: 'Inst',
-    dataIndex: 'instId',
-  },
-  {
-    title: 'Order Side',
-    dataIndex: 'side',
-  },
-  {
-    title: 'Order Price',
-    dataIndex: 'px',
-  },
-  {
-    title: 'Order Size',
-    dataIndex: 'sz',
-  },
-  {
-    title: 'Filled Size',
-    dataIndex: 'fillSz',
-  },
-  {
-    title: 'Average Price',
-    dataIndex: 'avgPx',
-  },
-];
-
-const columns2: TableColumnType<WsOrder>[] = [
-  {
-    title: 'Inst',
-    dataIndex: 'instId',
-  },
-  {
-    title: 'Order Side',
-    dataIndex: 'side',
-  },
-  {
-    title: 'Order Price',
-    dataIndex: 'px',
-  },
-  {
-    title: 'Order Size',
-    dataIndex: 'sz',
-  },
-  {
-    title: 'Filled Size',
-    dataIndex: 'fillSz',
-  },
-  {
-    title: 'Average Price',
-    dataIndex: 'avgPx',
-  },
-];
-
 // subscribing and unsubscribing will be done at page level. Consuming push data will be done at component level.
 export const HighFrequencyTrade = () => {
-  const formRef = useRef<ProFormInstance>();
   const params = useParams<{ instId: InstId }>();
   const [instId, setInstId] = useState<InstId>(params.instId || 'BTC-USDC');
-  const [pendingOrders, setPendingOrders] = useState<WsOrder[]>([]);
-  const [filledOrders, setFilledOrders] = useState<WsOrder[]>([]);
-  const [started, setStarted] = useState(false);
-  const [highFrequency, setHighFrequency] = useState<HighFrequency>(undefined);
+  const [newTraderFormVisible, setNewTraderFormVisible] = useState(false);
+  const [traders, setTraders] = useState<[string, HighFrequency][]>([]);
+  const [tab, setTab] = useState('');
+
+  useEffect(() => {
+    const updateTraders = (e?: TraderEvent) => {
+      const ts = traderManager.getTraders(instId);
+      setTraders(ts);
+      if (ts.length > 0) {
+        setTimeout(() => {
+          if (e) {
+            if (e.type === 'traderadded') {
+              setTab(e.detail.name);
+            } else {
+              if (tab === e.detail.name) {
+                setTab(ts[0][0]);
+              }
+            }
+          } else {
+            setTab(ts[0][0]);
+          }
+        }, 100);
+      }
+    };
+    updateTraders();
+    traderManager.addEventListener('traderadded', updateTraders);
+    traderManager.addEventListener('traderremoved', updateTraders);
+  }, [instId]);
 
   useSubscribe(['books5', 'trades', 'tickers'], instId, [instId]);
 
-  useEffect(() => {
-    const arg = {
-      channel: 'orders',
-      instType: 'MARGIN',
-      instId,
-    } as const;
-    const { wsClient } = window;
-    wsClient.subscribe(arg);
-    return () => {
-      wsClient.unsubscribe(arg);
-    };
-  }, [instId]);
   const [ticker] = usePush<WsPushArg & { instId: InstId }, Ticker>(
     'tickers',
     (arg: { channel: 'tickers'; instId: InstId }) => {
@@ -125,134 +80,55 @@ export const HighFrequencyTrade = () => {
           <InstPageSubTitle key={`sub-title-${instId}`} ticker={ticker} />
         )
       }
+      extra={
+        <Space>
+          <Button
+            type="primary"
+            icon={<PlusCircleOutlined />}
+            onClick={() => {
+              setNewTraderFormVisible(true);
+            }}
+          >
+            New Trader
+          </Button>
+        </Space>
+      }
     >
       <div className={styles.main}>
         <ProCard direction="column" className={styles.mainBody}>
-          <ProCard headerBordered title="Settings">
-            <ProForm
-              formRef={formRef}
-              layout="horizontal"
-              grid={true}
-              submitter={{
-                render: props => {
-                  return (
-                    <Row>
-                      <Col span={8} offset={0}>
-                        <Row>
-                          <Col span={13} offset={11}>
-                            <Space>
-                              <Button
-                                type="primary"
-                                key="submit"
-                                onClick={() => props.form?.submit?.()}
-                              >
-                                {started ? 'Stop' : 'Start'}
-                              </Button>
-
-                              <Button
-                                type="default"
-                                key="reset"
-                                disabled={started}
-                                onClick={() => props.form?.resetFields()}
-                              >
-                                Reset
-                              </Button>
-                            </Space>
-                          </Col>
-                        </Row>
-                      </Col>
-                    </Row>
-                  );
+          {traders.length > 0 ? (
+            <ProCard
+              tabs={{
+                tabPosition: 'top',
+                activeKey: tab,
+                items: traders.map(([name, trader]) => {
+                  return {
+                    label: name,
+                    key: name,
+                    children: (
+                      <TraderDetail key={name} name={name} trader={trader} />
+                    ),
+                  };
+                }),
+                onTabClick(key: string) {
+                  setTab(key);
                 },
               }}
-              labelCol={{
-                span: 11,
-              }}
-              wrapperCol={{
-                span: 12,
-              }}
-              onFinish={async (values: HighFrequencyConfigs) => {
-                if (started) {
-                  highFrequency.stop();
-                  setHighFrequency(undefined);
-                } else {
-                  const hf = new HighFrequency(
-                    instId,
-                    {
-                      ...values,
-                    },
-                    (pOrders, fOrders) => {
-                      setPendingOrders(pOrders);
-                      setFilledOrders(fOrders);
-                    }
-                  );
-                  hf.start();
-                  setHighFrequency(hf);
-                }
-                setStarted(!started);
-                return Promise.resolve(true);
-              }}
-            >
-              <ProFormDigit
-                disabled={started}
-                colProps={{ span: 8 }}
-                placeholder={''}
-                name="basePx"
-                label="Base Price"
-                rules={[{ required: true, message: 'Required' }]}
-              />
-              <ProFormDigit
-                disabled={started}
-                colProps={{ span: 8 }}
-                placeholder={''}
-                name="gap"
-                label="Gap"
-                rules={[{ required: true, message: 'Required' }]}
-              />
-              <ProFormDigit
-                disabled={started}
-                colProps={{ span: 8 }}
-                placeholder={''}
-                name="baseSz"
-                label="Base Size"
-                rules={[{ required: true, message: 'Required' }]}
-              />
-              <ProFormDigit
-                disabled={started}
-                colProps={{ span: 8 }}
-                placeholder={''}
-                name="levelCount"
-                label="Level Count"
-                rules={[{ required: true, message: 'Required' }]}
-              />
-              <ProFormDigit
-                disabled={started}
-                colProps={{ span: 8 }}
-                placeholder={''}
-                name="coefficient"
-                label="Coefficient"
-                rules={[{ required: true, message: 'Required' }]}
-              />
-            </ProForm>
-          </ProCard>
-          <Table
-            title={() => (
-              <span className={styles.sectionHeader}>Filled Orders</span>
-            )}
-            columns={columns2}
-            dataSource={filledOrders}
-            rowKey={'clOrdId'}
-            pagination={false}
-          />
-          <Table
-            title={() => (
-              <span className={styles.sectionHeader}>Pending Orders</span>
-            )}
-            columns={columns}
-            pagination={false}
-            dataSource={pendingOrders}
-            rowKey={'clOrdId'}
-          />
+            />
+          ) : (
+            <ProCard layout="center">
+              <Button
+                type="primary"
+                size="large"
+                onClick={() => {
+                  setNewTraderFormVisible(true);
+                }}
+                icon={<PlusCircleOutlined />}
+              >
+                Create New Trader
+              </Button>
+            </ProCard>
+          )}
         </ProCard>
         <div className={styles.mainAside}>
           <ProCard title="Books" style={{ marginBottom: '12px' }}>
@@ -263,6 +139,12 @@ export const HighFrequencyTrade = () => {
           </ProCard>
         </div>
       </div>
+      <TraderForm
+        key={`new-trader-form-${instId}`}
+        instId={instId}
+        open={newTraderFormVisible}
+        onOpenChange={setNewTraderFormVisible}
+      />
     </PageContainer>
   );
 };

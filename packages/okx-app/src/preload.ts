@@ -10,6 +10,7 @@ import {
   OkxRestClient,
   OkxWebSocketClient,
   Order,
+  WsPrivateChannelArgWithInstFamily,
   okxRestClient,
   okxWsClient,
 } from 'okx-node';
@@ -38,6 +39,15 @@ window.addEventListener('DOMContentLoaded', () => {
   const account = new Account();
   const market = new Market();
   const order = new Order();
+  okxWsClient
+    .privateChannelReady('private')
+    .then(() => {
+      okxWsClient.subscribe<WsPrivateChannelArgWithInstFamily>({
+        channel: 'orders',
+        instType: 'MARGIN',
+      });
+    })
+    .catch(e => console.error(e));
 
   contextBridge.exposeInMainWorld('shell', {
     openExternal(url: string, opts?: Electron.OpenExternalOptions) {
