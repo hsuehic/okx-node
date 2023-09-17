@@ -1,3 +1,5 @@
+import moment from 'moment';
+
 export const setThousandComma = (value: number | string) => {
   const v: string = value.toString();
   const reg = /(\d)(?=(?:\d{3})+(\.\d+)?$)/g;
@@ -35,4 +37,9 @@ export const formatDiffRatio = (last: string, open: string): string => {
 export const formatValueDiffRatio = (l: number, o: number): string => {
   const ratio = (l - o) / o;
   return formatValueRatio(ratio);
+};
+
+export const formatTime = (ts: string, format?: string): string => {
+  const m = moment(parseInt(ts));
+  return m.format(format);
 };

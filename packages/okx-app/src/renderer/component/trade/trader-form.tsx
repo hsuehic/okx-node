@@ -52,6 +52,7 @@ export const TraderForm = (props: OrderFormProps) => {
         const trader = traderManager.addTrader(name, {
           instId,
           ...config,
+          tag: name,
         } as HighFrequencyConfigs);
         trader.start();
         void message.success('Trader added');
@@ -63,7 +64,21 @@ export const TraderForm = (props: OrderFormProps) => {
         placeholder={'Please input unique name'}
         name="name"
         label="Name"
-        rules={[{ required: true, message: 'Required' }]}
+        rules={[
+          {
+            required: true,
+            message: 'Required',
+          },
+          {
+            validator(rule, value: string, callback) {
+              const reg = /^[0-9A-Za-z]+$/;
+              if (!reg.test(value)) {
+                callback('Can only contain letters and numbers');
+              }
+              callback();
+            },
+          },
+        ]}
       />
       <ProFormDigit
         colProps={{ span: 8 }}

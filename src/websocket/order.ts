@@ -130,6 +130,9 @@ export interface WsOrder {
   algoId: string;
   amendSource: string;
   cancelSource: string;
+  /**
+   * time when Order updated
+   */
   uTime: string;
 }
 

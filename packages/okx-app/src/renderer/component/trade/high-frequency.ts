@@ -78,6 +78,10 @@ export interface HighFrequencyConfigs {
    * Unused currently, 1 is the default value
    */
   coefficient: number;
+  /**
+   * Order tag, can use trader name as tag
+   */
+  tag?: string;
 }
 
 /**
@@ -95,6 +99,7 @@ export class HighFrequency extends EventTarget {
   private _gap: number;
   private _ccy: CryptoCurrency;
   private _quote: Quote;
+  private _tag: string;
   /**
    * Used for price calculator
    */
@@ -117,7 +122,7 @@ export class HighFrequency extends EventTarget {
    */
   constructor(configs: HighFrequencyConfigs) {
     super();
-    const { instId, basePx, gap } = configs;
+    const { instId, basePx, gap, tag } = configs;
     this._instId = instId;
     const [ccy, quote] = instId.split('-');
     this._ccy = ccy as CryptoCurrency;
@@ -126,6 +131,10 @@ export class HighFrequency extends EventTarget {
     this._px = basePx * this._factor;
     this._basePx = basePx * this._factor;
     this._gap = gap * this._factor;
+    this._tag = tag;
+
+    // const { persist } = window;
+    // void persist.saveTrader(configs);
   }
 
   /**
@@ -241,6 +250,8 @@ export class HighFrequency extends EventTarget {
         void this._initializeBooks();
       }
       this._triggerOnOrders();
+      // const { persist } = window;
+      // void persist.saveOrder(order);
     }
   }
 
@@ -300,6 +311,7 @@ export class HighFrequency extends EventTarget {
       ccy: this._ccy,
       ordType: 'limit',
       quickMgnType: 'auto_borrow',
+      tag: this._tag,
     };
   };
 
@@ -369,5 +381,9 @@ export class HighFrequency extends EventTarget {
 
   get config(): HighFrequencyConfigs {
     return this._configs;
+  }
+
+  get tag(): string | undefined {
+    return this._tag;
   }
 }

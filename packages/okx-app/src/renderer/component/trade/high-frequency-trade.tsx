@@ -36,9 +36,7 @@ export const HighFrequencyTrade = () => {
             if (e.type === 'traderadded') {
               setTab(e.detail.name);
             } else {
-              if (tab === e.detail.name) {
-                setTab(ts[0][0]);
-              }
+              setTab(ts[0][0]);
             }
           } else {
             setTab(ts[0][0]);

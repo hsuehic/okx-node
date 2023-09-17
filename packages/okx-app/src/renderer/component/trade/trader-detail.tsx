@@ -9,6 +9,8 @@ import {
 import { Button, Space, Table, TableColumnType } from 'antd';
 import { WsOrder } from 'okx-node';
 
+import { renderTime } from '../renderer';
+
 import {
   HighFrequency,
   OrderEventDetail,
@@ -41,11 +43,18 @@ const columns: TableColumnType<WsOrder>[] = [
   },
   {
     title: 'Filled Size',
-    dataIndex: 'fillSz',
+    dataIndex: 'accFillSz',
   },
   {
     title: 'Average Price',
     dataIndex: 'avgPx',
+  },
+  {
+    title: 'Created Time',
+    dataIndex: 'uTime',
+    render: (v: string) => {
+      return renderTime(v);
+    },
   },
 ];
 
@@ -68,11 +77,18 @@ const columns2: TableColumnType<WsOrder>[] = [
   },
   {
     title: 'Filled Size',
-    dataIndex: 'fillSz',
+    dataIndex: 'accFillSz',
   },
   {
     title: 'Average Price',
     dataIndex: 'avgPx',
+  },
+  {
+    title: 'Filled Time',
+    dataIndex: 'fillTime',
+    render: (v: string) => {
+      return renderTime(v);
+    },
   },
 ];
 

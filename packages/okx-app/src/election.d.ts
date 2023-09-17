@@ -6,8 +6,11 @@ import {
   OkxRestClient,
   OkxWebSocketClient,
   Order,
+  // WsOrder,
   WsPublicIndexKlineChannel,
 } from 'okx-node';
+
+// import { HighFrequencyConfigs } from './renderer/component/trade/high-frequency';
 
 declare global {
   type ExtractStringType<
@@ -28,5 +31,13 @@ declare global {
         getUuid: () => string;
       };
     };
+    // persist: {
+    //   findOrderBy(where: Partial<WsOrder>): Promise<WsOrder[]>;
+    //   saveOrder(order: WsOrder): Promise<void>;
+    //   findTraderBy(
+    //     where: Partial<HighFrequencyConfigs>
+    //   ): Promise<HighFrequencyConfigs[]>;
+    //   saveTrader(trader: HighFrequencyConfigs): Promise<void>;
+    // };
   }
 }
