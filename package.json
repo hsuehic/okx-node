@@ -1,6 +1,6 @@
 {
   "name": "okx-node",
-  "version": "0.0.0-development",
+  "version": "0.0.1",
   "description": "A template for creating npm packages using TypeScript and VSCode",
   "main": "./dist/cjs/index.js",
   "types": "./dist/cjs/index.d.ts",
@@ -41,7 +41,7 @@
     "eslint": "eslint .",
     "npmPkgJsonLint": "npmPkgJsonLint .",
     "prepare": "husky install",
-    "release": "npx changeset publish",
+    "prepublish": "npm run build",
     "test:watch": "jest --watch",
     "test": "jest --coverage",
     "typecheck": "tsc --noEmit",
