@@ -4,10 +4,10 @@
  * @returns sorter function
  */
 export const createSorter = <T extends object>(
-  ...props: (keyof T | ((v: T) => unknown))[]
+  ...props: (keyof T | ((v: T) => number | string))[]
 ): ((a: T, b: T) => -1 | 0 | 1) => {
   return (a: T, b: T) => {
-    let p: keyof T | ((v: T) => unknown);
+    let p: keyof T | ((v: T) => number | string);
     let vA, vB;
     for (let i = 0; i < props.length; i++) {
       p = props[i];
