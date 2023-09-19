@@ -1,0 +1,58 @@
+{
+  "name": "sign-message",
+  "version": "0.0.1",
+  "main": "./dist/cjs/node.js",
+  "types": "./dist/cjs/node.d.ts",
+  "browser": "./dist/mjs/browser.js",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/mjs/node.d.ts",
+        "default": "./dist/mjs/node.js"
+      },
+      "require": {
+        "types": "./dist/cjs/node.d.ts",
+        "default": "./dist/cjs/node.js"
+      }
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist/**/*"
+  ],
+  "scripts": {
+    "build": "npm run build:cjs && npm run build:mjs",
+    "build:cjs": "tsc --project tsconfig.cjs.json",
+    "build:mjs": "tsc --project tsconfig.mjs.json",
+    "clean": "rm -rf ./lib/ && rm -rf ./dist/",
+    "eslint": "eslint ./src/ --fix",
+    "lintpackagejson": "npmPkgJsonLint .",
+    "release": "npx changeset publish",
+    "test:watch": "jest --watch",
+    "test": "jest --coverage",
+    "typecheck": "tsc --noEmit"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": ">=12.0"
+  },
+  "keywords": [
+    "boilerplate",
+    "template",
+    "typescript",
+    "vscode",
+    "jest",
+    "husky",
+    "commitlint",
+    "changesets",
+    "codecov"
+  ],
+  "bugs": {
+    "url": "https://github.com/hsuehic/okx-node/issues"
+  },
+  "homepage": "https://github.com/hsuehic/okx-node#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hsuehic/okx-node.git"
+  }
+}

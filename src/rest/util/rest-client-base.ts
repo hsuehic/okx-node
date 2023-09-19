@@ -4,8 +4,8 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 import axios, { AxiosRequestConfig, AxiosResponse, Method } from 'axios';
+import { signMessage } from 'sign-message';
 
-import { signMessage } from '../../util/authorization-node';
 import {
   APICredentials,
   APIMarket,
@@ -158,7 +158,7 @@ export abstract class BaseRestClient {
     }
 
     const tsISO = new Date().toISOString();
-    const signResult = this.signRequest(
+    const signResult = await this.signRequest(
       isPublicApi,
       tsISO,
       method,
@@ -223,13 +223,13 @@ export abstract class BaseRestClient {
    * Sign request
    */
   // eslint-disable-next-line @typescript-eslint/ban-types
-  private signRequest<T extends Object>(
+  private async signRequest<T extends Object>(
     isPublicApi: boolean,
     tsISO: string,
     method: Method,
     endpoint: string,
     params: T | undefined
-  ): SignedRequest<T> {
+  ): Promise<SignedRequest<T>> {
     const res: SignedRequest<T> = {
       requestBody: params,
       method,
@@ -256,10 +256,10 @@ export abstract class BaseRestClient {
     //   message,
     //   secret: this.apiSecret,
     // });
-
+    const sign = await signMessage(message, this.apiSecret);
     return {
       ...res,
-      sign: signMessage(message, this.apiSecret),
+      sign,
     };
   }
 

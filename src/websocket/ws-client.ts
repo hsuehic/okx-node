@@ -1,8 +1,7 @@
 import { EventEmitter } from 'events';
 
+import { signMessage } from 'sign-message';
 import WebSocket from 'ws';
-
-import { signMessage } from '../util/authorization-node';
 
 import {
   PushChannel,
@@ -161,7 +160,7 @@ export class OkxWebSocketClient extends EventEmitter {
     });
     socket.on('open', () => {
       if (key !== 'public') {
-        this._loginToWsClient(key);
+        void this._loginToWsClient(key);
       }
       if (reassign) {
         if (key === 'public') {
@@ -207,10 +206,10 @@ export class OkxWebSocketClient extends EventEmitter {
   /**
    * Login to private channel
    */
-  private _loginToWsClient(key: WsKey) {
+  private async _loginToWsClient(key: WsKey) {
     const timestamp = Date.now() / 1000;
 
-    const sign = signMessage(
+    const sign = await signMessage(
       timestamp.toString() + 'GET' + '/users/self/verify',
       this._secretKey
     );
