@@ -1,0 +1,16 @@
+.main {
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+}
+
+.mainBody {
+  display: block;
+  flex: 1;
+  overflow: hidden;
+}
+
+.mainAside {
+  width: 338px;
+  height: calc(100vh - 166px);
+}

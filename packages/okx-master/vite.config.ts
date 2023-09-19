@@ -7,6 +7,7 @@ export default defineConfig(({ command, mode }) => {
   return {
     build: {
       sourcemap: true,
+      outDir: 'static',
     },
     plugins: [react({ include: /\.(scss|mdx|js|jsx|ts|tsx)$/ })],
   };

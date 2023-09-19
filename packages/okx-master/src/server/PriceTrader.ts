@@ -16,12 +16,12 @@ import { OkxTrader, OkxTraderConfig } from './Trader';
 
 export interface OkxPriceTraderConfig extends OkxTraderConfig {
   type: 'price';
-  instId: InstId;
   basePx: number;
   baseSz: number;
   gap: number;
   levelCount: number;
   coefficient: number;
+  started: boolean;
 }
 
 /**

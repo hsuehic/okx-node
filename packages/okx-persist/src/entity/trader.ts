@@ -24,4 +24,10 @@ export class Trader {
 
   @Column()
   coefficient!: number;
+
+  @Column({
+    nullable: true,
+    default: true,
+  })
+  status!: boolean;
 }

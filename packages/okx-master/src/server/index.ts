@@ -1,1 +1,1 @@
-export { OkxTrader } from './Trader';
+import './server';

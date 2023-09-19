@@ -1,12 +1,11 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "target": "ES5",
+    "target": "ES2022",
     "module": "CommonJS",
-    "outDir": "./dist/cjs",
+    "outDir": "./dist",
     "declaration": true
   },
-  "exclude": [
-    "test/**/*.spec.ts",
-  ]
+  "include": ["src/server"],
+  "exclude": ["test/**/*.spec.ts"]
 }

@@ -5,7 +5,7 @@ import { OkxTraderMaster, TraderConfig } from '../TraderMaster';
 const okxTraderMaster = new OkxTraderMaster();
 
 export const routerTrader = new Router({
-  prefix: '/traders',
+  prefix: '/api/traders',
 });
 
 routerTrader.get('/', ctx => {

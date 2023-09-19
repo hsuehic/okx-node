@@ -32,9 +32,9 @@
     "dist/**/*"
   ],
   "scripts": {
-    "build": "npm run build:cjs && npm run build:mjs",
-    "build:cjs": "tsc --project tsconfig.cjs.json",
-    "build:mjs": "tsc --project tsconfig.mjs.json",
+    "build": "npm run build:server && npm run build:client",
+    "prebuild": "npm run clean",
+    "build:server": "tsc --project tsconfig.cjs.json",
     "clean": "rm -rf ./lib/ && rm -rf ./dist/",
     "eslint": "eslint ./src/ --fix",
     "lintpackagejson": "npmPkgJsonLint .",
@@ -42,7 +42,11 @@
     "test:watch": "jest --watch",
     "test": "jest --coverage",
     "typecheck": "tsc --noEmit",
-    "dev": "vite"
+    "build:client": "vite build",
+    "dev": "nodemon --watch \"src/server/**\" --watch script --files ./script/start.ts",
+    "dev:client": "vite",
+    "dev:server": "nodemon --watch \"src/server/**\" --files ./src/server/server.ts",
+    "start": "pnpm run build && node ./dist/index.js"
   },
   "license": "MIT",
   "engines": {
@@ -68,25 +72,37 @@
     "url": "git+https://github.com/hsuehic/okx-node.git"
   },
   "dependencies": {
+    "@ant-design/icons": "^5.2.6",
+    "@ant-design/pro-components": "^2.6.22",
     "@koa/bodyparser": "^5.0.0",
     "@koa/cors": "^4.0.0",
     "@koa/router": "^12.0.0",
+    "antd": "^5.9.2",
+    "echarts": "^5.4.3",
+    "express": "^4.18.2",
     "koa": "^2.14.2",
     "koa-static": "^5.0.0",
-    "koa2-connect": "^1.0.2",
+    "moment": "^2.29.4",
     "okx-node": "workspace:^",
+    "okx-persist": "workspace:^",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router": "^6.15.0",
     "react-router-dom": "^6.15.0",
+    "tsxecharts": "^1.2.2",
     "ws": "^8.13.0"
   },
   "devDependencies": {
     "@types/koa": "^2.13.8",
+    "@types/koa-static": "^4.0.2",
+    "@types/koa__cors": "^4.0.1",
     "@types/koa__router": "^12.0.0",
     "@types/react": "^18.2.21",
     "@types/react-dom": "^18.2.7",
     "@vitejs/plugin-react": "^4.0.4",
+    "koa-connect": "^2.1.0",
+    "nodemon": "^3.0.1",
+    "ts-node": "^10.2.1",
     "vite": "^4.4.9"
   }
 }

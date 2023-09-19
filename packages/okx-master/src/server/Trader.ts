@@ -1,6 +1,8 @@
 import { WsOrder, WsSubscriptionTopic } from 'okx-node';
 
 export interface OkxTraderConfig {
+  id: string;
+  name: string;
   type: TraderType;
   instId: InstId;
 }
