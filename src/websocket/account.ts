@@ -1,7 +1,5 @@
 import EventEmitter from 'events';
 
-import { okxWsClient } from '../instanse';
-
 import {
   WsBalanceData,
   WsPosition,
@@ -140,7 +138,7 @@ export class Account extends EventEmitter {
   private _accountInfo: WsAccoutInfo[] | undefined;
   private _position: WsPosition[] | undefined;
 
-  constructor() {
+  constructor(okxWsClient: OkxWebSocketClient) {
     super();
     this._okxWsClient = okxWsClient;
     void this._okxWsClient.privateChannelReady('private').then(() => {

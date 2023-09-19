@@ -1,8 +1,8 @@
 import { EventEmitter } from 'events';
 
-import { okxWsClient } from '../instanse';
-
 import { WsInstrumentType, WsPrivateChannelArgTickers, WsPush } from './type';
+
+import { OkxWebSocketClient } from '.';
 
 export interface WsTicker {
   instType: WsInstrumentType;
@@ -30,11 +30,12 @@ export interface Market {
 }
 
 export class Market extends EventEmitter {
-  private _okxWsClient = okxWsClient;
+  private _okxWsClient: OkxWebSocketClient;
   private _tickers = new Map<string, WsTicker>();
 
-  constructor() {
+  constructor(okxWsClient: OkxWebSocketClient) {
     super();
+    this._okxWsClient = okxWsClient;
     this._okxWsClient.on(
       'push-tickers',
       (push: WsPush<WsPrivateChannelArgTickers, WsTicker>) => {

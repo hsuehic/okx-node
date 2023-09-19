@@ -30,9 +30,21 @@ import {
  */
 export interface Options {
   market: WsMarket;
-  apiKey: string;
-  passphrase: string;
-  secretKey: string;
+  /**
+   * set, it will login to channels that need authorization
+   */
+  apiKey?: string;
+  /**
+   * set, it will login to channels that need authorization
+   */
+  passphrase?: string;
+  /**
+   * set, it will login to channels that need authorization
+   */
+  secretKey?: string;
+  /**
+   * in ms, if not set, it will use default value 3000
+   */
   heartbeatInterval?: number;
 }
 
@@ -166,9 +178,13 @@ export class OkxWebSocketClient extends EventEmitter {
         if (key === 'public') {
           this._reSubAfterReconnect(key);
         } else {
-          void this.privateChannelReady(key).then(() => {
+          if (this._needToLogin()) {
+            void this.privateChannelReady(key).then(() => {
+              this._reSubAfterReconnect(key);
+            });
+          } else {
             this._reSubAfterReconnect(key);
-          });
+          }
         }
       }
     });
@@ -203,28 +219,34 @@ export class OkxWebSocketClient extends EventEmitter {
     record[wsKey] = Date.now();
   }
 
+  private _needToLogin(): boolean {
+    return !!(this._apiKey && this._passphrase && this._secretKey);
+  }
+
   /**
    * Login to private channel
    */
   private async _loginToWsClient(key: WsKey) {
     const timestamp = Date.now() / 1000;
 
-    const sign = await signMessage(
-      timestamp.toString() + 'GET' + '/users/self/verify',
-      this._secretKey
-    );
-    const request = {
-      op: 'login',
-      args: [
-        {
-          apiKey: this._apiKey,
-          passphrase: this._passphrase,
-          timestamp,
-          sign,
-        },
-      ],
-    };
-    this._send(key, request);
+    if (this._needToLogin()) {
+      const sign = await signMessage(
+        timestamp.toString() + 'GET' + '/users/self/verify',
+        this._secretKey
+      );
+      const request = {
+        op: 'login',
+        args: [
+          {
+            apiKey: this._apiKey,
+            passphrase: this._passphrase,
+            timestamp,
+            sign,
+          },
+        ],
+      };
+      this._send(key, request);
+    }
   }
 
   /**

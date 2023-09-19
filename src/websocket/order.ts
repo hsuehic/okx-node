@@ -1,8 +1,6 @@
 import { randomUUID } from 'crypto';
 import EventEmitter from 'events';
 
-import { okxWsClient } from '../instanse';
-
 import {
   WsAmendOrderResponse,
   WsCancelOrderParameter,
@@ -19,6 +17,8 @@ import {
   WsTradeMode,
   WsTradeResponse,
 } from './type';
+
+import { OkxWebSocketClient } from '.';
 
 export type WsOrderState =
   | 'canceled'
@@ -185,16 +185,17 @@ export interface Order {
 }
 
 export class Order extends EventEmitter {
-  private _okxWsClient = okxWsClient;
+  private _okxWsClient: OkxWebSocketClient;
 
-  constructor() {
+  constructor(okxWsClient: OkxWebSocketClient) {
     super();
+    this._okxWsClient = okxWsClient;
     void this._subscribe();
   }
   private async _subscribe() {
-    await okxWsClient.privateChannelReady('private');
+    await this._okxWsClient.privateChannelReady('private');
 
-    await okxWsClient.privateChannelReady('business');
+    await this._okxWsClient.privateChannelReady('business');
     this._okxWsClient.on('trade', (push: WsTradeResponse) => {
       // @ts-ignore known event emitter
       this.emit(push.op, push);
