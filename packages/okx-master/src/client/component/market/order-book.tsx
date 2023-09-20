@@ -1,6 +1,6 @@
 import { OrderBook, Ticker, WsPushArgInstId } from 'okx-node';
 
-import '../../../election.d.ts';
+import '../../../global.js';
 import { usePush } from '../hooks/websock';
 
 import styles from './order-book.module.scss';
@@ -88,7 +88,7 @@ export const OrderBookContainer = ({ instId }: OrderBookContainerProps) => {
   return (
     <OrderBookComponent
       instId={instId}
-      books={books5}
+      books={books5 as WsOrderBook}
       price={(ticker && ticker.last) || ''}
     />
   );

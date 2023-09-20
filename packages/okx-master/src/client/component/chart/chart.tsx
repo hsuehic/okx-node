@@ -8,7 +8,7 @@ import {
   WsPush,
 } from 'okx-node';
 
-import '../../../election.d.ts';
+import '../../../global.js';
 
 import {
   CandlestickChartData,
@@ -55,12 +55,7 @@ const updateCandlestickChartData = (
 const subscribeIndex = (
   instId: string,
   channel: WsPublicIndexKlineChannel,
-  handler: (
-    data: WsPush<
-      { channel: WsPublicIndexKlineChannel; instId: string },
-      WsMarkPriceCandleArray
-    >
-  ) => void
+  handler: (data: WsPush) => void
 ) => {
   const { wsClient } = window;
   wsClient.subscribe({
@@ -97,7 +92,7 @@ export interface ChartProps {
 }
 
 export const Chart = ({ className, instId, channel }: ChartProps) => {
-  const elRef = useRef();
+  const elRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const chart = echarts.init(elRef.current);
@@ -110,7 +105,9 @@ export const Chart = ({ className, instId, channel }: ChartProps) => {
     };
   }, []);
   useEffect(() => {
-    const chart = echarts.getInstanceByDom(elRef.current);
+    const chart = echarts.getInstanceByDom(
+      elRef.current as HTMLElement
+    ) as echarts.ECharts;
     const bar = channel.replace('index-candle', '') as Bar;
     let candlestickChartData: CandlestickChartData = {
       xAxis: [],
@@ -121,13 +118,11 @@ export const Chart = ({ className, instId, channel }: ChartProps) => {
       lines: [],
     };
 
-    const handler = ({
-      arg,
-      data,
-    }: WsPush<
-      { channel: WsPublicIndexKlineChannel; instId: string },
-      WsMarkPriceCandleArray
-    >) => {
+    const handler = (push: WsPush) => {
+      const { arg, data } = push as WsPush<
+        { channel: WsPublicIndexKlineChannel; instId: string },
+        WsMarkPriceCandleArray
+      >;
       if (arg.channel === channel && arg.instId === instId) {
         candlestickChartData = updateCandlestickChartData(
           candlestickChartData,

@@ -2,8 +2,6 @@ import { ProCard } from '@ant-design/pro-components';
 import { Table, TableColumnType } from 'antd';
 import { WsAssetInfo } from 'okx-node';
 
-import '../../../election.d.ts';
-
 import styles from './currency-list.module.scss';
 
 const renderEquityInUsd = (v: string) => {

@@ -5,8 +5,7 @@ import { ProCard } from '@ant-design/pro-components';
 import { Table, TableColumnType } from 'antd';
 import { WsPosition } from 'okx-node';
 
-import '../../../election.d.ts';
-import { formatPrice } from '../formatter.js';
+import { formatPrice } from '../formatter';
 
 import { renderUpl, renderUplRatio } from './renderer';
 
@@ -119,8 +118,8 @@ const columnsCross: TableColumnType<WsPosition>[] = [
 ];
 
 export const PositionList = () => {
-  const { wsClient } = window;
-  const { account } = wsClient;
+  const { wsAccount: account } = window;
+
   const [dataSource, setDataSource] = useState<WsPosition[]>(
     account.position || []
   );

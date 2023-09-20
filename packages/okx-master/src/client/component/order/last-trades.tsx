@@ -3,8 +3,6 @@ import { useEffect, useState } from 'react';
 import moment from 'moment';
 import { Trade, WsPush } from 'okx-node';
 
-import '../../../election.d.ts';
-
 import styles from './last-trades.module.scss';
 
 export type WsTradesArg = {
@@ -29,8 +27,8 @@ export const LastTrades = ({ instId }: LastTradesProps) => {
     const { wsClient } = window;
     const eventName = 'push-trades';
     let newTrades = trades;
-    const handler = (push: WsPushTrade) => {
-      const { arg, data } = push;
+    const handler = (push: WsPush) => {
+      const { arg, data } = push as WsPushTrade;
       if (arg.instId === instId) {
         const item = data[0];
         newTrades = [item, ...newTrades];

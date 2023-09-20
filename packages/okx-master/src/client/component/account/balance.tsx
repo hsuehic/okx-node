@@ -4,15 +4,12 @@ import { PageContainer, ProCard } from '@ant-design/pro-components';
 import { Statistic } from 'antd';
 import { WsAccoutInfo, WsAssetInfo } from 'okx-node';
 
-import '../../../election.d.ts';
-
 import { CurrencyList } from './currency-list';
 
 const { Divider } = ProCard;
 
 export const Balance = () => {
-  const { wsClient } = window;
-  const { account } = wsClient;
+  const { wsAccount: account } = window;
 
   let initialAccountInfo: WsAccoutInfo | undefined = undefined;
   let initialAssetInfo: WsAssetInfo[] | undefined = undefined;
