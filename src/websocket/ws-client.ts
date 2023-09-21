@@ -31,7 +31,7 @@ import {
 export interface Options {
   market: WsMarket;
   /**
-   * set, it will login to channels that need authorization
+   * set apiKey, passphrase, and secretKey, it will login to channels that need authorization, otherwise it won't init private channel.
    */
   apiKey?: string;
   /**
@@ -88,6 +88,7 @@ export class OkxWebSocketClient extends EventEmitter {
   private _passphrase: string;
   private _secretKey: string;
   private _timerId: NodeJS.Timer;
+  private _activeClients: WsKey[];
   private _privateChannelReady: {
     private: boolean;
     business: boolean;
@@ -139,14 +140,16 @@ export class OkxWebSocketClient extends EventEmitter {
     this._subscribes.set('private', new Set<WsChannelSubUnSubRequestArg>());
     this._subscribes.set('public', new Set<WsChannelSubUnSubRequestArg>());
 
-    /**
-     * ws clients for private, public, business ws endpoint
-     */
-    this._clients = {
-      business: this._initClient('business'),
-      private: this._initClient('private'),
-      public: this._initClient('public'),
-    };
+    if (this._needToLogin()) {
+      this._activeClients = ['business', 'private', 'public'];
+    } else {
+      this._activeClients = ['business', 'public'];
+    }
+
+    for (const key of this._activeClients) {
+      this._clients[key] = this._initClient(key);
+    }
+
     this._heartbeatInterval = options.heartbeatInterval || 3000;
     this._timerId = setInterval(() => {
       this._sendPing();
@@ -200,7 +203,7 @@ export class OkxWebSocketClient extends EventEmitter {
   }
 
   private _sendPing() {
-    for (const key of WS_KEYS) {
+    for (const key of this._activeClients) {
       if (this._clients[key].readyState === WebSocket.OPEN) {
         this._clients[key].send('ping');
         this._log('ping', `[${key}]`, 'ping');
@@ -382,7 +385,7 @@ export class OkxWebSocketClient extends EventEmitter {
 
   private _checkHeartbeat() {
     const { lastReceived, lastSend } = this._pingPongTimer;
-    for (const key of WS_KEYS) {
+    for (const key of this._activeClients) {
       const now = Date.now();
       if (lastSend[key] - lastReceived[key] > this._heartbeatInterval * 3) {
         console.log(key, 'force closed');
@@ -483,6 +486,23 @@ export class OkxWebSocketClient extends EventEmitter {
         });
       });
       return p;
+    }
+  }
+
+  /**
+   * Release resources
+   */
+  public dispose() {
+    for (const key of this._activeClients) {
+      const client = this._clients[key];
+      client.onclose = null;
+      client.onmessage = null;
+      client.onopen = null;
+      client.close();
+      delete this._clients[key];
+    }
+    if (this._timerId) {
+      clearInterval(this._timerId);
     }
   }
 
