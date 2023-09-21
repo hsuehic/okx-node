@@ -1,6 +1,5 @@
 import { OrderBook, Ticker, WsPushArgInstId } from 'okx-node';
 
-import '../../../global.js';
 import { usePush } from '../hooks/websock';
 
 import styles from './order-book.module.scss';

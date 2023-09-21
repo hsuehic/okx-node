@@ -8,8 +8,6 @@ import {
   WsPush,
 } from 'okx-node';
 
-import '../../../global.js';
-
 import {
   CandlestickChartData,
   calculateCandlestickChartData,

@@ -26,3 +26,7 @@ export async function signMessage(
     )
     .join('');
 }
+
+export const randomUUID = (): string => {
+  return window.crypto.randomUUID();
+};

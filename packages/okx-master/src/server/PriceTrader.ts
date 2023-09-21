@@ -9,9 +9,9 @@ import {
   WsPush,
   WsPushOrders,
   WsSubscriptionTopic,
-  okxWsClient,
 } from 'okx-node';
 
+import { okxWsClient } from './clients';
 import { OkxTrader, OkxTraderConfig } from './Trader';
 
 export interface OkxPriceTraderConfig extends OkxTraderConfig {
@@ -79,7 +79,7 @@ export class OkxPriceTrader extends EventTarget implements OkxTrader {
     this._gap = gap * this._factor;
     this._levelCount = levelCount;
     this._okxWsClient = okxWsClient;
-    this._orderClient = new Order();
+    this._orderClient = new Order(okxWsClient);
     this._buyOrder = {
       clOrdId: '',
     };

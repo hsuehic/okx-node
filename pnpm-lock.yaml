@@ -111,9 +111,15 @@ importers:
       antd:
         specifier: ^5.9.2
         version: 5.9.2(moment@2.29.4)(react-dom@18.2.0)(react@18.2.0)
+      dotenv:
+        specifier: ^16.3.1
+        version: 16.3.1
       echarts:
         specifier: ^5.4.3
         version: 5.4.3
+      events:
+        specifier: ^3.3.0
+        version: 3.3.0
       express:
         specifier: ^4.18.2
         version: 4.18.2
@@ -178,12 +184,15 @@ importers:
       nodemon:
         specifier: ^3.0.1
         version: 3.0.1
+      sass:
+        specifier: ^1.68.0
+        version: 1.68.0
       ts-node:
         specifier: ^10.2.1
         version: 10.9.1(@types/node@18.17.6)(typescript@5.0.2)
       vite:
         specifier: ^4.4.9
-        version: 4.4.9(@types/node@18.17.6)
+        version: 4.4.9(@types/node@18.17.6)(sass@1.68.0)
 
   packages/okx-persist:
     dependencies:
@@ -2696,7 +2705,7 @@ packages:
       '@babel/plugin-transform-react-jsx-self': 7.22.5(@babel/core@7.22.10)
       '@babel/plugin-transform-react-jsx-source': 7.22.5(@babel/core@7.22.10)
       react-refresh: 0.14.0
-      vite: 4.4.9(@types/node@18.17.6)
+      vite: 4.4.9(@types/node@18.17.6)(sass@1.68.0)
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -4626,6 +4635,11 @@ packages:
     resolution: {integrity: sha512-GWkBvjiSZK87ELrYOSESUYeVIc9mvLLf/nXalMOS5dYrgZq9o5OVkbZAVM06CVxYsCwH9BDZFPlQTlPA1j4ahA==}
     dev: true
 
+  /events@3.3.0:
+    resolution: {integrity: sha512-mQw+2fkQbALzQ7V0MY0IqdnXNOeTtP4r0lN9z7AAawCXgqea7bDii20AYrIBrFd/Hx0M2Ocz6S111CaFkUcb0Q==}
+    engines: {node: '>=0.8.x'}
+    dev: false
+
   /execa@5.1.1:
     resolution: {integrity: sha512-8uSpZZocAZRBAPIEINJj3Lo9HyGitllczc27Eh5YYojjMFMn8yHMDMaUHE2Jqfq05D/wucwI4JGURyXt1vchyg==}
     engines: {node: '>=10'}
@@ -5357,6 +5371,10 @@ packages:
   /ignore@5.2.4:
     resolution: {integrity: sha512-MAb38BcSbH0eHNBxn7ql2NH/kX33OkB3lZ1BNdh7ENeRChHTYsTvWrMubiIAMNS2llXEEgZ1MUOBtXChP3kaFQ==}
     engines: {node: '>= 4'}
+    dev: true
+
+  /immutable@4.3.4:
+    resolution: {integrity: sha512-fsXeu4J4i6WNWSikpI88v/PcVflZz+6kMhUfIwc5SY+poQRPnaf5V7qds6SUyUN3cVxEzuCab7QIoLOQ+DQ1wA==}
     dev: true
 
   /import-fresh@3.3.0:
@@ -8537,6 +8555,16 @@ packages:
   /safer-buffer@2.1.2:
     resolution: {integrity: sha512-YZo3K82SD7Riyi0E1EQPojLz7kpepnSQI9IyPbHHg1XXXevb5dJI7tpyN2ADxGcQbHG7vcyRHk0cbwqcQriUtg==}
 
+  /sass@1.68.0:
+    resolution: {integrity: sha512-Lmj9lM/fef0nQswm1J2HJcEsBUba4wgNx2fea6yJHODREoMFnwRpZydBnX/RjyXw2REIwdkbqE4hrTo4qfDBUA==}
+    engines: {node: '>=14.0.0'}
+    hasBin: true
+    dependencies:
+      chokidar: 3.5.3
+      immutable: 4.3.4
+      source-map-js: 1.0.2
+    dev: true
+
   /saxes@5.0.1:
     resolution: {integrity: sha512-5LBh1Tls8c9xgGjw3QrMwETmTMVk0oFgvrFSvWx62llR2hcEInrKNZ2GZCCuuy2lvWrdl5jhbpeqc5hRYKFOcw==}
     engines: {node: '>=10'}
@@ -9696,7 +9724,7 @@ packages:
     engines: {node: '>= 0.8'}
     dev: false
 
-  /vite@4.4.9(@types/node@18.17.6):
+  /vite@4.4.9(@types/node@18.17.6)(sass@1.68.0):
     resolution: {integrity: sha512-2mbUn2LlUmNASWwSCNSJ/EG2HuSRTnVNaydp6vMCm5VIqJsjMfbIWtbH2kDuwUVW5mMUKKZvGPX/rqeqVvv1XA==}
     engines: {node: ^14.18.0 || >=16.0.0}
     hasBin: true
@@ -9728,6 +9756,7 @@ packages:
       esbuild: 0.18.20
       postcss: 8.4.28
       rollup: 3.28.1
+      sass: 1.68.0
     optionalDependencies:
       fsevents: 2.3.2
     dev: true

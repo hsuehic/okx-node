@@ -3,7 +3,6 @@ import { useState } from 'react';
 import moment from 'moment';
 import { Trade, WsPush, WsPushArgInstId } from 'okx-node';
 
-import '../../../global.js';
 import { usePush } from '../hooks/websock.js';
 
 import styles from './last-trades.module.scss';

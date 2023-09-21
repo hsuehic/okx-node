@@ -58,26 +58,13 @@ okxWsClient.subscribe({
 okxWsClient.on(eventName, data => console.log(data));
 ```
 
-## API
+## Browser Usage
 
-### myPackage(input, options?)
+Need to install `events` package.
 
-#### input
-
-Type: `string`
-
-Lorem ipsum.
-
-#### options
-
-Type: `object`
-
-##### postfix
-
-Type: `string`
-Default: `rainbows`
-
-Lorem ipsum.
+```base
+npm install events -s
+```
 
 ## Use Case
 

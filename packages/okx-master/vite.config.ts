@@ -5,6 +5,9 @@ import { defineConfig } from 'vite';
 export default defineConfig(({ command, mode }) => {
   console.log(command, mode);
   return {
+    resolve: {
+      browserField: true,
+    },
     build: {
       sourcemap: true,
       outDir: 'static',

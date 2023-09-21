@@ -6,6 +6,10 @@
   "browser": "./dist/mjs/browser.js",
   "exports": {
     ".": {
+      "browser": {
+        "types": "./dist/mjs/browser.d.ts",
+        "default": "./dist/mjs/browser.js"
+      },
       "import": {
         "types": "./dist/mjs/node.d.ts",
         "default": "./dist/mjs/node.js"
@@ -24,6 +28,8 @@
     "build": "npm run build:cjs && npm run build:mjs",
     "build:cjs": "tsc --project tsconfig.cjs.json",
     "build:mjs": "tsc --project tsconfig.mjs.json",
+    "postbuild:cjs": "echo '{\"type\":\"commonjs\"}' > ./dist/cjs/package.json",
+    "postbuild:mjs": "echo '{\"type\":\"module\"}' > ./dist/mjs/package.json",
     "clean": "rm -rf ./lib/ && rm -rf ./dist/",
     "eslint": "eslint ./src/ --fix",
     "lintpackagejson": "npmPkgJsonLint .",

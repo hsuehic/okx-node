@@ -1,7 +1,7 @@
 import { EventEmitter } from 'events';
 
+import WebSocket, { MessageEvent } from 'isomorphic-ws';
 import { signMessage } from 'sign-message';
-import WebSocket from 'ws';
 
 import {
   PushChannel,
@@ -163,14 +163,14 @@ export class OkxWebSocketClient extends EventEmitter {
     console.log(reassign ? 're-init' : 'init', key);
     const wsUrl = getWsUrl(this._market, key);
     const socket = new WebSocket(wsUrl);
-    socket.on('close', () => {
+    socket.onclose = () => {
       console.log(key, 'closed');
       if (key === 'private' || key === 'business') {
         this._privateChannelReady[key] = false;
       }
       this._initClient(key, true);
-    });
-    socket.on('open', () => {
+    };
+    socket.onopen = () => {
       if (key !== 'public') {
         void this._loginToWsClient(key);
       }
@@ -187,10 +187,11 @@ export class OkxWebSocketClient extends EventEmitter {
           }
         }
       }
-    });
-    socket.on('message', (data: WebSocket.RawData, isBinary: boolean) => {
-      this._onMessage(key, data, isBinary);
-    });
+    };
+    socket.onmessage = (evnt: MessageEvent) => {
+      const { data } = evnt;
+      this._onMessage(key, String(data));
+    };
     if (reassign) {
       console.log('re-assign', key);
       this._clients[key] = socket;
@@ -227,7 +228,7 @@ export class OkxWebSocketClient extends EventEmitter {
    * Login to private channel
    */
   private async _loginToWsClient(key: WsKey) {
-    const timestamp = Date.now() / 1000;
+    const timestamp = (Date.now() / 1000).toFixed(0);
 
     if (this._needToLogin()) {
       const sign = await signMessage(
@@ -254,40 +255,39 @@ export class OkxWebSocketClient extends EventEmitter {
    * @param key {WebSocketChannelKey} Key of the channel
    * @param message Message content
    */
-  private _onMessage(wsKey: WsKey, data: WebSocket.RawData, isBinary: boolean) {
+  private _onMessage(wsKey: WsKey, data: string) {
     this._pingPongTimer.lastReceived[wsKey] = Date.now();
-    if (!isBinary) {
-      const msgStr = data.toString();
-      if (msgStr !== 'pong') {
-        const msgObj = JSON.parse(msgStr) as object;
 
-        const { event } = msgObj as Exclude<WsResponse, WsTradeResponse>;
-        switch (event) {
-          case 'error':
-            this._handleFailureResponse(msgObj as WsFailureResponse);
-            break;
-          case 'login':
-            this._handleLoginResponse(wsKey, msgObj as WsLoginResonse);
-            break;
-          case 'subscribe':
-          case 'unsubscribe':
-            this._handleSubscribeResponse(msgObj as WsSubscribeResponse);
-            break;
-          default:
-            break;
-        }
-        const { id, op } = msgObj as WsTradeResponse;
-        if (id && op) {
-          this._handleTradeResponse(msgObj as WsTradeResponse);
-        }
-        const { arg, data } = msgObj as WsPush;
-        if (arg && data) {
-          this._handlePush(msgObj as WsPush);
-        }
-      } else {
-        this._logTimer(wsKey, true);
-        this._log('pong', `[${wsKey}] pong`);
+    const msgStr = data.toString();
+    if (msgStr !== 'pong') {
+      const msgObj = JSON.parse(msgStr) as object;
+
+      const { event } = msgObj as Exclude<WsResponse, WsTradeResponse>;
+      switch (event) {
+        case 'error':
+          this._handleFailureResponse(msgObj as WsFailureResponse);
+          break;
+        case 'login':
+          this._handleLoginResponse(wsKey, msgObj as WsLoginResonse);
+          break;
+        case 'subscribe':
+        case 'unsubscribe':
+          this._handleSubscribeResponse(msgObj as WsSubscribeResponse);
+          break;
+        default:
+          break;
       }
+      const { id, op } = msgObj as WsTradeResponse;
+      if (id && op) {
+        this._handleTradeResponse(msgObj as WsTradeResponse);
+      }
+      const { arg, data } = msgObj as WsPush;
+      if (arg && data) {
+        this._handlePush(msgObj as WsPush);
+      }
+    } else {
+      this._logTimer(wsKey, true);
+      this._log('pong', `[${wsKey}] pong`);
     }
   }
 

@@ -56,7 +56,3 @@ type CryptoCurrency =
 type Quote = 'USDC' | 'USDT';
 
 type InstId = `${CryptoCurrency}-${Quote}`;
-
-interface Window {
-  AbcAbc: string;
-}

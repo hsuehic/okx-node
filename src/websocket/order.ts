@@ -1,5 +1,6 @@
-import { randomUUID } from 'crypto';
 import EventEmitter from 'events';
+
+import { randomUUID } from 'sign-message';
 
 import {
   WsAmendOrderResponse,
@@ -223,10 +224,8 @@ export class Order extends EventEmitter {
     this._okxWsClient.trade(req);
     return id;
   }
-  public static getUuid() {
-    const uuid = randomUUID({
-      disableEntropyCache: false,
-    });
+  public static getUuid(): string {
+    const uuid = randomUUID();
     const clOrdId = uuid.replace(/-/g, '').substring(0, 16); // to meet the constrain of length 32 (msgid, clOrdId)
     return clOrdId;
   }

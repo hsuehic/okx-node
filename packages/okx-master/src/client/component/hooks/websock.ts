@@ -35,20 +35,21 @@ export const usePush = <TArg extends WsPushArg, TData extends object>(
   handler?: (push: WsPush<TArg, TData>) => void
 ): [TData | undefined] => {
   const [v, setV] = useState<TData | undefined>(undefined);
-  const pushHandler = (push: WsPush<TArg, TData>) => {
-    if (test(push.arg)) {
+  const pushHandler = (push: WsPush) => {
+    const { arg, data } = push as WsPush<TArg, TData>;
+    if (test(arg)) {
       if (handler) {
-        handler(push);
+        handler(push as WsPush<TArg, TData>);
       }
-      setV(push.data[0]);
+      setV(data[0]);
     }
   };
-  const { on, off } = window.wsClient;
+  const { wsClient } = window;
   const pushEvent = `push-${channel}` as const;
   useEffect(() => {
-    on(pushEvent, pushHandler);
+    wsClient.on(pushEvent, pushHandler);
     return () => {
-      off(pushEvent, pushHandler);
+      wsClient.off(pushEvent, pushHandler);
     };
   }, [...deps]);
   return [v];
