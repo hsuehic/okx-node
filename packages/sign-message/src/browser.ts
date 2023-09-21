@@ -10,21 +10,14 @@ export async function signMessage(
     false,
     ['sign']
   );
-
   const signature = await window.crypto.subtle.sign(
     'HMAC',
     key,
     encoder.encode(message)
   );
 
-  // eslint-disable-next-line
-  return Array.prototype.map
-    .call(
-      new Uint8Array(signature),
-      (x: { toString(radius: number): string }) =>
-        ('00' + x.toString(16)).slice(-2)
-    )
-    .join('');
+  const digest = btoa(String.fromCharCode(...new Uint8Array(signature)));
+  return digest;
 }
 
 export const randomUUID = (): string => {
