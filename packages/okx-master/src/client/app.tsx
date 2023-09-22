@@ -5,10 +5,10 @@ import { Account, OkxRestClient, OkxWebSocketClient, Order } from 'okx-node';
 
 import { router } from './component/router';
 
-const apiKey = '7fd283b1-cc12-4d5a-a691-5c96416ac13a';
-const passphrase = '123ABC!@#abc';
-const secretKey = 'AFD0FAE5D4F73373CBD906F2A5B9C440';
-const market = 'demo';
+const apiKey = 'ea96d8ce-5f5e-4405-a6ca-b53f951442cc';
+const passphrase = '!Xue78361251234';
+const secretKey = 'CC8BF0D78B7546A19CAE5CAF2D432BE5';
+const market = 'prod';
 
 window.wsClient = OkxWebSocketClient.getInstance({
   apiKey,

@@ -141,7 +141,8 @@ export class Account extends EventEmitter {
   constructor(okxWsClient: OkxWebSocketClient) {
     super();
     this._okxWsClient = okxWsClient;
-    void this._okxWsClient.privateChannelReady('private').then(() => {
+    const p = this._okxWsClient.privateChannelReady('private');
+    void p.then(() => {
       this._subscribe();
     });
     this._okxWsClient.on('push-account', (push: WsPush) => {

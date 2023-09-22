@@ -16,7 +16,7 @@ export const Config = () => {
       }}
     >
       <ProCard>
-        <ProDescriptions
+        <ProDescriptions<AccountConfiguration>
           column={1}
           request={async () => {
             const data = await window.restClient.getAccountConfiguration();
@@ -29,7 +29,8 @@ export const Config = () => {
           <Item
             dataIndex="acctLv"
             title="Account Level"
-            render={(_, entity: AccountConfiguration) => {
+            render={(_, e: Record<string, any>) => {
+              const entity = e as AccountConfiguration;
               return (
                 <Segmented
                   value={entity.acctLv}
@@ -60,7 +61,8 @@ export const Config = () => {
           <Item
             dataIndex="autoLoan"
             title="Auto Loan"
-            render={(_, entity: AccountConfiguration) => {
+            render={(_, e: Record<string, any>) => {
+              const entity = e as AccountConfiguration;
               return (
                 <Switch
                   size="small"

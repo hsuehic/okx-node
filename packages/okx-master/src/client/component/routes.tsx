@@ -152,4 +152,10 @@ export const loginRoutes = [
       return <h1>Register</h1>;
     },
   },
+  {
+    path: '/loginout',
+    Component: () => {
+      return <h1>Logout</h1>;
+    },
+  },
 ];

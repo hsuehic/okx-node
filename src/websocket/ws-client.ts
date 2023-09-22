@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { EventEmitter } from 'events';
 
 import WebSocket, { MessageEvent } from 'isomorphic-ws';
@@ -70,19 +71,21 @@ export declare interface OkxWebSocketClient {
   emit(event: 'subscribe', data: WsSubscribeResponse): boolean;
   emit(event: 'trade', data: WsTradeResponse): boolean;
   emit(event: PushChannel, data: WsPush): boolean;
+  emit(event: 'open', wsKey: string): boolean;
 
   on(event: 'login', listener: (wsKey: WsKey) => void): this;
   on(event: 'errorResponse', listener: (data: WsFailureResponse) => void): this;
-  on(event: 'subscribe', listeneer: (data: WsSubscribeResponse) => void): this;
+  on(event: 'subscribe', listener: (data: WsSubscribeResponse) => void): this;
   on(event: 'trade', listerner: (data: WsTradeResponse) => void): this;
   on(event: PushChannel, listener: (data: WsPush) => void): this;
+  on(event: 'open', listener: (wsKey: WsKey) => void): this;
 }
 
 export class OkxWebSocketClient extends EventEmitter {
   /**
    * WebSocket clients for different channels
    */
-  private _clients: Record<WsKey, WebSocket>;
+  private _clients: { [key in WsKey]?: WebSocket };
 
   private _apiKey: string;
   private _passphrase: string;
@@ -145,6 +148,7 @@ export class OkxWebSocketClient extends EventEmitter {
     } else {
       this._activeClients = ['business', 'public'];
     }
+    this._clients = {};
 
     for (const key of this._activeClients) {
       this._clients[key] = this._initClient(key);
@@ -163,17 +167,16 @@ export class OkxWebSocketClient extends EventEmitter {
    * @returns {WebSocket}
    */
   private _initClient(key: WsKey, reassign = false): WebSocket {
-    console.log(reassign ? 're-init' : 'init', key);
     const wsUrl = getWsUrl(this._market, key);
     const socket = new WebSocket(wsUrl);
     socket.onclose = () => {
-      console.log(key, 'closed');
       if (key === 'private' || key === 'business') {
         this._privateChannelReady[key] = false;
       }
       this._initClient(key, true);
     };
     socket.onopen = () => {
+      this.emit('open', key);
       if (key !== 'public') {
         void this._loginToWsClient(key);
       }
@@ -196,7 +199,6 @@ export class OkxWebSocketClient extends EventEmitter {
       this._onMessage(key, String(data));
     };
     if (reassign) {
-      console.log('re-assign', key);
       this._clients[key] = socket;
     }
     return socket;
@@ -334,9 +336,11 @@ export class OkxWebSocketClient extends EventEmitter {
       socket.send(msg);
       this._logTimer(wsKey);
     } else {
-      socket.on('open', () => {
-        socket.send(msg);
-        this._logTimer(wsKey);
+      this.once('open', (key: WsKey) => {
+        if (wsKey === key) {
+          socket.send(msg);
+          this._logTimer(wsKey);
+        }
       });
     }
   }
@@ -388,10 +392,13 @@ export class OkxWebSocketClient extends EventEmitter {
     for (const key of this._activeClients) {
       const now = Date.now();
       if (lastSend[key] - lastReceived[key] > this._heartbeatInterval * 3) {
-        console.log(key, 'force closed');
         const socket = this._clients[key];
         // close the client to force re-connect
-        socket.close(1);
+        try {
+          socket.close(1);
+        } catch (ex) {
+          console.error(ex);
+        }
         // reset loger timestamp to avoid forcing closing again when re-connecting and re-subscribing
         lastSend[key] = now;
         lastReceived[key] = now;
@@ -404,9 +411,7 @@ export class OkxWebSocketClient extends EventEmitter {
    * @param wsKey
    */
   private _reSubAfterReconnect(wsKey: WsKey) {
-    console.log(wsKey, 're-subscribe');
     const subscribtions = this._subscribes.get(wsKey);
-    console.log([...subscribtions]);
     subscribtions.forEach((subscription: WsSubscriptionTopic) => {
       this._subUnsub(
         {
@@ -476,10 +481,10 @@ export class OkxWebSocketClient extends EventEmitter {
     key: 'private' | 'business'
   ): Promise<boolean> {
     if (this._privateChannelReady[key]) {
-      return true;
+      return Promise.resolve(true);
     } else {
       const p = new Promise<boolean>(resolve => {
-        this.once('login', (wsKey: WsKey) => {
+        this.on('login', (wsKey: WsKey) => {
           if (wsKey === key) {
             resolve(true);
           }

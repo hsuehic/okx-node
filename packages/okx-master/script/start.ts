@@ -2,20 +2,16 @@ import Koa from 'koa';
 import connect from 'koa-connect';
 import { createServer as createViteServer } from 'vite';
 
-import { routerTrader } from '../src/server/router';
+import { app } from '../src/server/app';
 
-const PORT = 8080;
-async function createServer() {
-  const app = new Koa();
-
+const port = 8080;
+async function startServer() {
   const vite = await createViteServer({
     server: {
       middlewareMode: true,
       hmr: true,
     },
   });
-
-  app.use(routerTrader.routes()).use(routerTrader.allowedMethods());
 
   app.use(connect(vite.middlewares) as Koa.Middleware);
 
@@ -30,9 +26,9 @@ async function createServer() {
     }
   });
 
-  app.listen(PORT, () => {
-    console.log(`Server at port #${PORT}`);
+  app.listen(port, () => {
+    console.log(`Server at port #${port}`);
   });
 }
 
-void createServer();
+void startServer();
