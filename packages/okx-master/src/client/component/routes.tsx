@@ -142,8 +142,11 @@ export const appRoutes = [
 export const loginRoutes = [
   {
     path: '/login',
-    Component: () => {
-      return <h1>Login</h1>;
+    lazy: async () => {
+      const { Login } = await import('./login');
+      return {
+        Component: Login,
+      };
     },
   },
   {
@@ -153,7 +156,7 @@ export const loginRoutes = [
     },
   },
   {
-    path: '/loginout',
+    path: '/logout',
     Component: () => {
       return <h1>Logout</h1>;
     },

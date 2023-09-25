@@ -17,6 +17,7 @@ describe('index', () => {
       trader.coefficient = 1;
       trader.gap = 0.06;
       trader.levelCount = 5;
+      trader.instId = 'BTC-USDC';
       trader.name = 'sol006';
 
       await dataSource.manager.save(trader);

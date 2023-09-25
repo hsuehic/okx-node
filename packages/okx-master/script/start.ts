@@ -3,9 +3,10 @@ import connect from 'koa-connect';
 import { createServer as createViteServer } from 'vite';
 
 import { app } from '../src/server/app';
+import { dataSource } from '../src/server/services';
 
 const port = 8080;
-async function startServer() {
+async function createServer() {
   const vite = await createViteServer({
     server: {
       middlewareMode: true,
@@ -13,10 +14,12 @@ async function startServer() {
     },
   });
 
+  await dataSource.initialize();
+
   app.use(connect(vite.middlewares) as Koa.Middleware);
 
-  app.use(async (ctx, next) => {
-    await next();
+  app.use(async ctx => {
+    // await next();
 
     if (ctx.type === 'text/html') {
       ctx.body = await vite.transformIndexHtml(
@@ -31,4 +34,4 @@ async function startServer() {
   });
 }
 
-void startServer();
+void createServer();

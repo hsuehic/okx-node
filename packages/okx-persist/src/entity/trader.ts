@@ -8,7 +8,7 @@ export class Trader {
   name!: string;
 
   @Column()
-  instId: string;
+  instId!: string;
 
   @Column()
   basePx!: number;
@@ -27,7 +27,7 @@ export class Trader {
 
   @Column({
     nullable: true,
-    default: true,
+    default: false,
   })
-  status!: boolean;
+  enabled!: boolean;
 }
