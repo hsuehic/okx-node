@@ -4,5 +4,6 @@ declare namespace NodeJS {
     PASSPHRASE: string;
     SECRET_KEY: string;
     MARKET: 'prod' | 'aws' | 'demo';
+    NODE_ENV: 'dev' | 'prod';
   }
 }

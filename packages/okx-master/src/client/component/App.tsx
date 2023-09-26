@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, Outlet, useLocation } from 'react-router-dom';
+import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 
 import {
   GithubFilled,
@@ -15,9 +15,10 @@ import {
   ProLayout,
   // SettingDrawer,
 } from '@ant-design/pro-components';
-import { ConfigProvider, Dropdown, Input, theme } from 'antd';
+import { ConfigProvider, Dropdown, Input, message, theme } from 'antd';
 import enUS from 'antd/locale/en_US';
 
+import { logout } from './api/login';
 import { appRoutes } from './routes';
 
 import './App.scss';
@@ -65,6 +66,7 @@ const SearchInput = () => {
 };
 
 export const App = () => {
+  const navigate = useNavigate();
   const [settings] = useState<Partial<ProSettings> | undefined>({
     fixSiderbar: true,
     layout: 'mix',
@@ -125,6 +127,19 @@ export const App = () => {
                           key: 'logout',
                           icon: <LogoutOutlined />,
                           label: 'Logout',
+                          onClick: () => {
+                            logout()
+                              .then(async () => {
+                                await message.success(
+                                  'Successfully logged out!',
+                                  1
+                                );
+                                navigate('/login');
+                              })
+                              .catch(ex => {
+                                void message.error(ex as string, 2);
+                              });
+                          },
                         },
                       ],
                     }}

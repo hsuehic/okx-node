@@ -15,8 +15,6 @@ import {
   routerTrader,
 } from './router';
 
-console.log(process.env);
-
 const app = new Koa();
 app.use(cors());
 app.keys = ['abc', '123'];
@@ -35,6 +33,8 @@ app.use(routerLogin.routes()).use(routerLogin.allowedMethods());
 app.use(routerAccount.routes()).use(routerAccount.allowedMethods());
 app.use(routerTrader.routes()).use(routerTrader.allowedMethods());
 app.use(routerOrder.routes()).use(routerOrder.allowedMethods());
-app.use(browserRouter());
+if (process.env.NODE_ENV !== 'dev') {
+  app.use(browserRouter());
+}
 
 export { app };

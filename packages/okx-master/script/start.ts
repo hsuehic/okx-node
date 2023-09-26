@@ -18,8 +18,8 @@ async function createServer() {
 
   app.use(connect(vite.middlewares) as Koa.Middleware);
 
-  app.use(async ctx => {
-    // await next();
+  app.use(async (ctx, next) => {
+    await next();
 
     if (ctx.type === 'text/html') {
       ctx.body = await vite.transformIndexHtml(

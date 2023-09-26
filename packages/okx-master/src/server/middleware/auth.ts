@@ -4,7 +4,6 @@ export const auth = () => async (ctx: Context, next: Next) => {
   if (ctx.isAuthenticated()) {
     await next();
   } else {
-    await next();
     if (/^\/api\//.test(ctx.request.path)) {
       // protect apis
       const publicApis = ['/api/login/password', '/api/logout'];
@@ -17,10 +16,13 @@ export const auth = () => async (ctx: Context, next: Next) => {
       }
     } else {
       // protect pages
-      const publicPages = ['/login', '/register', '/logout'];
-      if (!publicPages.includes(ctx.request.path)) {
+      const reg =
+        /^\/(trade(\/[^/]+)*|account(\/[^/]+)*|order(\/[^/]+)*|order(\/[^/]+)*)*$/;
+      if (reg.test(ctx.request.path)) {
         ctx.redirect('/login');
+        return;
       }
     }
+    await next();
   }
 };

@@ -6,6 +6,8 @@ import { Strategy as LocalStrategy } from 'passport-local';
 import { User } from '../model';
 import { dataSource } from '../services';
 
+import { wrapData } from './util';
+
 type Done<T = false | undefined | Express.User> = (
   error: Error | null | undefined,
   user?: T
@@ -85,22 +87,47 @@ routerLogin.post('/login/password', async (ctx: Context, next: Next) => {
       if (err) {
         const msg = 'Server internal error';
         ctx.body = {
-          err: 5001,
+          code: '5001',
           msg,
         };
       } else if (user === false) {
         ctx.body = {
-          err: 1,
+          code: '1',
           msg: "User doesn't exist",
         };
       } else {
         ctx.body = {
-          err: 0,
+          code: '0',
           data: {},
+          msg: '',
         };
       }
       resolve(user);
     })(ctx, next);
   });
-  await promise;
+  const user = await promise;
+  await ctx.login(user);
 });
+
+routerLogin.post('/logout', async ctx => {
+  await ctx.logout();
+  ctx.body = wrapData({});
+});
+
+// routerLogin.get('/login/google', passport.authenticate('google'));
+// routerLogin.get(
+//   '/auth/google/callback',
+//   passport.authenticate('google', {
+//     successRedirect: '/',
+//     failureRedirect: '/login',
+//   })
+// );
+
+// routerLogin.get('/login/facebook', passport.authenticate('facebook'));
+// routerLogin.get(
+//   '/auth/facebook/callback',
+//   passport.authenticate('facebook', {
+//     successRedirect: '/',
+//     failureRedirect: '/login',
+//   })
+// );

@@ -63,8 +63,12 @@ export const request = async <T>(
     redirect: 'follow',
   });
   const json = (await res.json()) as ResponseBody<T>;
-  const value = json.data;
-  return value;
+  if (json.code === '0') {
+    const value = json.data;
+    return value;
+  } else {
+    throw json.msg;
+  }
 };
 
 export const get = async <T>(
