@@ -1,6 +1,6 @@
 import { ProCard } from '@ant-design/pro-components';
 import { Table, TableColumnType } from 'antd';
-import { WsAssetInfo } from 'okx-node';
+import { AccountBalanceDetail } from 'okx-node';
 
 import styles from './currency-list.module.scss';
 
@@ -9,7 +9,7 @@ const renderEquityInUsd = (v: string) => {
   return <span>{value.toFixed(2)}</span>;
 };
 
-const columns: TableColumnType<WsAssetInfo>[] = [
+const columns: TableColumnType<AccountBalanceDetail>[] = [
   {
     dataIndex: 'ccy',
     title: 'Currency',
@@ -55,14 +55,14 @@ const columns: TableColumnType<WsAssetInfo>[] = [
 ];
 
 export interface CurrencyListProps {
-  dataSource?: WsAssetInfo[];
+  dataSource?: AccountBalanceDetail[];
 }
 
 export const CurrencyList = ({ dataSource }: CurrencyListProps) => {
   return (
     <ProCard.Group title="Currency">
       <ProCard>
-        <Table<WsAssetInfo>
+        <Table<AccountBalanceDetail>
           loading={!dataSource}
           columns={columns}
           dataSource={dataSource}

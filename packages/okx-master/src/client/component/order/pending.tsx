@@ -6,6 +6,7 @@ import { Button, Table, TableColumnType } from 'antd';
 import moment from 'moment';
 import { OrderListItem, Ticker, WsOrderSide, WsPushArg } from 'okx-node';
 
+import { getPendingOrders } from '../api/order';
 import { InstPageSubTitle, InstPageTitle } from '../common';
 import { formatPrice } from '../formatter';
 import { useIntervalRequest, usePush, useSubscribe } from '../hooks';
@@ -65,8 +66,7 @@ export const PendingOrder = () => {
   const [open, setOpen] = useState<boolean>(false);
   const [orders] = useIntervalRequest(
     () => {
-      const { restClient } = window;
-      return restClient.getOrderList({
+      return getPendingOrders({
         instId,
       });
     },

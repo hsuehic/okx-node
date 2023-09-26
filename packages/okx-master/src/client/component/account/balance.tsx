@@ -1,51 +1,18 @@
-import { useCallback, useEffect, useState } from 'react';
-
 import { PageContainer, ProCard } from '@ant-design/pro-components';
 import { Statistic } from 'antd';
-import { WsAccoutInfo, WsAssetInfo } from 'okx-node';
+import { AccountBalance } from 'okx-node';
+
+import { getBalance } from '../api/account';
+import { useIntervalRequest } from '../hooks';
 
 import { CurrencyList } from './currency-list';
 
 const { Divider } = ProCard;
 
 export const Balance = () => {
-  const { wsAccount: account } = window;
+  const [accountBalance] = useIntervalRequest<AccountBalance>(getBalance, 2000);
+  const loading = !accountBalance;
 
-  let initialAccountInfo: WsAccoutInfo | undefined = undefined;
-  let initialAssetInfo: WsAssetInfo[] | undefined = undefined;
-  const info = account.accountInfo;
-  if (info && info.length > 0) {
-    initialAccountInfo = info[0];
-    initialAssetInfo = initialAccountInfo.details;
-  }
-  const [loading, setLoading] = useState<boolean>(!initialAccountInfo);
-  const [accountInfo, setAccountInfo] = useState<WsAccoutInfo | undefined>(
-    initialAccountInfo
-  );
-  const [dataSource, setDataSource] = useState<WsAssetInfo[] | undefined>(
-    initialAssetInfo
-  );
-
-  const handlerAccountInfo = useCallback(
-    (data: WsAccoutInfo[]) => {
-      if (data.length > 0) {
-        const acc = data[0];
-        setAccountInfo(acc);
-        const assetInfo = acc.details;
-        setDataSource(assetInfo);
-        setLoading(false);
-      }
-    },
-    [setAccountInfo, setLoading]
-  );
-
-  useEffect(() => {
-    const eventName = 'push-account';
-    account.on(eventName, handlerAccountInfo);
-    return () => {
-      account.off(eventName, handlerAccountInfo);
-    };
-  });
   return (
     <PageContainer
       token={{
@@ -57,7 +24,7 @@ export const Balance = () => {
           <Statistic
             title="Total"
             prefix="$"
-            value={accountInfo && accountInfo.totalEq}
+            value={accountBalance && accountBalance.totalEq}
             precision={2}
             loading={loading}
           />
@@ -67,7 +34,7 @@ export const Balance = () => {
           <Statistic
             title="Effective"
             prefix="$"
-            value={accountInfo && accountInfo.adjEq}
+            value={accountBalance && accountBalance.adjEq}
             loading={loading}
           />
         </ProCard>
@@ -76,7 +43,7 @@ export const Balance = () => {
           <Statistic
             title="Isolated"
             prefix="$"
-            value={accountInfo && accountInfo.isoEq}
+            value={accountBalance && accountBalance.isoEq}
             precision={2}
             loading={loading}
           />
@@ -86,12 +53,12 @@ export const Balance = () => {
           <Statistic
             prefix="$"
             title="Frozen"
-            value={accountInfo && accountInfo.ordFroz}
+            value={accountBalance && accountBalance.ordFroz}
             loading={loading}
           />
         </ProCard>
       </ProCard.Group>
-      <CurrencyList dataSource={dataSource} />
+      <CurrencyList dataSource={accountBalance?.details} />
     </PageContainer>
   );
 };

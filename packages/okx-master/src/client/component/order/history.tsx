@@ -6,6 +6,7 @@ import { Button, Table, TableColumnType } from 'antd';
 import moment from 'moment';
 import { OrderFill, Ticker, WsOrderSide, WsPushArg } from 'okx-node';
 
+import { getOrderHistory } from '../api/order';
 import { InstPageSubTitle, InstPageTitle } from '../common';
 import { useIntervalRequest, usePush, useSubscribe } from '../hooks';
 
@@ -63,8 +64,7 @@ export const OrderHistory = () => {
   const [open, setOpen] = useState<boolean>(false);
   const [orders] = useIntervalRequest(
     () => {
-      const { restClient } = window;
-      return restClient.getFillsHistory({
+      return getOrderHistory({
         instType: 'MARGIN',
         instId,
       });

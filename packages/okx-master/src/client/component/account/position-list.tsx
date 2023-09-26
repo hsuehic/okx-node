@@ -1,15 +1,16 @@
-import { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import { ProCard } from '@ant-design/pro-components';
 import { Table, TableColumnType } from 'antd';
-import { WsPosition } from 'okx-node';
+import { AccountPosition } from 'okx-node';
 
+import { getPositions } from '../api/account';
 import { formatPrice } from '../formatter';
+import { useIntervalRequest } from '../hooks';
 
 import { renderUpl, renderUplRatio } from './renderer';
 
-const columnsIsolated: TableColumnType<WsPosition>[] = [
+const columnsIsolated: TableColumnType<AccountPosition>[] = [
   {
     dataIndex: 'posId',
     title: 'Position Id',
@@ -27,7 +28,7 @@ const columnsIsolated: TableColumnType<WsPosition>[] = [
   },
   {
     title: 'Base Balance',
-    render(_: unknown, record: WsPosition) {
+    render(_: unknown, record: AccountPosition) {
       const { baseBal, baseBorrowed } = record;
       const v = parseFloat(baseBal) - parseFloat(baseBorrowed);
       return v.toString();
@@ -35,7 +36,7 @@ const columnsIsolated: TableColumnType<WsPosition>[] = [
   },
   {
     title: 'Quote Balance',
-    render(_: unknown, record: WsPosition) {
+    render(_: unknown, record: AccountPosition) {
       const { quoteBal, quoteBorrowed } = record;
       const v = parseFloat(quoteBal) - parseFloat(quoteBorrowed);
       return v.toString();
@@ -62,7 +63,7 @@ const columnsIsolated: TableColumnType<WsPosition>[] = [
   },
 ];
 
-const columnsCross: TableColumnType<WsPosition>[] = [
+const columnsCross: TableColumnType<AccountPosition>[] = [
   {
     dataIndex: 'posId',
     title: 'Position Id',
@@ -80,7 +81,7 @@ const columnsCross: TableColumnType<WsPosition>[] = [
   },
   {
     title: 'Base',
-    render(_: unknown, record: WsPosition) {
+    render(_: unknown, record: AccountPosition) {
       const { ccy, posCcy, pos, liab } = record;
       const v = ccy === posCcy ? pos : liab;
       return v;
@@ -88,7 +89,7 @@ const columnsCross: TableColumnType<WsPosition>[] = [
   },
   {
     title: 'Quote',
-    render(_: unknown, record: WsPosition) {
+    render(_: unknown, record: AccountPosition) {
       const { ccy, posCcy, pos, liab } = record;
       const v = ccy === posCcy ? liab : pos;
       return v;
@@ -118,27 +119,20 @@ const columnsCross: TableColumnType<WsPosition>[] = [
 ];
 
 export const PositionList = () => {
-  const { wsAccount: account } = window;
-
-  const [dataSource, setDataSource] = useState<WsPosition[]>(
-    account.position || []
+  const [accountPositions] = useIntervalRequest<AccountPosition[]>(
+    getPositions,
+    1000,
+    []
   );
-  const handler = useCallback((data: WsPosition[]) => {
-    setDataSource(data);
-  }, []);
-  useEffect(() => {
-    const eventName = 'push-positions';
-    account.on(eventName, handler);
-    return () => {
-      account.off(eventName, handler);
-    };
-  });
+  const loading = !accountPositions;
+  const dataSource = accountPositions || [];
+
   return (
     <>
       <ProCard.Group title="Isolated Margin">
         <ProCard>
-          <Table<WsPosition>
-            loading={!dataSource}
+          <Table<AccountPosition>
+            loading={loading}
             columns={columnsIsolated}
             dataSource={dataSource.filter(
               record =>
@@ -151,8 +145,8 @@ export const PositionList = () => {
       </ProCard.Group>
       <ProCard.Group title="Cross Margin">
         <ProCard>
-          <Table<WsPosition>
-            loading={!dataSource}
+          <Table<AccountPosition>
+            loading={loading}
             columns={columnsCross}
             dataSource={dataSource.filter(
               record =>

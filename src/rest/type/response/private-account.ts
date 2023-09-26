@@ -77,6 +77,12 @@ export interface AccountPosition {
   uplRatio: string;
   vegaBS: string;
   vegaPA: string;
+  baseBorrowed: string;
+  baseInterest: string;
+  quoteBorrowed: string;
+  quoteInterest: string;
+  baseBal: string;
+  quoteBal: string;
 }
 
 export interface HistoricAccountPosition {

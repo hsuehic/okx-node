@@ -8,7 +8,12 @@ import session from 'koa-session';
 // import server from 'koa-static';
 
 import { auth, browserRouter } from './middleware';
-import { routerAccount, routerLogin, routerTrader } from './router';
+import {
+  routerAccount,
+  routerLogin,
+  routerOrder,
+  routerTrader,
+} from './router';
 
 console.log(process.env);
 
@@ -29,6 +34,7 @@ app.use(auth());
 app.use(routerLogin.routes()).use(routerLogin.allowedMethods());
 app.use(routerAccount.routes()).use(routerAccount.allowedMethods());
 app.use(routerTrader.routes()).use(routerTrader.allowedMethods());
+app.use(routerOrder.routes()).use(routerOrder.allowedMethods());
 app.use(browserRouter());
 
 export { app };

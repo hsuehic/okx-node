@@ -11,6 +11,7 @@ import {
 import { Form, message } from 'antd';
 import moment from 'moment';
 import {
+  Order,
   TradeMode,
   WsOrderSide,
   WsPlaceOrderParams,
@@ -82,11 +83,10 @@ export const OrderForm = (props: OrderFormProps) => {
         destroyOnClose: true,
       }}
       onFinish={async (values: WsPlaceOrderParams) => {
-        const { wsClient } = window;
         const params: WsPlaceOrderParams = { ...initialValues, ...values };
-        params.clOrdId = wsClient.order.getUuid();
+        params.clOrdId = Order.getUuid();
         if (params.ordType == 'market') {
-          delete params['px'];
+          params['px'] = '';
         } else {
           params.px = params.px.toString();
         }
@@ -97,7 +97,7 @@ export const OrderForm = (props: OrderFormProps) => {
           params.quickMgnType = quickMgnType;
         }
         params.sz = params.sz.toString();
-        await wsClient.order.placeOrder([params]);
+        await Promise.resolve([params]);
         void message.success('Order submited');
         return true;
       }}
@@ -140,8 +140,8 @@ export const OrderForm = (props: OrderFormProps) => {
         }}
         name="tdMode"
         fieldProps={{
-          onChange: (value: TradeMode) => {
-            setTdMode(value);
+          onChange: (value: string | number) => {
+            setTdMode(value as TradeMode);
           },
         }}
       />
