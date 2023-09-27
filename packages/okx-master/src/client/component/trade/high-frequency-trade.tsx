@@ -1,59 +1,43 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useParams } from 'react-router';
 
 import { PlusCircleOutlined } from '@ant-design/icons';
 import { PageContainer, ProCard } from '@ant-design/pro-components';
 import { Button, Space } from 'antd';
-import { Ticker, WsPushArg } from 'okx-node';
+import { Ticker, WsChannel, WsPushArgInstId } from 'okx-node';
 
+import { OkxTraderItem } from '../../../type';
+import { getTraders } from '../api/trader';
 import { InstPageSubTitle, InstPageTitle } from '../common';
-import { usePush, useSubscribe } from '../hooks';
+import { useIntervalRequest, usePush, useSubscribe } from '../hooks';
 import { LastTrades } from '../market/last-trades';
 import { OrderBookContainer } from '../market/order-book';
 
-import { HighFrequency } from './high-frequency';
 import { TraderDetail } from './trader-detail';
 import { TraderForm } from './trader-form';
-import { TraderEvent, traderManager } from './trader-manager';
 
 import styles from './high-frequency-trade.module.scss';
 
 // subscribing and unsubscribing will be done at page level. Consuming push data will be done at component level.
-export const HighFrequencyTrade = () => {
+export const PriceTrade = () => {
   const params = useParams<{ instId: InstId }>();
   const [instId, setInstId] = useState<InstId>(params.instId || 'BTC-USDC');
   const [newTraderFormVisible, setNewTraderFormVisible] = useState(false);
-  const [traders, setTraders] = useState<[string, HighFrequency][]>([]);
+  const [traders] = useIntervalRequest<OkxTraderItem[]>(
+    async () => {
+      const traderItems = await getTraders({ instId });
+      return traderItems;
+    },
+    1000,
+    [instId]
+  );
   const [tab, setTab] = useState('');
-
-  useEffect(() => {
-    const updateTraders = (e?: TraderEvent) => {
-      const ts = traderManager.getTraders(instId);
-      setTraders(ts);
-      if (ts.length > 0) {
-        setTimeout(() => {
-          if (e) {
-            if (e.type === 'traderadded') {
-              setTab(e.detail.name);
-            } else {
-              setTab(ts[0][0]);
-            }
-          } else {
-            setTab(ts[0][0]);
-          }
-        }, 100);
-      }
-    };
-    updateTraders();
-    traderManager.addEventListener('traderadded', updateTraders);
-    traderManager.addEventListener('traderremoved', updateTraders);
-  }, [instId]);
 
   useSubscribe(['books5', 'trades', 'tickers'], instId, [instId]);
 
-  const [ticker] = usePush<WsPushArg & { instId: InstId }, Ticker>(
+  const [ticker] = usePush<WsPushArgInstId, Ticker>(
     'tickers',
-    (arg: { channel: 'tickers'; instId: InstId }) => {
+    (arg: { channel: WsChannel; instId: string }) => {
       return arg.instId === instId;
     },
     [instId]
@@ -94,18 +78,17 @@ export const HighFrequencyTrade = () => {
     >
       <div className={styles.main}>
         <ProCard direction="column" className={styles.mainBody}>
-          {traders.length > 0 ? (
+          {traders && traders.length > 0 ? (
             <ProCard
               tabs={{
                 tabPosition: 'top',
-                activeKey: tab,
-                items: traders.map(([name, trader]) => {
+                activeKey: tab || traders[0].name,
+                items: traders.map((trader: OkxTraderItem) => {
+                  const { name } = trader;
                   return {
                     label: name,
                     key: name,
-                    children: (
-                      <TraderDetail key={name} name={name} trader={trader} />
-                    ),
+                    children: <TraderDetail key={name} trader={trader} />,
                   };
                 }),
                 onTabClick(key: string) {

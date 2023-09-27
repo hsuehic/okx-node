@@ -1,2 +1,2 @@
 export { Trade } from './trade';
-export { HighFrequencyTrade } from './high-frequency-trade';
+export { PriceTrade } from './high-frequency-trade';

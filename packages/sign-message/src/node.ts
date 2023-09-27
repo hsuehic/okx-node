@@ -1,4 +1,4 @@
-import { createHmac } from 'crypto';
+import { createHmac, randomUUID as createRandomUUID } from 'crypto';
 
 export async function signMessage(message: string, secret: string) {
   await Promise.resolve(true);
@@ -6,5 +6,5 @@ export async function signMessage(message: string, secret: string) {
 }
 
 export const randomUUID = (): string => {
-  return crypto.randomUUID();
+  return createRandomUUID();
 };

@@ -4,7 +4,7 @@ export const useRequest = <T>(
   request: () => Promise<T>,
   deps: unknown[] = []
 ): [T | undefined] => {
-  const [value, setValue] = useState<T | undefined>(undefined);
+  const [value, setValue] = useState<T | undefined>();
   useEffect(() => {
     void request().then((data: T) => {
       setValue(data);

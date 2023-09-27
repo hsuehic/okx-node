@@ -5,24 +5,24 @@ import {
 } from '@ant-design/pro-components';
 import { Form, message } from 'antd';
 
-import { HighFrequencyConfigs } from './high-frequency';
-import { traderManager } from './trader-manager';
+import { createTrader } from '../api/trader';
 
 export type SpotOrderType = 'limit' | 'market';
 
-export interface OrderFormProps {
+export interface TraderFormProps {
   onOpenChange?: (value: boolean) => void;
   open: boolean;
   instId: InstId;
 }
 
-export interface NewTraderParams extends HighFrequencyConfigs {
-  name: string;
-}
+export type OkxPriceTraderParams = Omit<
+  OkxPriceTraderConfig,
+  'type' | 'instId'
+>;
 
-export const TraderForm = (props: OrderFormProps) => {
+export const TraderForm = (props: TraderFormProps) => {
   const { open, onOpenChange, instId } = props;
-  const [form] = Form.useForm<NewTraderParams>();
+  const [form] = Form.useForm<OkxPriceTraderParams>();
   return (
     <DrawerForm
       title={`Create new trader for ${instId}`}
@@ -47,16 +47,14 @@ export const TraderForm = (props: OrderFormProps) => {
       drawerProps={{
         destroyOnClose: true,
       }}
-      onFinish={async (values: NewTraderParams) => {
-        const { name, ...config } = values;
-        const trader = traderManager.addTrader(name, {
-          instId,
-          ...config,
-          tag: name,
-        } as HighFrequencyConfigs);
-        trader.start();
-        void message.success('Trader added');
-        return Promise.resolve(true);
+      onFinish={async (values: OkxPriceTraderParams) => {
+        try {
+          await createTrader({ ...values, type: 'price', instId });
+          void message.success('Trader added');
+          return true;
+        } catch (ex) {
+          void message.info(ex as string);
+        }
       }}
     >
       <ProFormText

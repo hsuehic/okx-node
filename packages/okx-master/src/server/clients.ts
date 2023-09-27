@@ -20,3 +20,10 @@ export const okxWsClient = OkxWebSocketClient.getInstance({
   passphrase: PASSPHRASE,
   market: MARKET,
 });
+
+void okxWsClient.privateChannelReady('private').then(() => {
+  okxWsClient.subscribe({
+    channel: 'orders',
+    instType: 'MARGIN',
+  });
+});

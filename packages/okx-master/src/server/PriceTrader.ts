@@ -1,3 +1,5 @@
+import EventEmitter from 'events';
+
 import {
   OkxWebSocketClient,
   Order,
@@ -12,17 +14,7 @@ import {
 } from 'okx-node';
 
 import { okxWsClient } from './clients';
-import { OkxTrader, OkxTraderConfig } from './Trader';
-
-export interface OkxPriceTraderConfig extends OkxTraderConfig {
-  type: 'price';
-  basePx: number;
-  baseSz: number;
-  gap: number;
-  levelCount: number;
-  coefficient: number;
-  started: boolean;
-}
+import { OkxTrader } from './Trader';
 
 /**
  * High Frequency Trader based on bid prices, ask prices, and order status
@@ -31,7 +23,7 @@ export interface OkxPriceTraderConfig extends OkxTraderConfig {
  * e.g. the base price is `0.50`. and gap is `0.005`. 2 books will be initialized when starting, the sell book is at price `0.505`, the buy book will be at price `0.495`.
  * if the buy book is filled, the new books will be buy book at 0.49 and sell book at 0.50. the size of the books will be determined by `coefficient`, using formula `size = Math.pow(coeffient, Math.abs(orderPx - basePx)/gap) * baseSz`;
  */
-export class OkxPriceTrader extends EventTarget implements OkxTrader {
+export class OkxPriceTrader extends EventEmitter implements OkxTrader {
   private _id: string;
   private _config: OkxPriceTraderConfig;
   private _instId: InstId;
@@ -56,16 +48,16 @@ export class OkxPriceTrader extends EventTarget implements OkxTrader {
   };
   private _started = false;
   private _filledOrders: WsOrder[] = [];
+  private _name: string;
 
   /**
    * Construct and start high frequency trade
-   * @param instId {InstId}
    * @param configs Configurations of trading
-   * @param onOrders Handler of order changes
    */
   constructor(config: OkxPriceTraderConfig) {
     super();
-    const { instId, basePx, baseSz, coefficient, gap, levelCount } = config;
+    const { instId, basePx, baseSz, coefficient, gap, levelCount, name } =
+      config;
     this._id = Order.getUuid();
     this._config = config;
     this._instId = instId;
@@ -77,6 +69,7 @@ export class OkxPriceTrader extends EventTarget implements OkxTrader {
     this._baseSz = baseSz;
     this._coefficient = coefficient;
     this._gap = gap * this._factor;
+    this._name = name;
     this._levelCount = levelCount;
     this._okxWsClient = okxWsClient;
     this._orderClient = new Order(okxWsClient);
@@ -87,25 +80,24 @@ export class OkxPriceTrader extends EventTarget implements OkxTrader {
       clOrdId: '',
     };
     this.start();
+    this._okxWsClient.on('push-orders', this._handlePushOrders);
   }
 
   /**
    * subscribe events
    */
   private _on() {
-    const { _orderClient: orderClient, _okxWsClient: wsClient } = this;
+    const { _orderClient: orderClient } = this;
     orderClient.on('order', this._handlePlaceOrderResponse);
     orderClient.on('cancel-order', this._handleCancelOrderResponse);
-    wsClient.on('push-orders', this._handlePushOrders);
   }
   /**
    * unsubscribe events
    */
   private _off() {
-    const { _orderClient: orderClient, _okxWsClient: wsClient } = this;
+    const { _orderClient: orderClient } = this;
     orderClient.off('order', this._handlePlaceOrderResponse);
     orderClient.off('cancel-order', this._handleCancelOrderResponse);
-    wsClient.off('push-orders', this._handlePushOrders);
   }
 
   /**
@@ -245,6 +237,7 @@ export class OkxPriceTrader extends EventTarget implements OkxTrader {
       ccy: this._ccy,
       ordType: 'limit',
       quickMgnType: 'auto_borrow',
+      tag: this._name,
     };
   };
 
@@ -262,6 +255,10 @@ export class OkxPriceTrader extends EventTarget implements OkxTrader {
     this._on();
     void this._initializeBooks();
     this._started = true;
+  }
+
+  public dispose(): void {
+    this._okxWsClient.off('push-order', this._handlePushOrders);
   }
 
   public stop() {
@@ -301,11 +298,14 @@ export class OkxPriceTrader extends EventTarget implements OkxTrader {
     return [];
   }
 
-  get started(): boolean {
-    return this._started;
+  get status(): TraderStatus {
+    return this._started ? 'running' : 'stopped';
   }
 
   get id(): string {
     return this._id;
+  }
+  get name(): string {
+    return this._name;
   }
 }

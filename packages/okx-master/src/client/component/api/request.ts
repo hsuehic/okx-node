@@ -3,7 +3,7 @@ export type HttpRequestMethod = 'POST' | 'GET' | 'DELETE' | 'PUT';
 export interface ResponseBody<T> {
   msg: string;
   code: string;
-  data: T[];
+  data: T;
 }
 
 export const objectToQueryString = (initialObj: Record<string, unknown>) => {
@@ -51,7 +51,7 @@ export const objectToQueryString = (initialObj: Record<string, unknown>) => {
 export const request = async <T>(
   url: string,
   init?: RequestInit
-): Promise<T[]> => {
+): Promise<T> => {
   const res = await fetch(url, {
     ...init,
     mode: 'cors',
@@ -84,7 +84,7 @@ export const get = async <T>(
   return result;
 };
 
-export const post = async <T>(url: string, body?: object): Promise<T[]> => {
+export const post = async <T>(url: string, body?: object): Promise<T> => {
   const value = await request<T>(url, {
     method: 'POST',
     body: body ? JSON.stringify(body) : undefined,

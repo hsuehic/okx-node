@@ -1,6 +1,8 @@
 import Router from '@koa/router';
 
-import { OkxTraderMaster, TraderConfig } from '../TraderMaster';
+import { OkxTraderMaster } from '../TraderMaster';
+
+import { wrapData } from './util';
 
 const okxTraderMaster = new OkxTraderMaster();
 
@@ -10,32 +12,44 @@ export const routerTrader = new Router({
 
 routerTrader.get('/', ctx => {
   const { traders } = okxTraderMaster;
+  const { instId } = ctx.query;
+  const filteredTraders = instId
+    ? traders.filter(trader => trader.instId === instId)
+    : traders;
   ctx.response.type = 'application/json';
-  ctx.body = {
-    msg: '',
-    error: 0,
-    data: traders.map(trader => {
-      const { instId, type, config } = trader;
+  ctx.body = wrapData(
+    filteredTraders.map(trader => {
+      const {
+        instId,
+        id,
+        type,
+        status,
+        name,
+        config,
+        pendingOrders,
+        filledOrders,
+      } = trader;
       return {
+        config,
+        id,
         instId,
         type,
-        config,
+        filledOrders,
+        pendingOrders,
+        name,
+        status,
       };
-    }),
-  };
+    })
+  );
 });
 
 routerTrader.post('/', ctx => {
-  const traderConfig = ctx.request.body as TraderConfig;
+  const traderConfig = ctx.request.body as OkxTraderConfigType;
   const id = okxTraderMaster.addTrader(traderConfig);
 
-  ctx.body = {
-    msg: '',
-    error: 0,
-    data: {
-      id,
-    },
-  };
+  ctx.body = wrapData({
+    id,
+  });
 });
 
 routerTrader.get('/:id', ctx => {
@@ -43,32 +57,38 @@ routerTrader.get('/:id', ctx => {
   const trader = okxTraderMaster.getById(id);
   if (trader) {
     const { config, pendingOrders, filledOrders } = trader;
-    ctx.body = {
-      msg: '',
-      error: 0,
-      data: {
-        id,
-        config,
-        pendingOrders,
-        filledOrders,
-      },
-    };
+    ctx.body = wrapData({
+      id,
+      config,
+      pendingOrders,
+      filledOrders,
+    });
   } else {
     ctx.body = {
       msg: `Trader #${id} doesn't exist.`,
-      error: 1,
+      code: '6001',
     };
   }
 });
 
-routerTrader.del('/:id', ctx => {
+routerTrader.post('/:id', ctx => {
   const id = ctx.params.id;
-  const deleted = okxTraderMaster.removeTrader(id);
-  ctx.body = {
-    msg: '',
-    error: 0,
-    data: {
-      success: deleted,
-    },
-  };
+  const { status } = ctx.request.body as { status: TraderStatus };
+  const okxTrader = okxTraderMaster.getById(id);
+  switch (status) {
+    case 'removed':
+      okxTraderMaster.removeTrader(id);
+      break;
+    case 'running':
+      okxTrader?.start();
+      break;
+    case 'stopped':
+      okxTrader?.stop();
+      break;
+    default:
+      break;
+  }
+  ctx.body = wrapData({
+    id,
+  });
 });

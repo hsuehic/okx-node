@@ -1,12 +1,5 @@
 import { WsOrder, WsSubscriptionTopic } from 'okx-node';
 
-export interface OkxTraderConfig {
-  id: string;
-  name: string;
-  type: TraderType;
-  instId: InstId;
-}
-
 export interface OkxTrader {
   /**
    * Trader type
@@ -21,9 +14,13 @@ export interface OkxTrader {
    */
   stop(): void;
   /**
+   * release the resources, such unsubscribe events
+   */
+  dispose(): void;
+  /**
    * get the instrument for the order master
    */
-  instId: InstId;
+  instId?: InstId;
   /**
    * Filled orders placed by this trader
    */
@@ -38,9 +35,9 @@ export interface OkxTrader {
   subscriptions: WsSubscriptionTopic[];
 
   /**
-   * Whether the trader is started or not
+   * trader status
    */
-  started: boolean;
+  status: TraderStatus;
   /**
    * Configuration
    */
@@ -49,4 +46,8 @@ export interface OkxTrader {
    * Unique ID
    */
   id: string;
+  /**
+   * Name
+   */
+  name: string;
 }

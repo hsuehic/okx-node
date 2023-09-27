@@ -11,7 +11,7 @@ import {
   UserOutlined,
 } from '@ant-design/icons';
 import {
-  LoginForm,
+  LoginFormPage,
   ProConfigProvider,
   ProFormCaptcha,
   ProFormCheckbox,
@@ -35,216 +35,208 @@ export const Login = () => {
   const [loginType, setLoginType] = useState<LoginType>('account');
   return (
     <ProConfigProvider hashed={false}>
-      <div style={{ padding: '24px' }}>
-        <LoginForm
-          onFinish={async (data: { username: string; password: string }) => {
-            const { username, password } = data;
-            try {
-              await login(username, password);
-              navigate('/');
-              return true;
-            } catch (ex) {
-              void message.error(ex as string);
-              return false;
-            }
-          }}
-          onFocus={e => {
-            console.log(e);
-          }}
-          logo="https://github.githubassets.com/images/modules/logos_page/Octocat.png"
-          title="Crypo Master"
-          subTitle="Most professional crypo exchanger"
-          submitter={{
-            searchConfig: {
-              submitText: 'Login',
-            },
-            onSubmit(value) {
-              console.log(value);
-            },
-          }}
-          actions={
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                flexDirection: 'column',
-              }}
-            >
-              <Divider plain>
-                <span
-                  style={{ color: '#CCC', fontWeight: 'normal', fontSize: 14 }}
-                >
-                  Other Authentications
-                </span>
-              </Divider>
-              <Space align="center" size={24}>
-                <div
-                  style={{
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    flexDirection: 'column',
-                    height: 40,
-                    width: 40,
-                    border: '1px solid #D4D8DD',
-                    borderRadius: '50%',
-                  }}
-                >
-                  <GoogleOutlined style={{ ...iconStyles, color: '#1677FF' }} />
-                </div>
-                <div
-                  style={{
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    flexDirection: 'column',
-                    height: 40,
-                    width: 40,
-                    border: '1px solid #D4D8DD',
-                    borderRadius: '50%',
-                  }}
-                >
-                  <FacebookOutlined
-                    style={{ ...iconStyles, color: '#FF6A10' }}
-                  />
-                </div>
-                <div
-                  style={{
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    flexDirection: 'column',
-                    height: 40,
-                    width: 40,
-                    border: '1px solid #D4D8DD',
-                    borderRadius: '50%',
-                  }}
-                >
-                  <TwitterOutlined
-                    style={{ ...iconStyles, color: '#333333' }}
-                  />
-                </div>
-              </Space>
-            </div>
+      <LoginFormPage
+        onFinish={async (data: { username: string; password: string }) => {
+          const { username, password } = data;
+          try {
+            await login(username, password);
+            navigate('/');
+            return true;
+          } catch (ex) {
+            void message.error(ex as string);
+            return false;
           }
-        >
-          <Tabs
-            centered
-            activeKey={loginType}
-            onChange={activeKey => setLoginType(activeKey as LoginType)}
-            items={[
-              {
-                key: 'account',
-                label: 'User Name',
-                children: (
-                  <>
-                    <ProFormText
-                      name="username"
-                      fieldProps={{
-                        size: 'large',
-                        prefix: <UserOutlined className={'prefixIcon'} />,
-                      }}
-                      placeholder={'Email address or phone number'}
-                      rules={[
-                        {
-                          required: true,
-                          message: 'Please input username!',
-                        },
-                      ]}
-                    />
-                    <ProFormText.Password
-                      name="password"
-                      fieldProps={{
-                        size: 'large',
-                        prefix: <LockOutlined className={'prefixIcon'} />,
-                      }}
-                      placeholder={'Password'}
-                      rules={[
-                        {
-                          required: true,
-                          message: 'Please input password',
-                        },
-                      ]}
-                    />
-                  </>
-                ),
-              },
-
-              {
-                key: 'phone',
-                label: 'Mobile Number',
-                children: (
-                  <>
-                    <ProFormText
-                      fieldProps={{
-                        size: 'large',
-                        prefix: <MobileOutlined className={'prefixIcon'} />,
-                      }}
-                      name="mobile"
-                      placeholder={'Mobile Phone Number'}
-                      rules={[
-                        {
-                          required: true,
-                          message: 'Please input Mobile Phone Number',
-                        },
-                        {
-                          pattern: /^1\d{10}$/,
-                          message: 'Invalid format',
-                        },
-                      ]}
-                    />
-                    <ProFormCaptcha
-                      fieldProps={{
-                        size: 'large',
-                        prefix: <LockOutlined className={'prefixIcon'} />,
-                      }}
-                      captchaProps={{
-                        size: 'large',
-                      }}
-                      placeholder={'Please input captcha'}
-                      captchaTextRender={(timing, count) => {
-                        if (timing) {
-                          return `${count} ${'Send'}`;
-                        }
-                        return 'Get captchar';
-                      }}
-                      name="captcha"
-                      rules={[
-                        {
-                          required: true,
-                          message: 'Please input captcha',
-                        },
-                      ]}
-                      onGetCaptcha={async () => {
-                        await message.success(
-                          'Succeed. Your captchar is: 1234'
-                        );
-                      }}
-                    />
-                  </>
-                ),
-              },
-            ]}
-          />
+        }}
+        onFocus={e => {
+          console.log(e);
+        }}
+        logo="https://github.githubassets.com/images/modules/logos_page/Octocat.png"
+        title="Crypo Master"
+        subTitle="Most professional crypo exchanger"
+        submitter={{
+          searchConfig: {
+            submitText: 'Login',
+          },
+          onSubmit(value) {
+            console.log(value);
+          },
+        }}
+        actions={
           <div
             style={{
-              marginBlockEnd: 24,
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              flexDirection: 'column',
             }}
           >
-            <ProFormCheckbox noStyle name="autoLogin">
-              Automatic login
-            </ProFormCheckbox>
-            <a
-              style={{
-                float: 'right',
-              }}
-            >
-              Forgot password
-            </a>
+            <Divider plain>
+              <span
+                style={{ color: '#CCC', fontWeight: 'normal', fontSize: 14 }}
+              >
+                Other Authentications
+              </span>
+            </Divider>
+            <Space align="center" size={24}>
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  flexDirection: 'column',
+                  height: 40,
+                  width: 40,
+                  border: '1px solid #D4D8DD',
+                  borderRadius: '50%',
+                }}
+              >
+                <GoogleOutlined style={{ ...iconStyles, color: '#1677FF' }} />
+              </div>
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  flexDirection: 'column',
+                  height: 40,
+                  width: 40,
+                  border: '1px solid #D4D8DD',
+                  borderRadius: '50%',
+                }}
+              >
+                <FacebookOutlined style={{ ...iconStyles, color: '#FF6A10' }} />
+              </div>
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  flexDirection: 'column',
+                  height: 40,
+                  width: 40,
+                  border: '1px solid #D4D8DD',
+                  borderRadius: '50%',
+                }}
+              >
+                <TwitterOutlined style={{ ...iconStyles, color: '#333333' }} />
+              </div>
+            </Space>
           </div>
-        </LoginForm>
-      </div>
+        }
+      >
+        <Tabs
+          centered
+          activeKey={loginType}
+          onChange={activeKey => setLoginType(activeKey as LoginType)}
+          items={[
+            {
+              key: 'account',
+              label: 'User Name',
+              children: (
+                <>
+                  <ProFormText
+                    name="username"
+                    fieldProps={{
+                      size: 'large',
+                      prefix: <UserOutlined className={'prefixIcon'} />,
+                    }}
+                    placeholder={'Email address or phone number'}
+                    rules={[
+                      {
+                        required: true,
+                        message: 'Please input username!',
+                      },
+                    ]}
+                  />
+                  <ProFormText.Password
+                    name="password"
+                    fieldProps={{
+                      size: 'large',
+                      prefix: <LockOutlined className={'prefixIcon'} />,
+                    }}
+                    placeholder={'Password'}
+                    rules={[
+                      {
+                        required: true,
+                        message: 'Please input password',
+                      },
+                    ]}
+                  />
+                </>
+              ),
+            },
+
+            {
+              key: 'phone',
+              label: 'Mobile Number',
+              children: (
+                <>
+                  <ProFormText
+                    fieldProps={{
+                      size: 'large',
+                      prefix: <MobileOutlined className={'prefixIcon'} />,
+                    }}
+                    name="mobile"
+                    placeholder={'Mobile Phone Number'}
+                    rules={[
+                      {
+                        required: true,
+                        message: 'Please input Mobile Phone Number',
+                      },
+                      {
+                        pattern: /^1\d{10}$/,
+                        message: 'Invalid format',
+                      },
+                    ]}
+                  />
+                  <ProFormCaptcha
+                    fieldProps={{
+                      size: 'large',
+                      prefix: <LockOutlined className={'prefixIcon'} />,
+                    }}
+                    captchaProps={{
+                      size: 'large',
+                    }}
+                    placeholder={'Please input captcha'}
+                    captchaTextRender={(timing, count) => {
+                      if (timing) {
+                        return `${count} ${'Send'}`;
+                      }
+                      return 'Get captchar';
+                    }}
+                    name="captcha"
+                    rules={[
+                      {
+                        required: true,
+                        message: 'Please input captcha',
+                      },
+                    ]}
+                    onGetCaptcha={async () => {
+                      await message.success('Succeed. Your captchar is: 1234');
+                    }}
+                  />
+                </>
+              ),
+            },
+          ]}
+        />
+        <div
+          style={{
+            marginBlockEnd: 24,
+          }}
+        >
+          <ProFormCheckbox noStyle name="autoLogin">
+            Automatic login
+          </ProFormCheckbox>
+          <a
+            style={{
+              float: 'right',
+            }}
+          >
+            Forgot password
+          </a>
+        </div>
+      </LoginFormPage>
     </ProConfigProvider>
   );
 };

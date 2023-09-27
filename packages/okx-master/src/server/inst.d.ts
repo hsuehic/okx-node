@@ -15,6 +15,8 @@ type InstId = `${CryptoCurrency}-${Quote}`;
 
 type TraderType = 'price' | 'diff';
 
+type TraderStatus = 'running' | 'stopped' | 'removed';
+
 declare module '@koa/cors' {
   import * as Koa from 'koa';
 

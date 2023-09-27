@@ -1,10 +1,7 @@
 import { WsSubscriptionTopic } from 'okx-node';
 
-import { OkxDiffTraderConfig } from './DiffTrader';
-import { OkxPriceTrader, OkxPriceTraderConfig } from './PriceTrader';
+import { OkxPriceTrader } from './PriceTrader';
 import { OkxTrader } from './Trader';
-
-export type TraderConfig = OkxPriceTraderConfig | OkxDiffTraderConfig;
 
 export class OkxTraderMaster {
   private _traders: Map<string, OkxTrader>;
@@ -13,11 +10,13 @@ export class OkxTraderMaster {
     this._traders = new Map<string, OkxTrader>();
   }
 
-  addTrader(traderConfig: TraderConfig) {
+  addTrader(traderConfig: OkxTraderConfigType) {
     const { type } = traderConfig;
     if (type === 'price') {
       const trader = new OkxPriceTrader(traderConfig);
-      this._traders.set(trader.id, trader);
+      const { id } = trader;
+      this._traders.set(id, trader);
+      return id;
     }
     return '';
   }
@@ -25,6 +24,7 @@ export class OkxTraderMaster {
     const trader = this._traders.get(key);
     if (trader) {
       trader.stop();
+      trader.dispose();
     }
     return this._traders.delete(key);
   }

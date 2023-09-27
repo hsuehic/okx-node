@@ -124,14 +124,14 @@ export const appRoutes = [
     element: <Outlet />,
     children: [
       {
-        path: 'high-frequency/:instId',
-        name: 'High Frequency',
-        defaultPath: '/trade/high-frequency/BTC-USDC',
+        path: 'price/:instId',
+        name: 'Price Trade',
+        defaultPath: '/trade/price/BTC-USDC',
         icon: <DollarOutlined />,
         lazy: async () => {
-          const { HighFrequencyTrade } = await import('./trade');
+          const { PriceTrade } = await import('./trade');
           return {
-            Component: HighFrequencyTrade,
+            Component: PriceTrade,
           };
         },
       },

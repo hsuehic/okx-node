@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 
 import {
   ProCard,
@@ -6,23 +6,18 @@ import {
   ProFormDigit,
   ProFormInstance,
 } from '@ant-design/pro-components';
-import { Button, Space, Table, TableColumnType } from 'antd';
+import { Button, Space, Table, TableColumnType, message } from 'antd';
 import { WsOrder } from 'okx-node';
 
+import { OkxTraderItem } from '../../../type';
+import { updateTrader } from '../api/trader';
 import { renderTime } from '../renderer';
-
-import {
-  HighFrequency,
-  OrderEventDetail,
-  TraderStatusEvent,
-} from './high-frequency';
-import { traderManager } from './trader-manager';
 
 import styles from './trader-detail.module.scss';
 
 export interface TraderDetailProps {
   name: string;
-  trader: HighFrequency;
+  trader: OkxTraderItem;
 }
 const columns: TableColumnType<WsOrder>[] = [
   {
@@ -92,34 +87,12 @@ const columns2: TableColumnType<WsOrder>[] = [
   },
 ];
 
-export const TraderDetail = ({ trader, name }: TraderDetailProps) => {
-  const { config } = trader;
-
+export const TraderDetail = ({ trader }: { trader: OkxTraderItem }) => {
+  const { id, config, status, pendingOrders, filledOrders } = trader;
   const formRef = useRef<ProFormInstance>();
-  const [pendingOrders, setPendingOrders] = useState<WsOrder[]>([]);
-  const [filledOrders, setFilledOrders] = useState<WsOrder[]>([]);
-  const [started, setStarted] = useState(false);
-
-  useEffect(() => {
-    const handler = (e: CustomEvent<OrderEventDetail>) => {
-      setPendingOrders(e.detail.pendingOrders);
-      setFilledOrders(e.detail.filledOrders);
-    };
-    const statusHandler = (e: TraderStatusEvent) => {
-      setStarted(e.detail.started);
-    };
-    trader.addEventListener('orders', handler);
-    trader.addEventListener('started', statusHandler);
-    trader.addEventListener('stoped', statusHandler);
-    setStarted(trader.started);
-    setPendingOrders(trader.pendingOrders);
-    setFilledOrders(trader.filledOrders);
-    return () => {
-      trader.removeEventListener('orders', handler);
-      trader.removeEventListener('started', statusHandler);
-      trader.removeEventListener('stoped', statusHandler);
-    };
-  }, [trader]);
+  const [loading, setLoading] = useState(false);
+  const [removing, setRemoving] = useState(false);
+  const started = status === 'running';
   return (
     <div>
       <ProCard
@@ -128,21 +101,31 @@ export const TraderDetail = ({ trader, name }: TraderDetailProps) => {
         extra={
           <Space>
             <Button
+              loading={removing}
               type="default"
               onClick={() => {
-                traderManager.removeTrader(name);
+                setRemoving(true);
+                updateTrader(id, 'removed')
+                  .then(() => {
+                    void message.success('Successfully removed the trader');
+                  })
+                  .catch(ex => {
+                    void message.error(ex as string);
+                  });
               }}
             >
               Remove
             </Button>
             <Button
               type="default"
+              loading={loading}
               onClick={() => {
-                if (started) {
-                  trader.stop();
-                } else {
-                  trader.start();
-                }
+                setLoading(true);
+                updateTrader(id, started ? 'stopped' : 'running')
+                  .then(() => {
+                    setLoading(false);
+                  })
+                  .catch(ex => console.error(ex));
               }}
             >
               {started ? 'Stop' : 'Start'}
