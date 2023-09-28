@@ -45,7 +45,8 @@
     "test:watch": "jest --watch",
     "test": "jest --coverage",
     "typecheck": "tsc --noEmit",
-    "eslint:fix": "npm run eslint -- --fix"
+    "eslint:fix": "npm run eslint -- --fix",
+    "run-container": "docker compose run --service-ports okx-master"
   },
   "repository": {
     "type": "git",

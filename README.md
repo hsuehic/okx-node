@@ -92,3 +92,12 @@ npm install events -s
 [codecov-url]: https://codecov.io/gh/hsuehic/okx-node
 
 <!--badge-variables-->
+
+## References
+
+- https://pnpm.io/docker
+
+## Memo
+
+- `docker-compose run` ignores `ports` unless you include `--service-ports`.
+- Port mapping is incompatible with `network_mode: host`
