@@ -4,7 +4,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 import axios, { AxiosRequestConfig, AxiosResponse, Method } from 'axios';
-import { signMessage } from 'sign-message';
+import { signMessage } from 'okx-sign';
 
 import {
   APICredentials,

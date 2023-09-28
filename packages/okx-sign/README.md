@@ -1,4 +1,4 @@
-# sign-message
+# okx-sign
 
 [![npm package][npm-img]][npm-url]
 [![Build Status][build-img]][build-url]
@@ -11,13 +11,13 @@
 ## Install
 
 ```bash
-npm install sign-message
+npm install okx-sign
 ```
 
 ## Usage
 
 ```ts
-import { signMessage } from 'sign-message';
+import { signMessage } from 'okx-sign';
 
 const signedMessage = signMessage('message', 'secret');
 ```

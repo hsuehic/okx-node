@@ -14,9 +14,9 @@ importers:
       isomorphic-ws:
         specifier: ^5.0.0
         version: 5.0.0(ws@8.13.0)
-      sign-message:
+      okx-sign:
         specifier: workspace:^
-        version: link:packages/sign-message
+        version: link:packages/okx-sign
       ws:
         specifier: ^8.13.0
         version: 8.13.0
@@ -236,7 +236,7 @@ importers:
         specifier: ^0.3.17
         version: 0.3.17(sqlite3@5.1.6)(ts-node@10.9.1)
 
-  packages/sign-message: {}
+  packages/okx-sign: {}
 
 packages:
 

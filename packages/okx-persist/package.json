@@ -34,13 +34,15 @@
     "build": "npm run build:cjs && npm run build:mjs",
     "build:cjs": "tsc --project tsconfig.cjs.json",
     "build:mjs": "tsc --project tsconfig.mjs.json",
+    "prebuild": "npm run clean",
     "clean": "rm -rf ./lib/ && rm -rf ./dist/",
     "eslint": "eslint ./src/ --fix",
     "lintpackagejson": "npmPkgJsonLint .",
     "release": "npx changeset publish",
     "test:watch": "jest --watch",
     "test": "jest --coverage",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "prepublish": "npm run build"
   },
   "license": "MIT",
   "engines": {

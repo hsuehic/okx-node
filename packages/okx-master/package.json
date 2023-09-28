@@ -1,7 +1,7 @@
 {
   "name": "okx-master",
   "private": true,
-  "version": "0.0.0-development",
+  "version": "0.0.1",
   "description": "A template for creating npm packages using TypeScript and VSCode",
   "main": "./dist/cjs/index.js",
   "types": "./dist/cjs/index.d.ts",

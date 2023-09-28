@@ -1,6 +1,6 @@
 import EventEmitter from 'events';
 
-import { randomUUID } from 'sign-message';
+import { randomUUID } from 'okx-sign';
 
 import {
   WsAmendOrderResponse,

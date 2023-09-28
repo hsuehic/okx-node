@@ -2,7 +2,7 @@
 import { EventEmitter } from 'events';
 
 import WebSocket, { MessageEvent } from 'isomorphic-ws';
-import { signMessage } from 'sign-message';
+import { signMessage } from 'okx-sign';
 
 import {
   PushChannel,

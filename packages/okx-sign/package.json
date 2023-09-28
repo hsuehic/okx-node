@@ -1,6 +1,6 @@
 {
-  "name": "sign-message",
-  "version": "0.0.1",
+  "name": "okx-sign",
+  "version": "1.0.1",
   "main": "./dist/cjs/node.js",
   "types": "./dist/cjs/node.d.ts",
   "browser": "./dist/mjs/browser.js",
@@ -30,13 +30,14 @@
     "build:mjs": "tsc --project tsconfig.mjs.json",
     "postbuild:cjs": "echo '{\"type\":\"commonjs\"}' > ./dist/cjs/package.json",
     "postbuild:mjs": "echo '{\"type\":\"module\"}' > ./dist/mjs/package.json",
+    "prebuild": "npm run clean",
     "clean": "rm -rf ./lib/ && rm -rf ./dist/",
     "eslint": "eslint ./src/ --fix",
     "lintpackagejson": "npmPkgJsonLint .",
-    "release": "npx changeset publish",
     "test:watch": "jest --watch",
     "test": "jest --coverage",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "prepublish": "npm run build"
   },
   "license": "MIT",
   "engines": {
