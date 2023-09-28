@@ -47,7 +47,7 @@
     "dev": "nodemon --watch \"src/server/**\" --watch script --files ./script/start.ts",
     "dev:client": "vite",
     "dev:server": "nodemon --watch \"src/server/**\" --exec node --inspect=9231 -r ts-node/register ./src/server/server.ts",
-    "start": "pnpm run build && node ./dist/server.js"
+    "start": "node ./dist/server.js"
   },
   "license": "MIT",
   "engines": {
@@ -89,7 +89,6 @@
     "koa-static": "^5.0.0",
     "moment": "^2.29.4",
     "okx-node": "workspace:^",
-    "okx-persist": "workspace:^",
     "passport": "^0.6.0",
     "passport-local": "^1.0.0",
     "react": "^18.2.0",
@@ -97,6 +96,7 @@
     "react-router": "^6.15.0",
     "react-router-dom": "^6.15.0",
     "reflect-metadata": "^0.1.13",
+    "sqlite3": "^5.1.6",
     "tsxecharts": "^1.2.2",
     "typeorm": "^0.3.17",
     "ws": "^8.13.0"

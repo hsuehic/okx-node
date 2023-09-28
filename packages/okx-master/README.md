@@ -1,4 +1,4 @@
-# my-package-name
+# okx-master
 
 [![npm package][npm-img]][npm-url]
 [![Build Status][build-img]][build-url]
@@ -6,43 +6,7 @@
 [![Issues][issues-img]][issues-url]
 [![Code Coverage][codecov-img]][codecov-url]
 
-> My awesome module
-
-## Install
-
-```bash
-npm install my-package-name
-```
-
-## Usage
-
-```ts
-import { myPackage } from 'my-package-name';
-
-myPackage('hello');
-//=> 'hello from my package'
-```
-
-## API
-
-### myPackage(input, options?)
-
-#### input
-
-Type: `string`
-
-Lorem ipsum.
-
-#### options
-
-Type: `object`
-
-##### postfix
-
-Type: `string`
-Default: `rainbows`
-
-Lorem ipsum.
+> A web application that can trade crypto automatically
 
 [build-img]: https://github.com/hsuehic/typescript-npm-package-template/actions/workflows/release.yml/badge.svg
 [build-url]: https://github.com/hsuehic/typescript-npm-package-template/actions/workflows/release.yml
@@ -54,3 +18,7 @@ Lorem ipsum.
 [issues-url]: https://github.com/hsuehic/typescript-npm-package-template/issues
 [codecov-img]: https://codecov.io/gh/hsuehic/typescript-npm-package-template/branch/main/graph/badge.svg
 [codecov-url]: https://codecov.io/gh/hsuehic/typescript-npm-package-template
+
+## References
+
+- https://pnpm.io/docker
