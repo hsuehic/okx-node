@@ -1,12 +1,21 @@
+import EventEmitter from 'events';
+
 import { WsSubscriptionTopic } from 'okx-node';
 
 import { OkxPriceTrader } from './PriceTrader';
 import { OkxTrader } from './Trader';
 
-export class OkxTraderMaster {
+type TraderMasterEvent = 'add' | 'stop' | 'remove' | 'start';
+export interface OkxTraderMaster {
+  emit(event: TraderMasterEvent, trader: OkxTrader): boolean;
+  on(event: TraderMasterEvent, handler: (trader: OkxTrader) => void): this;
+}
+
+export class OkxTraderMaster extends EventEmitter {
   private _traders: Map<string, OkxTrader>;
 
   constructor() {
+    super();
     this._traders = new Map<string, OkxTrader>();
   }
 
@@ -16,17 +25,36 @@ export class OkxTraderMaster {
       const trader = new OkxPriceTrader(traderConfig);
       const { id } = trader;
       this._traders.set(id, trader);
+      this.emit('add', trader);
       return id;
     }
     return '';
   }
-  removeTrader(key: string): boolean {
-    const trader = this._traders.get(key);
+  removeTrader(id: string): boolean {
+    const trader = this._traders.get(id);
     if (trader) {
       trader.stop();
       trader.dispose();
+      this.emit('remove', trader);
     }
-    return this._traders.delete(key);
+    const result = this._traders.delete(id);
+    return result;
+  }
+
+  startTrader(id: string) {
+    const trader = this._traders.get(id);
+    if (trader) {
+      trader.start();
+      this.emit('start', trader);
+    }
+  }
+
+  stopTrader(id: string) {
+    const trader = this._traders.get(id);
+    if (trader) {
+      trader.stop();
+      this.emit('stop', trader);
+    }
   }
 
   getById(key: string) {

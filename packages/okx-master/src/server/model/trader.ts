@@ -3,12 +3,12 @@ import { Column, Entity, PrimaryColumn } from 'typeorm';
 @Entity('tbTrader')
 export class Trader {
   @PrimaryColumn({
-    length: 16,
+    nullable: false,
   })
   id!: string;
 
   @Column({
-    nullable: true,
+    nullable: false,
   })
   name!: string;
 

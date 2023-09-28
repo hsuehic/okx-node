@@ -1,10 +1,8 @@
 import Router from '@koa/router';
 
-import { OkxTraderMaster } from '../TraderMaster';
+import { okxTraderMaster } from '../instance';
 
 import { wrapData } from './util';
-
-const okxTraderMaster = new OkxTraderMaster();
 
 export const routerTrader = new Router({
   prefix: '/api/traders',
