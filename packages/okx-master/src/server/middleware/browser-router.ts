@@ -11,7 +11,7 @@ import { Context, Next } from 'koa';
 export const browserRouter = () => async (ctx: Context, next: Next) => {
   await next();
   const reg =
-    /^\/login|logout|register|account(\/\w+)*|market(\/\w+)*|trader(\/\w+)*$/;
+    /^\/|\/login|logout|register|account(\/\w+)*|market(\/\w+)*|trader(\/\w+)*$/;
   if (reg.test(ctx.path) && ctx.body === undefined) {
     ctx.body = await readFile(path.resolve(process.cwd(), 'static/index.html'));
     ctx.type = 'text/html';

@@ -4,7 +4,8 @@
     "target": "ES2022",
     "module": "CommonJS",
     "outDir": "./dist",
-    "declaration": true
+    "declaration": false,
+    "esModuleInterop": true
   },
   "include": ["src/server"],
   "exclude": ["test/**/*.spec.ts"]

@@ -47,7 +47,7 @@
     "dev": "nodemon --watch \"src/server/**\" --watch script --files ./script/start.ts",
     "dev:client": "vite",
     "dev:server": "nodemon --watch \"src/server/**\" --exec node --inspect=9231 -r ts-node/register ./src/server/server.ts",
-    "start": "pnpm run build && node ./dist/index.js"
+    "start": "pnpm run build && node ./dist/server.js"
   },
   "license": "MIT",
   "engines": {

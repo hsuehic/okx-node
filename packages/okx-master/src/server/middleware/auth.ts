@@ -9,7 +9,7 @@ export const auth = () => async (ctx: Context, next: Next) => {
       const publicApis = ['/api/login/password', '/api/logout'];
       if (!publicApis.includes(ctx.request.path)) {
         ctx.body = {
-          error: 1,
+          code: '1',
           msg: 'Anthentication needed',
         };
         ctx.throw(401);
@@ -17,7 +17,7 @@ export const auth = () => async (ctx: Context, next: Next) => {
     } else {
       // protect pages
       const reg =
-        /^\/(trade(\/[^/]+)*|account(\/[^/]+)*|order(\/[^/]+)*|order(\/[^/]+)*)*$/;
+        /^\/(trade(\/[^/]+)*|account(\/[^/]+)*|order(\/[^/]+)*|market(\/[^/]+)*)?$/;
       if (reg.test(ctx.request.path)) {
         ctx.redirect('/login');
         return;
