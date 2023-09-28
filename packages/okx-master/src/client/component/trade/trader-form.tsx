@@ -1,6 +1,7 @@
 import {
   DrawerForm,
   ProFormDigit,
+  ProFormSegmented,
   ProFormText,
 } from '@ant-design/pro-components';
 import { Form, message } from 'antd';
@@ -29,7 +30,7 @@ export const TraderForm = (props: TraderFormProps) => {
       onOpenChange={onOpenChange}
       open={open}
       initialValues={{
-        instId,
+        initialOrder: 'any',
       }}
       layout="horizontal"
       labelCol={{
@@ -112,6 +113,15 @@ export const TraderForm = (props: TraderFormProps) => {
         name="coefficient"
         label="Coefficient"
         rules={[{ required: true, message: 'Required' }]}
+      />
+      <ProFormSegmented
+        label="Initial Order"
+        valueEnum={{
+          buy: 'buy',
+          sell: 'sell',
+          any: 'any',
+        }}
+        name="initialOrder"
       />
     </DrawerForm>
   );

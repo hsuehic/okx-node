@@ -187,8 +187,7 @@ export class OkxPriceTrader extends EventEmitter implements OkxTrader {
     }
   }
 
-  private async _initializeBooks() {
-    const buyOrderId = Order.getUuid();
+  private async _initializeBooks(orderSide: OrderSide = 'any') {
     const {
       _orderClient: orderClient,
       _baseSz: baseSz,
@@ -196,28 +195,35 @@ export class OkxPriceTrader extends EventEmitter implements OkxTrader {
       _px: px,
       _factor: factor,
     } = this;
-    this._buyOrder = {
-      clOrdId: buyOrderId,
-    };
-    const buyOrderParams: WsPlaceOrderParams = this._constructPlaceOrderParams(
-      buyOrderId,
-      'buy',
-      baseSz,
-      (px - gap) / factor
-    );
-    await orderClient.placeOrder([buyOrderParams]);
+    if (orderSide === 'any' || orderSide === 'buy') {
+      const buyOrderId = Order.getUuid();
+      this._buyOrder = {
+        clOrdId: buyOrderId,
+      };
+      const buyOrderParams: WsPlaceOrderParams =
+        this._constructPlaceOrderParams(
+          buyOrderId,
+          'buy',
+          baseSz,
+          (px - gap) / factor
+        );
+      await orderClient.placeOrder([buyOrderParams]);
+    }
 
-    const sellOrdId = Order.getUuid();
-    this._sellOrder = {
-      clOrdId: sellOrdId,
-    };
-    const sellOrderParams: WsPlaceOrderParams = this._constructPlaceOrderParams(
-      sellOrdId,
-      'sell',
-      baseSz,
-      (px + gap) / factor
-    );
-    await orderClient.placeOrder([sellOrderParams]);
+    if (orderSide === 'any' || orderSide === 'sell') {
+      const sellOrdId = Order.getUuid();
+      this._sellOrder = {
+        clOrdId: sellOrdId,
+      };
+      const sellOrderParams: WsPlaceOrderParams =
+        this._constructPlaceOrderParams(
+          sellOrdId,
+          'sell',
+          baseSz,
+          (px + gap) / factor
+        );
+      await orderClient.placeOrder([sellOrderParams]);
+    }
   }
 
   private _constructPlaceOrderParams = (
@@ -253,7 +259,7 @@ export class OkxPriceTrader extends EventEmitter implements OkxTrader {
 
   public start() {
     this._on();
-    void this._initializeBooks();
+    void this._initializeBooks(this._config.initialOrder);
     this._started = true;
   }
 

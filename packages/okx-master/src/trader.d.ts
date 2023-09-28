@@ -1,3 +1,5 @@
+type OrderSide = 'buy' | 'sell' | 'any';
+
 interface OkxTraderConfig {
   name: string;
   type: TraderType;
@@ -17,6 +19,7 @@ interface OkxPriceTraderConfig extends OkxTraderConfig {
   levelCount: number;
   coefficient: number;
   name: string;
+  initialOrder?: OrderSide;
 }
 
 type OkxTraderConfigType = OkxDiffTraderConfig | OkxPriceTraderConfig;
