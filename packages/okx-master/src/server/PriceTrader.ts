@@ -29,13 +29,11 @@ export class OkxPriceTrader extends EventEmitter implements OkxTrader {
   private _instId: InstId;
   private _px: number;
   private _ccy: CryptoCurrency;
-  private _basePx: number;
+  private _maxPx: number;
+  private _minPx: number;
   private _baseSz: number;
   private _gap: number;
   private _factor = 1000;
-  private _coefficient: number;
-  private _levelCount: number;
-  private _quote: Quote;
   private _orderClient: Order;
   private _okxWsClient: OkxWebSocketClient;
   private _buyOrder: {
@@ -56,21 +54,18 @@ export class OkxPriceTrader extends EventEmitter implements OkxTrader {
    */
   constructor(config: OkxPriceTraderConfig) {
     super();
-    const { instId, basePx, baseSz, coefficient, gap, levelCount, name } =
-      config;
+    const { instId, basePx, baseSz, gap, levelCount, name } = config;
     this._id = Order.getUuid();
     this._config = config;
     this._instId = instId;
-    const [ccy, quote] = instId.split('-');
+    const [ccy] = instId.split('-');
     this._ccy = ccy as CryptoCurrency;
-    this._quote = quote as Quote;
     this._px = basePx * this._factor;
-    this._basePx = this._px;
-    this._baseSz = baseSz;
-    this._coefficient = coefficient;
     this._gap = gap * this._factor;
+    this._minPx = this._px - this._gap * levelCount;
+    this._maxPx = this._px + this._gap * levelCount;
+    this._baseSz = baseSz;
     this._name = name;
-    this._levelCount = levelCount;
     this._okxWsClient = okxWsClient;
     this._orderClient = new Order(okxWsClient);
     this._buyOrder = {
@@ -180,11 +175,15 @@ export class OkxPriceTrader extends EventEmitter implements OkxTrader {
     if (newPrice) {
       this._filledOrders.push(order);
       this._px = newPrice;
-      if (Math.abs(this._px - this._basePx) / this._gap < this._levelCount) {
+      if (clOrdIdToBeCancelled) {
         this._cancelOrder(clOrdIdToBeCancelled);
-        void this._initializeBooks();
       }
+      void this._initializeBooks();
     }
+  }
+
+  private _validatePrice(px: number) {
+    return px >= this._minPx && px <= this._maxPx;
   }
 
   private async _initializeBooks(orderSide: OrderSide = 'any') {
@@ -196,33 +195,39 @@ export class OkxPriceTrader extends EventEmitter implements OkxTrader {
       _factor: factor,
     } = this;
     if (orderSide === 'any' || orderSide === 'buy') {
-      const buyOrderId = Order.getUuid();
-      this._buyOrder = {
-        clOrdId: buyOrderId,
-      };
-      const buyOrderParams: WsPlaceOrderParams =
-        this._constructPlaceOrderParams(
-          buyOrderId,
-          'buy',
-          baseSz,
-          (px - gap) / factor
-        );
-      await orderClient.placeOrder([buyOrderParams]);
+      const buyPx = px - gap;
+      if (buyPx <= this._maxPx && buyPx >= this._minPx) {
+        const buyOrderId = Order.getUuid();
+        this._buyOrder = {
+          clOrdId: buyOrderId,
+        };
+        const buyOrderParams: WsPlaceOrderParams =
+          this._constructPlaceOrderParams(
+            buyOrderId,
+            'buy',
+            baseSz,
+            buyPx / factor
+          );
+        await orderClient.placeOrder([buyOrderParams]);
+      }
     }
 
     if (orderSide === 'any' || orderSide === 'sell') {
-      const sellOrdId = Order.getUuid();
-      this._sellOrder = {
-        clOrdId: sellOrdId,
-      };
-      const sellOrderParams: WsPlaceOrderParams =
-        this._constructPlaceOrderParams(
-          sellOrdId,
-          'sell',
-          baseSz,
-          (px + gap) / factor
-        );
-      await orderClient.placeOrder([sellOrderParams]);
+      const sellPx = px + gap;
+      if (this._validatePrice(sellPx)) {
+        const sellOrdId = Order.getUuid();
+        this._sellOrder = {
+          clOrdId: sellOrdId,
+        };
+        const sellOrderParams: WsPlaceOrderParams =
+          this._constructPlaceOrderParams(
+            sellOrdId,
+            'sell',
+            baseSz,
+            sellPx / factor
+          );
+        await orderClient.placeOrder([sellOrderParams]);
+      }
     }
   }
 

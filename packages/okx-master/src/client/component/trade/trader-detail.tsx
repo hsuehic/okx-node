@@ -9,7 +9,7 @@ import {
 import { Button, Space, Table, TableColumnType, message } from 'antd';
 import { WsOrder } from 'okx-node';
 
-import { OkxTraderItem } from '../../../type';
+import { OkxTraderItem } from '../../../server/type';
 import { updateTrader } from '../api/trader';
 import { renderTime } from '../renderer';
 
@@ -186,21 +186,21 @@ export const TraderDetail = ({ trader }: { trader: OkxTraderItem }) => {
       </ProCard>
       <Table
         title={() => (
-          <span className={styles.sectionHeader}>Filled Orders</span>
-        )}
-        columns={columns2}
-        dataSource={filledOrders}
-        rowKey={'clOrdId'}
-        pagination={false}
-      />
-      <Table
-        title={() => (
           <span className={styles.sectionHeader}>Pending Orders</span>
         )}
         columns={columns}
         pagination={false}
         dataSource={pendingOrders}
         rowKey={'clOrdId'}
+      />
+      <Table
+        title={() => (
+          <span className={styles.sectionHeader}>Filled Orders</span>
+        )}
+        columns={columns2}
+        dataSource={filledOrders}
+        rowKey={'clOrdId'}
+        pagination={false}
       />
     </div>
   );
