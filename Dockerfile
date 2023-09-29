@@ -24,14 +24,5 @@ COPY --from=build /app/packages/okx-master/dist /app/packages/okx-master/dist
 COPY --from=build /app/packages/okx-master/static /app/packages/okx-master/static
 WORKDIR /app/packages/okx-master
 
-EXPOSE 8080
+EXPOSE 80
 CMD [ "pnpm", "start" ]
-
-FROM node:20-alpine as test-abc
-
-COPY ./test /app
-WORKDIR /app
-RUN npm install --frozen-lockfile
-
-EXPOSE 8080
-CMD [ "node", "index.js" ]
