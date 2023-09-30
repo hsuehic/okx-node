@@ -6,7 +6,7 @@ import { PageContainer, ProCard } from '@ant-design/pro-components';
 import { Button, Space } from 'antd';
 import { Ticker, WsChannel, WsPushArgInstId } from 'okx-node';
 
-import { OkxTraderItem } from '../../../type';
+import { OkxTraderItem } from '../../../server/type';
 import { getTraders } from '../api/trader';
 import { InstPageSubTitle, InstPageTitle } from '../common';
 import { useIntervalRequest, usePush, useSubscribe } from '../hooks';
@@ -23,15 +23,21 @@ export const PriceTrade = () => {
   const params = useParams<{ instId: InstId }>();
   const [instId, setInstId] = useState<InstId>(params.instId || 'BTC-USDC');
   const [newTraderFormVisible, setNewTraderFormVisible] = useState(false);
+  const [tab, setTab] = useState('');
   const [traders] = useIntervalRequest<OkxTraderItem[]>(
     async () => {
       const traderItems = await getTraders({ instId });
+      if (traderItems.length > 0) {
+        const activeTrader = traderItems.find(v => v.name == tab);
+        if (!activeTrader) {
+          setTab(traderItems[0].name);
+        }
+      }
       return traderItems;
     },
     1000,
     [instId]
   );
-  const [tab, setTab] = useState('');
 
   useSubscribe(['books5', 'trades', 'tickers'], instId, [instId]);
 

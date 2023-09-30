@@ -1,4 +1,4 @@
-import { OkxTraderItem } from '../../../type';
+import { OkxTraderItem } from '../../../server/type';
 
 import { get, post } from './request';
 
