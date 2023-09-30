@@ -166,9 +166,13 @@ export class OkxPriceTrader extends EventEmitter implements OkxTrader {
     let newPrice: number | undefined = undefined;
     let clOrdIdToBeCancelled = '';
     if (clOrdId === this._buyOrder.clOrdId) {
+      this._buyOrder.clOrdId = '';
+      this._buyOrder.order = undefined;
       clOrdIdToBeCancelled = this._sellOrder.clOrdId;
       newPrice = this._px - this._gap;
     } else if (clOrdId === this._sellOrder.clOrdId) {
+      this._sellOrder.clOrdId = '';
+      this._sellOrder.order = undefined;
       clOrdIdToBeCancelled = this._buyOrder.clOrdId;
       newPrice = this._px + this._gap;
     }
