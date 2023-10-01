@@ -10,7 +10,8 @@ RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --prod --frozen-l
 
 FROM base AS build
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
-RUN pnpm run -r build
+RUN pnpm --filter "okx-master^..." build
+RUN pnpm --filter "okx-master" build
 
 FROM base AS common
 COPY --from=prod-deps /app/node_modules /app/node_modules
