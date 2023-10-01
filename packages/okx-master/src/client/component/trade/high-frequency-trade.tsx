@@ -27,17 +27,17 @@ export const PriceTrade = () => {
   const [traders] = useIntervalRequest<OkxTraderItem[]>(
     async () => {
       const traderItems = await getTraders({ instId });
-      if (traderItems.length > 0) {
-        const activeTrader = traderItems.find(v => v.name == tab);
-        if (!activeTrader) {
-          setTab(traderItems[0].name);
-        }
-      }
       return traderItems;
     },
     1000,
     [instId]
   );
+  if (traders && traders.length > 0) {
+    const activeTrader = traders.find(v => v.name == tab);
+    if (!activeTrader) {
+      setTab(traders[0].name);
+    }
+  }
 
   useSubscribe(['books5', 'trades', 'tickers'], instId, [instId]);
 

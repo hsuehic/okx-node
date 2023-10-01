@@ -106,7 +106,9 @@ routerLogin.post('/login/password', async (ctx: Context, next: Next) => {
     })(ctx, next);
   });
   const user = await promise;
-  await ctx.login(user);
+  if (user) {
+    await ctx.login(user);
+  }
 });
 
 routerLogin.post('/logout', async ctx => {

@@ -57,9 +57,6 @@ export const Login = () => {
           searchConfig: {
             submitText: 'Login',
           },
-          onSubmit(value) {
-            console.log(value);
-          },
         }}
         actions={
           <div
