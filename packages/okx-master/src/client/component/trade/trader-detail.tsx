@@ -3,8 +3,8 @@ import { useRef, useState } from 'react';
 import {
   ProCard,
   ProForm,
-  ProFormDigit,
   ProFormInstance,
+  StatisticCard,
 } from '@ant-design/pro-components';
 import { Button, Space, Table, TableColumnType, message } from 'antd';
 import { WsOrder } from 'okx-node';
@@ -13,12 +13,18 @@ import { OkxTraderItem } from '../../../server/type';
 import { updateTrader } from '../api/trader';
 import { renderTime } from '../renderer';
 
+import { PriceTraderFormItems } from './price-trader-form';
+import { TieredTraderFormItems } from './tiered-trader-form';
+
 import styles from './trader-detail.module.scss';
 
 export interface TraderDetailProps {
   name: string;
   trader: OkxTraderItem;
 }
+
+const { Divider, Statistic } = StatisticCard;
+
 const columns: TableColumnType<WsOrder>[] = [
   {
     title: 'Inst',
@@ -87,12 +93,29 @@ const columns2: TableColumnType<WsOrder>[] = [
   },
 ];
 
+const renderTraderConfig = (config: OkxTraderConfigType) => {
+  const { type } = config;
+  let node;
+  switch (type) {
+    case 'price':
+      node = <PriceTraderFormItems />;
+      break;
+    case 'tiered':
+      node = <TieredTraderFormItems />;
+      break;
+    default:
+      break;
+  }
+  return node;
+};
+
 export const TraderDetail = ({ trader }: { trader: OkxTraderItem }) => {
   const { id, config, status, pendingOrders, filledOrders } = trader;
   const formRef = useRef<ProFormInstance>();
   const [loading, setLoading] = useState(false);
   const [removing, setRemoving] = useState(false);
   const started = status === 'running';
+
   return (
     <div>
       <ProCard
@@ -147,43 +170,44 @@ export const TraderDetail = ({ trader }: { trader: OkxTraderItem }) => {
             span: 12,
           }}
         >
-          <ProFormDigit
-            colProps={{ span: 8 }}
-            placeholder={''}
-            name="basePx"
-            label="Base Price"
-            rules={[{ required: true, message: 'Required' }]}
-          />
-          <ProFormDigit
-            colProps={{ span: 8 }}
-            placeholder={''}
-            name="gap"
-            label="Gap"
-            rules={[{ required: true, message: 'Required' }]}
-          />
-          <ProFormDigit
-            colProps={{ span: 8 }}
-            placeholder={''}
-            name="baseSz"
-            label="Base Size"
-            rules={[{ required: true, message: 'Required' }]}
-          />
-          <ProFormDigit
-            colProps={{ span: 8 }}
-            placeholder={''}
-            name="levelCount"
-            label="Level Count"
-            rules={[{ required: true, message: 'Required' }]}
-          />
-          <ProFormDigit
-            colProps={{ span: 8 }}
-            placeholder={''}
-            name="coefficient"
-            label="Coefficient"
-            rules={[{ required: true, message: 'Required' }]}
-          />
+          {renderTraderConfig(config)}
         </ProForm>
       </ProCard>
+      <StatisticCard.Group headerBordered title="Statistics" direction="row">
+        <StatisticCard
+          statistic={{
+            title: 'Traded',
+            value: trader.tradeSize,
+            precision: 2,
+            description: (
+              <Statistic value={`$${trader.tradePrice.toFixed(2)}`} />
+            ),
+          }}
+        />
+
+        <Divider type="vertical" />
+
+        <StatisticCard
+          statistic={{
+            title: 'Bought',
+            value: trader.boughtSize,
+            precision: 2,
+            description: (
+              <Statistic value={`$${trader.boughtPrice.toFixed(2)}`} />
+            ),
+          }}
+        />
+        <StatisticCard
+          statistic={{
+            title: 'Sold',
+            value: trader.soldSize,
+            precision: 2,
+            description: (
+              <Statistic value={`$${trader.soldPrice.toFixed(2)}`} />
+            ),
+          }}
+        />
+      </StatisticCard.Group>
       <Table
         title={() => (
           <span className={styles.sectionHeader}>Pending Orders</span>

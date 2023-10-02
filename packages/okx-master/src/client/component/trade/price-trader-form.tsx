@@ -14,6 +14,8 @@ export interface TraderFormProps {
   onOpenChange?: (value: boolean) => void;
   open: boolean;
   instId: InstId;
+  price?: number;
+  validateTraderName?: (name: string) => undefined | string;
 }
 
 export type OkxPriceTraderParams = Omit<
@@ -21,16 +23,61 @@ export type OkxPriceTraderParams = Omit<
   'type' | 'instId'
 >;
 
-export const TraderForm = (props: TraderFormProps) => {
-  const { open, onOpenChange, instId } = props;
+export const PriceTraderFormItems = () => {
+  return (
+    <>
+      <ProFormDigit
+        colProps={{ span: 8 }}
+        placeholder={''}
+        name="basePx"
+        label="Base Price"
+        rules={[{ required: true, message: 'Required' }]}
+      />
+      <ProFormDigit
+        colProps={{ span: 8 }}
+        placeholder={''}
+        name="gap"
+        label="Gap"
+        rules={[{ required: true, message: 'Required' }]}
+      />
+      <ProFormDigit
+        colProps={{ span: 8 }}
+        placeholder={''}
+        name="baseSz"
+        label="Base Size"
+        rules={[{ required: true, message: 'Required' }]}
+      />
+      <ProFormDigit
+        colProps={{ span: 8 }}
+        placeholder={''}
+        name="levelCount"
+        label="Level Count"
+        rules={[{ required: true, message: 'Required' }]}
+      />
+      <ProFormDigit
+        colProps={{ span: 8 }}
+        placeholder={''}
+        name="coefficient"
+        label="Coefficient"
+        rules={[{ required: true, message: 'Required' }]}
+      />
+    </>
+  );
+};
+
+export const PriceTraderForm = (props: TraderFormProps) => {
+  const { open, onOpenChange, instId, price, validateTraderName } = props;
   const [form] = Form.useForm<OkxPriceTraderParams>();
+  const [ccy] = instId.split('-');
   return (
     <DrawerForm
-      title={`Create new trader for ${instId}`}
+      title={`Create new PriceTrader for ${instId}`}
       onOpenChange={onOpenChange}
       open={open}
       initialValues={{
         initialOrder: 'any',
+        basePx: price,
+        name: ccy,
       }}
       layout="horizontal"
       labelCol={{
@@ -74,46 +121,17 @@ export const TraderForm = (props: TraderFormProps) => {
               if (!reg.test(value)) {
                 callback('Can only contain letters and numbers');
               }
+
+              if (validateTraderName) {
+                callback(validateTraderName(value));
+              }
               callback();
             },
           },
         ]}
       />
-      <ProFormDigit
-        colProps={{ span: 8 }}
-        placeholder={''}
-        name="basePx"
-        label="Base Price"
-        rules={[{ required: true, message: 'Required' }]}
-      />
-      <ProFormDigit
-        colProps={{ span: 8 }}
-        placeholder={''}
-        name="gap"
-        label="Gap"
-        rules={[{ required: true, message: 'Required' }]}
-      />
-      <ProFormDigit
-        colProps={{ span: 8 }}
-        placeholder={''}
-        name="baseSz"
-        label="Base Size"
-        rules={[{ required: true, message: 'Required' }]}
-      />
-      <ProFormDigit
-        colProps={{ span: 8 }}
-        placeholder={''}
-        name="levelCount"
-        label="Level Count"
-        rules={[{ required: true, message: 'Required' }]}
-      />
-      <ProFormDigit
-        colProps={{ span: 8 }}
-        placeholder={''}
-        name="coefficient"
-        label="Coefficient"
-        rules={[{ required: true, message: 'Required' }]}
-      />
+      <PriceTraderFormItems />
+
       <ProFormSegmented
         label="Initial Order"
         valueEnum={{

@@ -6,11 +6,6 @@ interface OkxTraderConfig {
   instId: InstId;
 }
 
-interface OkxDiffTraderConfig extends OkxTraderConfig {
-  type: 'diff';
-  maximunOrders: number;
-}
-
 interface OkxPriceTraderConfig extends OkxTraderConfig {
   type: 'price';
   basePx: number;
@@ -22,4 +17,16 @@ interface OkxPriceTraderConfig extends OkxTraderConfig {
   initialOrder?: OrderSide;
 }
 
-type OkxTraderConfigType = OkxDiffTraderConfig | OkxPriceTraderConfig;
+interface OkxTieredTraderConfig extends OkxTraderConfig {
+  type: 'tiered';
+  basePx: number;
+  baseSz: number;
+  gap: number;
+  levelCount: number;
+  coefficient: number;
+  maxSize: number;
+  minSize: number;
+  name: string;
+}
+
+type OkxTraderConfigType = OkxPriceTraderConfig | OkxTieredTraderConfig;

@@ -8,4 +8,10 @@ export interface OkxTraderItem {
   config: OkxTraderConfigType;
   pendingOrders: WsOrder[];
   filledOrders: WsOrder[];
+  boughtSize: number;
+  boughtPrice: number;
+  soldSize: number;
+  soldPrice: number;
+  tradeSize: number;
+  tradePrice: number;
 }

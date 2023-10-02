@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useParams } from 'react-router';
 
 import { PlusCircleOutlined } from '@ant-design/icons';
@@ -13,16 +13,18 @@ import { useIntervalRequest, usePush, useSubscribe } from '../hooks';
 import { LastTrades } from '../market/last-trades';
 import { OrderBookContainer } from '../market/order-book';
 
+import { PriceTraderForm } from './price-trader-form';
+import { TieredTraderForm } from './tiered-trader-form';
 import { TraderDetail } from './trader-detail';
-import { TraderForm } from './trader-form';
 
-import styles from './high-frequency-trade.module.scss';
+import styles from './trader-manager.module.scss';
 
 // subscribing and unsubscribing will be done at page level. Consuming push data will be done at component level.
-export const PriceTrade = () => {
+export const TraderManager = () => {
   const params = useParams<{ instId: InstId }>();
   const [instId, setInstId] = useState<InstId>(params.instId || 'BTC-USDC');
-  const [newTraderFormVisible, setNewTraderFormVisible] = useState(false);
+  const [priceTraderFormVisible, setPriceTraderFormVisible] = useState(false);
+  const [tieredTraderFormVisible, setTieredTraderFormVisible] = useState(false);
   const [tab, setTab] = useState('');
   const [traders] = useIntervalRequest<OkxTraderItem[]>(
     async () => {
@@ -38,6 +40,16 @@ export const PriceTrade = () => {
       setTab(traders[0].name);
     }
   }
+
+  const validateTraderName = useCallback(
+    (name: string) => {
+      if (traders && traders.findIndex(v => v.name === name) > -1) {
+        return 'Trader with the same name already exists';
+      }
+      return undefined;
+    },
+    [traders]
+  );
 
   useSubscribe(['books5', 'trades', 'tickers'], instId, [instId]);
 
@@ -74,10 +86,19 @@ export const PriceTrade = () => {
             type="primary"
             icon={<PlusCircleOutlined />}
             onClick={() => {
-              setNewTraderFormVisible(true);
+              setPriceTraderFormVisible(true);
             }}
           >
-            New Trader
+            Price Trader
+          </Button>
+          <Button
+            type="primary"
+            icon={<PlusCircleOutlined />}
+            onClick={() => {
+              setTieredTraderFormVisible(true);
+            }}
+          >
+            Tiered Trader
           </Button>
         </Space>
       }
@@ -108,11 +129,11 @@ export const PriceTrade = () => {
                 type="primary"
                 size="large"
                 onClick={() => {
-                  setNewTraderFormVisible(true);
+                  setTieredTraderFormVisible(true);
                 }}
                 icon={<PlusCircleOutlined />}
               >
-                Create New Trader
+                Create Tiered Trader
               </Button>
             </ProCard>
           )}
@@ -126,11 +147,21 @@ export const PriceTrade = () => {
           </ProCard>
         </div>
       </div>
-      <TraderForm
-        key={`new-trader-form-${instId}`}
+      <PriceTraderForm
+        key={`price-trader-form-${instId}`}
         instId={instId}
-        open={newTraderFormVisible}
-        onOpenChange={setNewTraderFormVisible}
+        open={priceTraderFormVisible}
+        onOpenChange={setPriceTraderFormVisible}
+        price={ticker ? parseFloat(ticker.last) : undefined}
+        validateTraderName={validateTraderName}
+      />
+      <TieredTraderForm
+        key={`tiered-trader-form-${instId}`}
+        instId={instId}
+        open={tieredTraderFormVisible}
+        onOpenChange={setTieredTraderFormVisible}
+        price={ticker ? parseFloat(ticker.last) : undefined}
+        validateTraderName={validateTraderName}
       />
     </PageContainer>
   );

@@ -14,4 +14,7 @@ module.exports = {
       },
     },
   ],
+  rules: {
+    'max-statements': 'off',
+  },
 };

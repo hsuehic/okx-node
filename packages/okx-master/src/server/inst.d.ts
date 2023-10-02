@@ -13,7 +13,7 @@ type Quote = 'USDC' | 'USDT';
 
 type InstId = `${CryptoCurrency}-${Quote}`;
 
-type TraderType = 'price' | 'diff';
+type TraderType = 'price' | 'diff' | 'tiered';
 
 type TraderStatus = 'running' | 'stopped' | 'removed';
 

@@ -50,4 +50,16 @@ export interface OkxTrader {
    * Name
    */
   name: string;
+
+  boughtSize: number;
+
+  boughtPrice: number;
+
+  soldSize: number;
+
+  soldPrice: number;
+
+  tradeSize: number;
+
+  tradePrice: number;
 }

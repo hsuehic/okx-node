@@ -129,9 +129,9 @@ export const appRoutes = [
         defaultPath: '/trade/price/BTC-USDC',
         icon: <DollarOutlined />,
         lazy: async () => {
-          const { PriceTrade } = await import('./trade');
+          const { TraderManager } = await import('./trade');
           return {
-            Component: PriceTrade,
+            Component: TraderManager,
           };
         },
       },

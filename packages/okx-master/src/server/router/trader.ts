@@ -26,6 +26,12 @@ routerTrader.get('/', ctx => {
         config,
         pendingOrders,
         filledOrders,
+        boughtPrice,
+        boughtSize,
+        soldPrice,
+        soldSize,
+        tradePrice,
+        tradeSize,
       } = trader;
       return {
         config,
@@ -36,6 +42,12 @@ routerTrader.get('/', ctx => {
         pendingOrders,
         name,
         status,
+        boughtPrice,
+        boughtSize,
+        soldPrice,
+        soldSize,
+        tradePrice,
+        tradeSize,
       };
     })
   );

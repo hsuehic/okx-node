@@ -3,6 +3,7 @@ import EventEmitter from 'events';
 import { WsSubscriptionTopic } from 'okx-node';
 
 import { OkxPriceTrader } from './PriceTrader';
+import { OkxTieredTrader } from './TieredTrader';
 import { OkxTrader } from './Trader';
 
 type TraderMasterEvent = 'add' | 'stop' | 'remove' | 'start';
@@ -21,8 +22,18 @@ export class OkxTraderMaster extends EventEmitter {
 
   addTrader(traderConfig: OkxTraderConfigType) {
     const { type } = traderConfig;
-    if (type === 'price') {
-      const trader = new OkxPriceTrader(traderConfig);
+    let trader: OkxTrader | undefined = undefined;
+    switch (type) {
+      case 'price':
+        trader = new OkxPriceTrader(traderConfig);
+        break;
+      case 'tiered':
+        trader = new OkxTieredTrader(traderConfig);
+        break;
+      default:
+        break;
+    }
+    if (trader) {
       const { id } = trader;
       this._traders.set(id, trader);
       this.emit('add', trader);

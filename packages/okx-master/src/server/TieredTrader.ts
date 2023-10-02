@@ -2,22 +2,25 @@ import { Order, WsOrder, WsPlaceOrderParams } from 'okx-node';
 
 import { BaseTrader } from './BaseTrader';
 
-export class OkxPriceTrader extends BaseTrader {
-  protected _config: OkxPriceTraderConfig;
+export class OkxTieredTrader extends BaseTrader {
+  protected _config: OkxTieredTraderConfig;
   private _px: number;
   private _maxPx: number;
   private _minPx: number;
   private _baseSz: number;
   private _gap: number;
   private _factor = 1000;
+  private _maxSize: number;
+  private _minSize: number;
 
   /**
    * Construct and start high frequency trade
    * @param configs Configurations of trading
    */
-  constructor(config: OkxPriceTraderConfig) {
+  constructor(config: OkxTieredTraderConfig) {
     super(config);
-    const { instId, basePx, baseSz, gap, levelCount } = config;
+    const { instId, basePx, baseSz, gap, levelCount, maxSize, minSize } =
+      config;
     this._id = Order.getUuid();
     this._config = config;
     this._instId = instId;
@@ -25,7 +28,10 @@ export class OkxPriceTrader extends BaseTrader {
     this._gap = gap * this._factor;
     this._minPx = this._px - this._gap * levelCount;
     this._maxPx = this._px + this._gap * levelCount;
+    this._maxSize = maxSize;
+    this._minSize = minSize;
     this._baseSz = baseSz;
+
     this.start();
   }
 
@@ -48,7 +54,12 @@ export class OkxPriceTrader extends BaseTrader {
     return px >= this._minPx && px <= this._maxPx;
   }
 
-  private async _initializeBooks(orderSide: OrderSide = 'any') {
+  private _validateSize(tradeSize: number) {
+    const newSize = this._traderSize + tradeSize;
+    return newSize >= this._minSize && newSize <= this._maxSize;
+  }
+
+  private async _initializeBooks() {
     const {
       _orderClient: orderClient,
       _baseSz: baseSz,
@@ -56,10 +67,7 @@ export class OkxPriceTrader extends BaseTrader {
       _px: px,
       _factor: factor,
     } = this;
-
-    this._buyOrder.clOrdId = undefined;
-    this._sellOrder.clOrdId = undefined;
-    if (orderSide === 'any' || orderSide === 'buy') {
+    if (this._validateSize(baseSz)) {
       const buyPx = px - gap;
       if (this._validatePrice(buyPx)) {
         const buyOrderId = Order.getUuid();
@@ -77,7 +85,7 @@ export class OkxPriceTrader extends BaseTrader {
       }
     }
 
-    if (orderSide === 'any' || orderSide === 'sell') {
+    if (this._validateSize(0 - baseSz)) {
       const sellPx = px + gap;
       if (this._validatePrice(sellPx)) {
         const sellOrdId = Order.getUuid();
@@ -103,10 +111,10 @@ export class OkxPriceTrader extends BaseTrader {
 
   public start() {
     super.start();
-    void this._initializeBooks(this._config.initialOrder);
+    void this._initializeBooks();
   }
 
-  get config(): OkxPriceTraderConfig {
+  get config(): OkxTieredTraderConfig {
     return this._config;
   }
 }
