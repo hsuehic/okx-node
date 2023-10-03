@@ -42,6 +42,12 @@ export class OkxTraderPersister {
     traderModel.instId = traderClass.instId || '';
     traderModel.name = traderClass.name;
     traderModel.status = traderClass.status;
+    traderModel.boughtPrice = traderClass.boughtPrice;
+    traderModel.boughtSize = traderClass.boughtSize;
+    traderModel.soldPrice = traderClass.soldPrice;
+    traderModel.soldSize = traderClass.soldSize;
+    traderModel.tradedPrice = traderClass.tradedPrice;
+    traderModel.tradedSize = traderClass.tradedSize;
     traderModel.ts = Date.now();
     traderModel.type = traderClass.type;
     return traderModel;

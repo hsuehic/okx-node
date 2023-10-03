@@ -27,7 +27,8 @@ export class BaseTrader extends EventEmitter implements OkxTrader {
   protected _boughtPrice = 0;
   protected _soldSize = 0;
   protected _soldPrice = 0;
-  protected _traderSize = 0;
+  protected _tradedSize = 0;
+  protected _tradedPrice = 0;
   protected _buyOrder: {
     clOrdId?: string;
     order?: WsOrder;
@@ -163,7 +164,7 @@ export class BaseTrader extends EventEmitter implements OkxTrader {
     const avgPrice = parseFloat(avgPx);
     if (clOrdId === this._buyOrder.clOrdId) {
       this._boughtSize += size;
-      this._traderSize += size;
+      this._tradedSize += size;
       this._boughtPrice += size * avgPrice;
       this._buyOrder.order = undefined;
       this._filledOrders.push(order);
@@ -172,7 +173,7 @@ export class BaseTrader extends EventEmitter implements OkxTrader {
       }
     } else if (clOrdId === this._sellOrder.clOrdId) {
       this._soldSize += size;
-      this._traderSize -= size;
+      this._tradedSize -= size;
       this._soldPrice += size * avgPrice;
       this._sellOrder.order = undefined;
       this._filledOrders.push(order);
@@ -285,14 +286,14 @@ export class BaseTrader extends EventEmitter implements OkxTrader {
   /**
    * Cumulative number of transactions, negative indicates net sales, positive indicates net buys
    */
-  get tradeSize(): number {
+  get tradedSize(): number {
     return this._boughtSize - this._soldSize;
   }
 
   /**
    * Cumulative cost of transactions
    */
-  get tradePrice(): number {
+  get tradedPrice(): number {
     return this._soldPrice - this._boughtPrice;
   }
 }

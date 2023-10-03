@@ -59,7 +59,7 @@ export interface OkxTrader {
 
   soldPrice: number;
 
-  tradeSize: number;
+  tradedSize: number;
 
-  tradePrice: number;
+  tradedPrice: number;
 }
