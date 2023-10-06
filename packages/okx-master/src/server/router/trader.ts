@@ -30,8 +30,8 @@ routerTrader.get('/', ctx => {
         boughtSize,
         soldPrice,
         soldSize,
-        tradePrice,
-        tradeSize,
+        tradedPrice,
+        tradedSize,
       } = trader;
       return {
         config,
@@ -46,8 +46,8 @@ routerTrader.get('/', ctx => {
         boughtSize,
         soldPrice,
         soldSize,
-        tradePrice,
-        tradeSize,
+        tradedPrice,
+        tradedSize,
       };
     })
   );
