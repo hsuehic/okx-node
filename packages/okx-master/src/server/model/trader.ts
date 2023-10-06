@@ -41,37 +41,37 @@ export class Trader {
     nullable: true,
     default: 0,
   })
-  boughtSize = 0;
+  boughtSize: number = 0;
 
   @Column({
     nullable: true,
     default: 0,
   })
-  boughtPrice = 0;
+  boughtPrice: number = 0;
 
   @Column({
     nullable: true,
     default: 0,
   })
-  soldSize = 0;
+  soldSize: number = 0;
 
   @Column({
     nullable: true,
     default: 0,
   })
-  soldPrice = 0;
+  soldPrice: number = 0;
 
   @Column({
     nullable: true,
     default: 0,
   })
-  tradedPrice = 0;
+  tradedPrice: number = 0;
 
   @Column({
     nullable: true,
     default: 0,
   })
-  tradedSize = 0;
+  tradedSize: number = 0;
 
   /**
    * timestamp of the time when the trader created

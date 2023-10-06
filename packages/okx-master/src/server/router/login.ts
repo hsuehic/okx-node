@@ -1,8 +1,14 @@
 import Router from '@koa/router';
 import { Context, Next } from 'koa';
 import passport from 'koa-passport';
+import {
+  Strategy as GoogleStrategy,
+  Profile,
+  VerifyCallback,
+} from 'passport-google-oauth20';
 import { Strategy as LocalStrategy } from 'passport-local';
 
+import { host, isProd } from '../constant';
 import { User } from '../model';
 import { dataSource } from '../services';
 
@@ -13,6 +19,7 @@ type Done<T = false | undefined | Express.User> = (
   user?: T
 ) => void;
 
+//#region password login
 const fetchUserByEmailAndPassword = async (email: string, password: string) => {
   const user = await dataSource.manager.findOneBy(User, {
     email,
@@ -76,14 +83,13 @@ passport.use(
   )
 );
 
-export const routerLogin = new Router({
-  prefix: '/api',
-});
+export const routerLogin = new Router();
 
-routerLogin.post('/login/password', async (ctx: Context, next: Next) => {
+routerLogin.post('/api/login/password', async (ctx: Context, next: Next) => {
   const promise = new Promise(resolve => {
     passport.authenticate('local', (err, user: User | false) => {
       console.log(err, user);
+      console.log(isProd);
       if (err) {
         const msg = 'Server internal error';
         ctx.body = {
@@ -110,20 +116,59 @@ routerLogin.post('/login/password', async (ctx: Context, next: Next) => {
     await ctx.login(user);
   }
 });
+//#region password login
 
-routerLogin.post('/logout', async ctx => {
+//#region google oauth20
+const googleCallbackPath = '/oauth2/redirect/google';
+const googleCallbackUrl = `${host}${googleCallbackPath}`;
+
+passport.use(
+  new GoogleStrategy(
+    {
+      clientID: process.env.GOOGLE_OAUTH_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_OAUTH_CLIENT_SECRET,
+      callbackURL: googleCallbackUrl,
+      state: true,
+      scope: ['profile'],
+    },
+    (
+      accessToken: string,
+      refreshToken: string,
+      profile: Profile,
+      done: VerifyCallback
+    ) => {
+      const email = profile._json.email;
+      dataSource.manager
+        .findOneBy(User, { email: email })
+        .then(user => {
+          if (user) {
+            done(null, user);
+          } else {
+            done(new Error('User is not registrered'), undefined);
+          }
+        })
+        .catch(reason => {
+          done(new Error(reason as string), undefined);
+        });
+    }
+  )
+);
+
+routerLogin.get('/login/google', passport.authenticate('google'));
+routerLogin.get(
+  googleCallbackPath,
+  passport.authenticate('google', {
+    successRedirect: '/',
+    failureRedirect: '/login/google',
+  })
+);
+
+//#endregion google oauth20
+
+routerLogin.post('/api/logout', async ctx => {
   await ctx.logout();
   ctx.body = wrapData({});
 });
-
-// routerLogin.get('/login/google', passport.authenticate('google'));
-// routerLogin.get(
-//   '/auth/google/callback',
-//   passport.authenticate('google', {
-//     successRedirect: '/',
-//     failureRedirect: '/login',
-//   })
-// );
 
 // routerLogin.get('/login/facebook', passport.authenticate('facebook'));
 // routerLogin.get(

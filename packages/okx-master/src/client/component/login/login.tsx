@@ -21,6 +21,8 @@ import { Divider, Space, Tabs, message } from 'antd';
 
 import { login } from '../api/login';
 
+import styles from './login.module.scss';
+
 type LoginType = 'phone' | 'account';
 
 const iconStyles: CSSProperties = {
@@ -75,46 +77,15 @@ export const Login = () => {
               </span>
             </Divider>
             <Space align="center" size={24}>
-              <div
-                style={{
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  flexDirection: 'column',
-                  height: 40,
-                  width: 40,
-                  border: '1px solid #D4D8DD',
-                  borderRadius: '50%',
-                }}
-              >
-                <GoogleOutlined style={{ ...iconStyles, color: '#1677FF' }} />
+              <div className={styles.oauthLoginItem}>
+                <a href="/login/google">
+                  <GoogleOutlined style={{ ...iconStyles, color: '#1677FF' }} />
+                </a>
               </div>
-              <div
-                style={{
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  flexDirection: 'column',
-                  height: 40,
-                  width: 40,
-                  border: '1px solid #D4D8DD',
-                  borderRadius: '50%',
-                }}
-              >
+              <div className={styles.oauthLoginItem}>
                 <FacebookOutlined style={{ ...iconStyles, color: '#FF6A10' }} />
               </div>
-              <div
-                style={{
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  flexDirection: 'column',
-                  height: 40,
-                  width: 40,
-                  border: '1px solid #D4D8DD',
-                  borderRadius: '50%',
-                }}
-              >
+              <div className={styles.oauthLoginItem}>
                 <TwitterOutlined style={{ ...iconStyles, color: '#333333' }} />
               </div>
             </Space>

@@ -14,6 +14,7 @@ module.exports = {
       },
       rules: {
         '@typescript-eslint/naming-convention': 'off',
+        '@typescript-eslint/no-inferrable-types': 'off',
         'max-statements': 'off',
       },
     },

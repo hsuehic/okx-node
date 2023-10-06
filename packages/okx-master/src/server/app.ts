@@ -7,6 +7,7 @@ import passport from 'koa-passport';
 import session from 'koa-session';
 import server from 'koa-static';
 
+import { isProd } from './constant';
 import { auth, browserRouter } from './middleware';
 import {
   routerAccount,
@@ -15,7 +16,6 @@ import {
   routerTrader,
 } from './router';
 
-const isProd = process.env.NODE_ENV !== 'dev';
 const app = new Koa();
 app.use(cors());
 app.keys = ['abc', '123'];

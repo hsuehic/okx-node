@@ -4,6 +4,8 @@ declare namespace NodeJS {
     PASSPHRASE: string;
     SECRET_KEY: string;
     MARKET: 'prod' | 'aws' | 'demo';
-    NODE_ENV: 'dev' | 'prod';
+    NODE_ENV: 'development' | 'prod';
+    GOOGLE_OAUTH_CLIENT_ID: string;
+    GOOGLE_OAUTH_CLIENT_SECRET: string;
   }
 }
