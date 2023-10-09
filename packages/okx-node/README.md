@@ -3,11 +3,9 @@
 [![npm package][npm-img]][npm-url]
 [![Downloads][downloads-img]][downloads-url]
 [![Lint Status][lint-img]][lint-url]
-[![Test Status][test-img]][test-url]
 [![Build Status][build-img]][build-url]
 [![Release Status][release-img]][release-url]
 [![Issues][issues-img]][issues-url]
-[![Code Coverage][codecov-img]][codecov-url]
 
 > My awesome module
 
@@ -76,8 +74,6 @@ npm install events -s
 
 [lint-img]: https://github.com/hsuehic/okx-node/actions/workflows/lint.yml/badge.svg
 [lint-url]: https://github.com/hsuehic/okx-node/workflows/lint.yml
-[test-img]: https://github.com/hsuehic/okx-node/actions/workflows/test.yml/badge.svg
-[test-url]: https://github.com/hsuehic/okx-node/workflows/test.yml
 [build-img]: https://github.com/hsuehic/okx-node/actions/workflows/build.yml/badge.svg
 [build-url]: https://github.com/hsuehic/okx-node/workflows/build.yml
 [release-img]: https://github.com/hsuehic/okx-node/actions/workflows/release.yml/badge.svg
@@ -88,8 +84,6 @@ npm install events -s
 [npm-url]: https://www.npmjs.com/package/okx-node
 [issues-img]: https://img.shields.io/github/issues/hsuehic/okx-node
 [issues-url]: https://github.com/hsuehic/okx-node/issues
-[codecov-img]: https://codecov.io/gh/hsuehic/okx-node/branch/main/graph/badge.svg
-[codecov-url]: https://codecov.io/gh/hsuehic/okx-node
 
 <!--badge-variables-->
 
