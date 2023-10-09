@@ -4,8 +4,8 @@ name: Trigger auto deployment for okx-master-app
 on:
   # Automatically trigger it when detected changes in repo
   push:
-    branches:
-      - main
+    tags:
+      - '*'
 
   # Allow manual trigger
   workflow_dispatch:
