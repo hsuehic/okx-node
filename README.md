@@ -74,13 +74,13 @@ npm install events -s
 <!--badge-variables-->
 
 [lint-img]: https://github.com/hsuehic/okx-node/actions/workflows/lint.yml/badge.svg
-[lint-url]: https://github.com/hsuehic/okx-node/workflows/lint.yml
+[lint-url]: https://github.com/hsuehic/okx-node/actions/workflows/lint.yml
 [build-img]: https://github.com/hsuehic/okx-node/actions/workflows/build.yml/badge.svg
-[build-url]: https://github.com/hsuehic/okx-node/workflows/build.yml
+[build-url]: https://github.com/hsuehic/okx-node/actions/workflows/build.yml
 [deploy-img]: https://github.com/hsuehic/okx-node/actions/workflows/deploy.yml/badge.svg
-[deploy-url]: https://github.com/hsuehic/okx-node/workflows/deploy.yml
+[deploy-url]: https://okx.ihsueh.com
 [release-img]: https://github.com/hsuehic/okx-node/actions/workflows/release.yml/badge.svg
-[release-url]: https://github.com/hsuehic/okx-node/workflows/release.yml
+[release-url]: https://github.com/hsuehic/okx-node/actions/workflows/release.yml
 [downloads-img]: https://img.shields.io/npm/dt/okx-node
 [downloads-url]: https://www.npmtrends.com/okx-node
 [npm-img]: https://img.shields.io/npm/v/okx-node
