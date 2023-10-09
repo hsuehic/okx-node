@@ -143,7 +143,7 @@ passport.use(
       clientSecret: process.env.GOOGLE_OAUTH_CLIENT_SECRET,
       callbackURL: googleCallbackUrl,
       state: true,
-      scope: ['profile'],
+      scope: ['profile', 'email'],
     },
     (
       accessToken: string,
