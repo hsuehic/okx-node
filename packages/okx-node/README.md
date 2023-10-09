@@ -9,7 +9,7 @@
 [![Issues][issues-img]][issues-url]
 [![Code Coverage][codecov-img]][codecov-url]
 
-> Monorepo for okx-node, with example application [okx-master](./packages/okx-master/README.md)
+> My awesome module
 
 ## Install
 
@@ -68,7 +68,7 @@ npm install events -s
 
 ## Use Case
 
-- okx-app [Crypto Master](./packages/okx-master/README.md)
+- okx-app [Crypto Master](./packages/okx-app/README.md)
   ![screenshot](./asset/screenshot.gif)
   ![snapshot](./asset/snapshot.png)
 

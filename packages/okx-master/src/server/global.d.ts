@@ -35,6 +35,16 @@ declare module '*.module.scss' {
   }
 }
 
+declare module '@koa/cors' {
+  import * as Koa from 'koa';
+
+  declare function cors(
+    opts?: any | undefined
+  ): (ctx: Koa.Context, next: Koa.Next) => Promise<any>;
+  // eslint-disable-next-line import/no-default-export
+  export default cors;
+}
+
 type ExposableObject<T extends object> = Omit<T, 'constructor'>;
 type ExposablePropName<T extends object> = keyof ExposableObject<T>;
 
@@ -56,3 +66,51 @@ type CryptoCurrency =
 type Quote = 'USDC' | 'USDT';
 
 type InstId = `${CryptoCurrency}-${Quote}`;
+type CryptoCurrency =
+  | 'BTC'
+  | 'ETH'
+  | 'LTC'
+  | 'XRP'
+  | 'SOL'
+  | 'BCH'
+  | 'DOGE'
+  | 'FIL'
+  | 'ADA'
+  | 'ETC';
+
+type TraderType = 'price' | 'diff' | 'tiered';
+
+type TraderStatus = 'running' | 'stopped' | 'removed';
+
+type OrderSide = 'buy' | 'sell' | 'any';
+
+interface OkxTraderConfig {
+  name: string;
+  type: TraderType;
+  instId: InstId;
+}
+
+interface OkxPriceTraderConfig extends OkxTraderConfig {
+  type: 'price';
+  basePx: number;
+  baseSz: number;
+  gap: number;
+  levelCount: number;
+  coefficient: number;
+  name: string;
+  initialOrder?: OrderSide;
+}
+
+interface OkxTieredTraderConfig extends OkxTraderConfig {
+  type: 'tiered';
+  basePx: number;
+  baseSz: number;
+  gap: number;
+  levelCount: number;
+  coefficient: number;
+  maxSize: number;
+  minSize: number;
+  name: string;
+}
+
+type OkxTraderConfigType = OkxPriceTraderConfig | OkxTieredTraderConfig;

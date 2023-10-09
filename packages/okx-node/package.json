@@ -1,6 +1,6 @@
 {
-  "name": "okx-persist",
-  "version": "0.0.1",
+  "name": "okx-node",
+  "version": "1.0.1",
   "description": "A template for creating npm packages using TypeScript and VSCode",
   "main": "./dist/cjs/index.js",
   "types": "./dist/cjs/index.d.ts",
@@ -28,25 +28,33 @@
     "./package.json": "./package.json"
   },
   "files": [
-    "dist/**/*"
+    "dist"
   ],
   "scripts": {
     "build": "npm run build:cjs && npm run build:mjs",
     "build:cjs": "tsc --project tsconfig.cjs.json",
     "build:mjs": "tsc --project tsconfig.mjs.json",
-    "prebuild": "npm run clean",
     "clean": "rm -rf ./lib/ && rm -rf ./dist/",
-    "eslint": "eslint ./src/ --fix",
-    "lintpackagejson": "npmPkgJsonLint .",
-    "release": "npx changeset publish",
+    "postbuild:cjs": "echo '{\"type\":\"commonjs\"}' > ./dist/cjs/package.json",
+    "postbuild:mjs": "echo '{\"type\":\"module\"}' > ./dist/mjs/package.json",
+    "prepublish": "npm run build",
     "test:watch": "jest --watch",
     "test": "jest --coverage",
     "typecheck": "tsc --noEmit",
-    "prepublish": "npm run build"
+    "eslint:fix": "npm run eslint -- --fix"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hsuehic/okx-node.git"
   },
   "license": "MIT",
+  "author": {
+    "name": "Xiaowei Xue",
+    "email": "xiaowei.xue@shopee.com",
+    "url": "https://github.com/hsuehic"
+  },
   "engines": {
-    "node": ">=12.0"
+    "node": ">=18.0"
   },
   "keywords": [
     "boilerplate",
@@ -63,13 +71,17 @@
     "url": "https://github.com/hsuehic/okx-node/issues"
   },
   "homepage": "https://github.com/hsuehic/okx-node#readme",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/hsuehic/okx-node.git"
+  "devDependencies": {
+    "@types/crypto-js": "^4.1.1",
+    "@types/ws": "^8.5.5"
+  },
+  "respository": {
+    "type": "git"
   },
   "dependencies": {
-    "reflect-metadata": "^0.1.13",
-    "sqlite3": "^5.1.6",
-    "typeorm": "^0.3.17"
+    "axios": "^1.5.0",
+    "isomorphic-ws": "^5.0.0",
+    "okx-sign": "workspace:^",
+    "ws": "^8.13.0"
   }
 }
