@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router';
 
 import { PageContainer, ProCard } from '@ant-design/pro-components';
 import { Button } from 'antd';
-import { Ticker, WsOrderSide, WsPushArg } from 'okx-node';
+import { Ticker, WsChannel, WsOrderSide, WsPushArg } from 'okx-node';
 
 import { CandleStick } from '../chart/candle-stick';
 import { InstPageSubTitle, InstPageTitle } from '../common';
@@ -26,7 +26,7 @@ export const Instrument = () => {
   useSubscribe(['books5', 'trades', 'tickers'], instId, [instId]);
   const [ticker] = usePush<WsPushArg & { instId: InstId }, Ticker>(
     'tickers',
-    (arg: { channel: 'tickers'; instId: InstId }) => {
+    (arg: { channel: WsChannel; instId: InstId }) => {
       return arg.instId === instId;
     },
     [instId]

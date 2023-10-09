@@ -15,7 +15,8 @@ RUN pnpm --filter "okx-master" build
 
 FROM base AS common
 COPY --from=prod-deps /app/node_modules /app/node_modules
-COPY --from=build /app/dist /app/dist
+COPY --from=build /app/packages/okx-node/node_modules /app/packages/okx-node/node_modules
+COPY --from=build /app/packages/okx-node/dist /app/packages/okx-node/dist
 # COPY --from=prod-deps /app/packages/okx-sign/node_modules /app/packages/okx-sign/node_modules # okx-sign no dependencies
 COPY --from=build /app/packages/okx-sign/dist /app/packages/okx-sign/dist
 

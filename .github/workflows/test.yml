@@ -29,12 +29,5 @@ jobs:
       - name: Test
         run: pnpm -r run test
 
-      - name: eslint-plugin-cnp - Upload coverage reports to Codecov
-        uses: codecov/codecov-action@v3
-        with:
-          files: ./packages/eslint-plugin-cnp/reports/coverage-final.json
-          flags: eslint-plugin-cnp
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
       
       
