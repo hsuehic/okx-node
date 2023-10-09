@@ -4,6 +4,7 @@
 [![Downloads][downloads-img]][downloads-url]
 [![Lint Status][lint-img]][lint-url]
 [![Build Status][build-img]][build-url]
+[![Deploy Status][deploy-img]][deploy-url]
 [![Release Status][release-img]][release-url]
 [![Issues][issues-img]][issues-url]
 
@@ -76,6 +77,8 @@ npm install events -s
 [lint-url]: https://github.com/hsuehic/okx-node/workflows/lint.yml
 [build-img]: https://github.com/hsuehic/okx-node/actions/workflows/build.yml/badge.svg
 [build-url]: https://github.com/hsuehic/okx-node/workflows/build.yml
+[deploy-img]: https://github.com/hsuehic/okx-node/actions/workflows/deploy.yml/badge.svg
+[deploy-url]: https://github.com/hsuehic/okx-node/workflows/deploy.yml
 [release-img]: https://github.com/hsuehic/okx-node/actions/workflows/release.yml/badge.svg
 [release-url]: https://github.com/hsuehic/okx-node/workflows/release.yml
 [downloads-img]: https://img.shields.io/npm/dt/okx-node
