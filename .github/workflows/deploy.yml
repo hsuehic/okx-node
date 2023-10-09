@@ -4,15 +4,12 @@ name: Trigger auto deployment for okx-master-app
 on:
   # Automatically trigger it when detected changes in repo
   push:
-    branches: 
-      [ main ]
-    paths:
-    - '**'
-    - '.github/workflows/okx-master-app-AutoDeployTrigger-490b79e5-1db3-4968-ab86-12a5aff89268.yml'
+    branches:
+      - main
 
-  # Allow manual trigger 
+  # Allow manual trigger
   workflow_dispatch:
-      
+
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
@@ -20,6 +17,10 @@ jobs:
     steps:
       - name: Checkout to the branch
         uses: actions/checkout@v2
+
+      # - name: Create .env file
+      #   run: |
+      #       printf 'API_KEY = ${{ secrets.API_KEY }}\nPASSPHRASE = ${{ secrets.PASSPHRASE }}\nSECRET_KEY = ${{ secrets.SECRET_KEY }}\nMARKET = ${{ secrets.MARKET }}\nGOOGLE_OAUTH_CLIENT_ID = ${{ secrets.GOOGLE_OAUTH_CLIENT_ID }}\nGOOGLE_OAUTH_CLIENT_SECRET = ${{ secrets.GOOGLE_OAUTH_CLIENT_SECRET }}\nOAUTH_GITHUB_CLIENT_ID = ${{ secrets.OAUTH_GITHUB_CLIENT_ID }}\nOAUTH_GITHUB_CLIENT_SECRET = ${{ secrets.OAUTH_GITHUB_CLIENT_SECRET }}\n' >> './packages/okx-master/.env'
 
       - name: Azure Login
         uses: azure/login@v1
@@ -29,14 +30,10 @@ jobs:
       - name: Build and push container image to registry
         uses: azure/container-apps-deploy-action@v1
         with:
-          appSourcePath: ${{ github.workspace }} 
+          appSourcePath: ${{ github.workspace }}
           registryUrl: docker.io
           registryUsername: ${{ secrets.OKXMASTERAPP_REGISTRY_USERNAME }}
           registryPassword: ${{ secrets.OKXMASTERAPP_REGISTRY_PASSWORD }}
           containerAppName: okx-master-app
           resourceGroup: okx-master
-          imageToBuild: hsuehic/okx-master-app:${{ github.sha }}
-          dockerfilePath: Dockerfile
-
-     
-
+          imageToBuild: hsuehic/okx-master:${{ github.sha }}

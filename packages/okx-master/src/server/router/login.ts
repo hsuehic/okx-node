@@ -179,8 +179,8 @@ const githubCallbackUrl = `https://okx.ihsueh.com${githubCallbackPath}`;
 passport.use(
   new GitHubStrategy(
     {
-      clientID: process.env.GITHUB_OAUTH_CLIENT_ID,
-      clientSecret: process.env.GITHUB_OAUTH_CLIENT_SECRET,
+      clientID: process.env.OAUTH_GITHUB_CLIENT_ID,
+      clientSecret: process.env.OAUTH_GITHUB_CLIENT_SECRET,
       callbackURL: githubCallbackUrl,
     },
     (
