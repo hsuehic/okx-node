@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import {
-  FacebookOutlined,
+  GithubOutlined,
   GoogleOutlined,
   LockOutlined,
   MobileOutlined,
@@ -83,10 +83,16 @@ export const Login = () => {
                 </a>
               </div>
               <div className={styles.oauthLoginItem}>
-                <FacebookOutlined style={{ ...iconStyles, color: '#FF6A10' }} />
+                <a href="/login/github">
+                  <GithubOutlined style={{ ...iconStyles, color: '#FF6A10' }} />
+                </a>
               </div>
               <div className={styles.oauthLoginItem}>
-                <TwitterOutlined style={{ ...iconStyles, color: '#333333' }} />
+                <a href="/login/twitter">
+                  <TwitterOutlined
+                    style={{ ...iconStyles, color: '#333333' }}
+                  />
+                </a>
               </div>
             </Space>
           </div>

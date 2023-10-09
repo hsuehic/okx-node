@@ -1,6 +1,7 @@
 import Router from '@koa/router';
 import { Context, Next } from 'koa';
 import passport from 'koa-passport';
+import { Strategy as GitHubStrategy } from 'passport-github2';
 import {
   Strategy as GoogleStrategy,
   Profile,
@@ -38,7 +39,20 @@ const fetchUserById = async (id: string) => {
   if (user) {
     return user;
   }
-  throw new Error('User not exist');
+  throw new Error('User does not exist');
+};
+
+const fetchUserByEmail = async (email?: string): Promise<User> => {
+  if (email) {
+    const user = await dataSource.manager.findOneBy(User, {
+      email,
+    });
+    if (user) {
+      return user;
+    }
+    throw new Error('User was not registrered');
+  }
+  throw new Error('Email can not be empty');
 };
 
 passport.serializeUser<string>((user: Express.User, done: Done<string>) => {
@@ -138,17 +152,12 @@ passport.use(
       done: VerifyCallback
     ) => {
       const email = profile._json.email;
-      dataSource.manager
-        .findOneBy(User, { email: email })
+      fetchUserByEmail(email)
         .then(user => {
-          if (user) {
-            done(null, user);
-          } else {
-            done(new Error('User is not registrered'), undefined);
-          }
+          done(null, user);
         })
-        .catch(reason => {
-          done(new Error(reason as string), undefined);
+        .catch((err: Error) => {
+          done(err, undefined);
         });
     }
   )
@@ -162,8 +171,48 @@ routerLogin.get(
     failureRedirect: '/login/google',
   })
 );
-
 //#endregion google oauth20
+
+//#region github oauth2
+const githubCallbackPath = '/oauth2/redirect/github';
+const githubCallbackUrl = `https://okx.ihsueh.com${githubCallbackPath}`;
+passport.use(
+  new GitHubStrategy(
+    {
+      clientID: process.env.GITHUB_OAUTH_CLIENT_ID,
+      clientSecret: process.env.GITHUB_OAUTH_CLIENT_SECRET,
+      callbackURL: githubCallbackUrl,
+    },
+    (
+      accessToken: string,
+      refreshToken: string,
+      profile: Profile,
+      done: VerifyCallback
+    ) => {
+      const email = profile._json.email;
+      fetchUserByEmail(email)
+        .then(user => {
+          done(null, user);
+        })
+        .catch((err: Error) => {
+          done(err, undefined);
+        });
+    }
+  )
+);
+routerLogin.get(
+  '/login/github',
+  passport.authenticate('github', { scope: ['user:email'] })
+);
+
+routerLogin.get(
+  githubCallbackPath,
+  passport.authenticate('github', {
+    successRedirect: '/',
+    failureRedirect: '/login/github',
+  })
+);
+//#endregion github oauth
 
 routerLogin.post('/api/logout', async ctx => {
   await ctx.logout();
