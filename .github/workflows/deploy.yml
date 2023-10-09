@@ -1,4 +1,4 @@
-name: Trigger auto deployment for okx-master-app
+name: Deploy2Azure
 
 # When this action will be executed
 on:
