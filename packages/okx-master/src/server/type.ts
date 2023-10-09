@@ -12,6 +12,6 @@ export interface OkxTraderItem {
   boughtPrice: number;
   soldSize: number;
   soldPrice: number;
-  tradeSize: number;
-  tradePrice: number;
+  tradedSize: number;
+  tradedPrice: number;
 }

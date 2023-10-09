@@ -177,10 +177,10 @@ export const TraderDetail = ({ trader }: { trader: OkxTraderItem }) => {
         <StatisticCard
           statistic={{
             title: 'Traded',
-            value: trader.tradeSize,
+            value: trader.tradedSize,
             precision: 2,
             description: (
-              <Statistic value={`$${trader.tradePrice.toFixed(2)}`} />
+              <Statistic value={`$${trader.tradedPrice.toFixed(2)}`} />
             ),
           }}
         />
