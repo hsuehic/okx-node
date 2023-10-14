@@ -8,12 +8,25 @@ import { TickerInfo } from './ticker-info';
 
 import styles from './inst-page-title.module.scss';
 
-export interface InstPageTitleProps {
-  instId: InstId;
-  onChange?: (value: InstId) => void;
-}
+export type InstPageTitleProps =
+  | {
+      type: 'MARGIN';
+      instId: InstIdMargin;
+      onChange?: (value: InstIdMargin) => void;
+    }
+  | {
+      type: 'SWAP';
+      instId: InstIdSwap;
+      onChange?: (value: InstIdSwap) => void;
+    }
+  | {
+      type: 'ALL';
+      instId: InstId;
+      onChange?: (value: InstId) => void;
+    };
 
-export const InstPageTitle = ({ instId, onChange }: InstPageTitleProps) => {
+export const InstPageTitle = (props: InstPageTitleProps) => {
+  const { instId } = props;
   const [ccy] = instId.split('-');
   return (
     <>
@@ -22,7 +35,7 @@ export const InstPageTitle = ({ instId, onChange }: InstPageTitleProps) => {
         src={getCryptoCurrencyIcon(ccy as CryptoCurrency)}
         alt={ccy}
       />
-      <InstSelect instId={instId} onChange={onChange} />
+      <InstSelect {...props} />
     </>
   );
 };

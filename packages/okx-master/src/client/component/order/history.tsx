@@ -78,7 +78,7 @@ export const OrderHistory = () => {
       token={{
         paddingInlinePageContainerContent: 20,
       }}
-      title={<InstPageTitle instId={instId} onChange={setInstId} />}
+      title={<InstPageTitle type="ALL" instId={instId} onChange={setInstId} />}
       subTitle={!!ticker && <InstPageSubTitle ticker={ticker} />}
       extra={[
         <Button

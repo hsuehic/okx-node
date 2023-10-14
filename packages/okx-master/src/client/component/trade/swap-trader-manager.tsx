@@ -13,20 +13,18 @@ import { useIntervalRequest, usePush, useSubscribe } from '../hooks';
 import { LastTrades } from '../market/last-trades';
 import { OrderBookContainer } from '../market/order-book';
 
-import { PriceTraderForm } from './price-trader-form';
-import { TieredTraderForm } from './tiered-trader-form';
-import { TraderDetail } from './trader-detail';
+import { SwapTraderDetail } from './swap-trader-detail';
+import { SwapTraderForm } from './swap-trader-form';
 
 import styles from './trader-manager.module.scss';
 
 // subscribing and unsubscribing will be done at page level. Consuming push data will be done at component level.
-export const TraderManager = () => {
-  const params = useParams<{ instId: InstIdMargin }>();
-  const [instId, setInstId] = useState<InstIdMargin>(
-    params.instId || 'BTC-USDC'
+export const SwapTraderManager = () => {
+  const params = useParams<{ instId: InstIdSwap }>();
+  const [instId, setInstId] = useState<InstIdSwap>(
+    params.instId || 'BTC-USDC-SWAP'
   );
-  const [priceTraderFormVisible, setPriceTraderFormVisible] = useState(false);
-  const [tieredTraderFormVisible, setTieredTraderFormVisible] = useState(false);
+  const [swapTraderFormVisible, setSwapTraderFormVisible] = useState(false);
   const [tab, setTab] = useState('');
   const [traders] = useIntervalRequest<OkxTraderItem[]>(
     async () => {
@@ -71,9 +69,9 @@ export const TraderManager = () => {
       title={
         <InstPageTitle
           key={`title-${instId}`}
-          type="MARGIN"
+          type="SWAP"
           instId={instId}
-          onChange={(value: InstIdMargin) => {
+          onChange={(value: InstIdSwap) => {
             setInstId(value);
           }}
         />
@@ -89,19 +87,10 @@ export const TraderManager = () => {
             type="primary"
             icon={<PlusCircleOutlined />}
             onClick={() => {
-              setPriceTraderFormVisible(true);
+              setSwapTraderFormVisible(true);
             }}
           >
-            Price Trader
-          </Button>
-          <Button
-            type="primary"
-            icon={<PlusCircleOutlined />}
-            onClick={() => {
-              setTieredTraderFormVisible(true);
-            }}
-          >
-            Tiered Trader
+            Swap Trader
           </Button>
         </Space>
       }
@@ -118,7 +107,7 @@ export const TraderManager = () => {
                   return {
                     label: name,
                     key: name,
-                    children: <TraderDetail key={name} trader={trader} />,
+                    children: <SwapTraderDetail key={name} trader={trader} />,
                   };
                 }),
                 onTabClick(key: string) {
@@ -132,11 +121,11 @@ export const TraderManager = () => {
                 type="primary"
                 size="large"
                 onClick={() => {
-                  setTieredTraderFormVisible(true);
+                  setSwapTraderFormVisible(true);
                 }}
                 icon={<PlusCircleOutlined />}
               >
-                Create Tiered Trader
+                Create Swap Trader
               </Button>
             </ProCard>
           )}
@@ -150,19 +139,11 @@ export const TraderManager = () => {
           </ProCard>
         </div>
       </div>
-      <PriceTraderForm
-        key={`price-trader-form-${instId}`}
-        instId={instId}
-        open={priceTraderFormVisible}
-        onOpenChange={setPriceTraderFormVisible}
-        price={ticker ? parseFloat(ticker.last) : undefined}
-        validateTraderName={validateTraderName}
-      />
-      <TieredTraderForm
+      <SwapTraderForm
         key={`tiered-trader-form-${instId}`}
         instId={instId}
-        open={tieredTraderFormVisible}
-        onOpenChange={setTieredTraderFormVisible}
+        open={swapTraderFormVisible}
+        onOpenChange={setSwapTraderFormVisible}
         price={ticker ? parseFloat(ticker.last) : undefined}
         validateTraderName={validateTraderName}
       />

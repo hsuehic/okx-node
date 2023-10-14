@@ -18,6 +18,7 @@ import {
   WsQuickMgnType,
 } from 'okx-node';
 
+import { getMaxAvailableTradableAmount } from '../api/account';
 import { INST_ID_SUPPORTED } from '../constant';
 import { useRequest } from '../hooks';
 
@@ -45,7 +46,7 @@ export const OrderForm = (props: OrderFormProps) => {
   const [ccy, quote] = instId.split('-');
   const quickMgnType = 'auto_borrow';
   const [avail] = useRequest(async () => {
-    const data = await window.restClient.getMaxAvailableTradableAmount({
+    const data = await getMaxAvailableTradableAmount({
       instId,
       ccy,
       quickMgnType,

@@ -4,7 +4,7 @@ import { WsChannel, WsPush, WsPushArg } from 'okx-node';
 
 export const useSubscribe = (
   channels: WsChannel[],
-  instId: InstId,
+  instId: InstId | InstIdSwap,
   deps: unknown[] = []
 ) => {
   const { wsClient } = window;

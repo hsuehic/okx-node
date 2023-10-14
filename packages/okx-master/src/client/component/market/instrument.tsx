@@ -20,11 +20,13 @@ export const Instrument = () => {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [side, setSide] = useState<WsOrderSide>('buy');
-  const params = useParams<{ instId: InstId }>();
-  const [instId, setInstId] = useState<InstId>(params.instId || 'BTC-USDC');
+  const params = useParams<{ instId: InstIdMargin }>();
+  const [instId, setInstId] = useState<InstIdMargin>(
+    params.instId || 'BTC-USDC'
+  );
 
   useSubscribe(['books5', 'trades', 'tickers'], instId, [instId]);
-  const [ticker] = usePush<WsPushArg & { instId: InstId }, Ticker>(
+  const [ticker] = usePush<WsPushArg & { instId: InstIdMargin }, Ticker>(
     'tickers',
     (arg: { channel: WsChannel; instId: InstId }) => {
       return arg.instId === instId;
@@ -39,9 +41,10 @@ export const Instrument = () => {
       }}
       title={
         <InstPageTitle
+          type="MARGIN"
           key={`title-${instId}`}
           instId={instId}
-          onChange={(value: InstId) => {
+          onChange={(value: InstIdMargin) => {
             setInstId(value);
           }}
         />

@@ -12,6 +12,7 @@ class B extends A {
   constructor() {
     super();
     console.log('Constructor B');
+    super.start();
   }
 
   protected start() {

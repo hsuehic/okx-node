@@ -65,7 +65,12 @@ type CryptoCurrency =
   | 'ETC';
 type Quote = 'USDC' | 'USDT';
 
-type InstId = `${CryptoCurrency}-${Quote}`;
+type InstIdMargin = `${CryptoCurrency}-${Quote}`;
+
+type InstIdSwap = `${InstIdMargin}-SWAP`;
+
+type InstId = InstIdMargin | InstIdSwap;
+
 type CryptoCurrency =
   | 'BTC'
   | 'ETH'
@@ -78,7 +83,7 @@ type CryptoCurrency =
   | 'ADA'
   | 'ETC';
 
-type TraderType = 'price' | 'diff' | 'tiered';
+type TraderType = 'price' | 'swap' | 'tiered';
 
 type TraderStatus = 'running' | 'stopped' | 'removed';
 
@@ -87,7 +92,7 @@ type OrderSide = 'buy' | 'sell' | 'any';
 interface OkxTraderConfig {
   name: string;
   type: TraderType;
-  instId: InstId;
+  instId: InstId | InstIdSwap;
 }
 
 interface OkxPriceTraderConfig extends OkxTraderConfig {
@@ -113,4 +118,20 @@ interface OkxTieredTraderConfig extends OkxTraderConfig {
   name: string;
 }
 
-type OkxTraderConfigType = OkxPriceTraderConfig | OkxTieredTraderConfig;
+interface OkxSwapTraderConfig extends OkxTraderConfig {
+  type: 'swap';
+  basePx: number;
+  baseSz: number;
+  gap: number;
+  levelCount: number;
+  coefficient: number;
+  maxSize: number;
+  minSize: number;
+  name: string;
+  posSide: 'long' | 'short';
+}
+
+type OkxTraderConfigType =
+  | OkxPriceTraderConfig
+  | OkxTieredTraderConfig
+  | OkxSwapTraderConfig;

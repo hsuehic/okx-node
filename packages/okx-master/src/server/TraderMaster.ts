@@ -3,6 +3,7 @@ import EventEmitter from 'events';
 import { WsSubscriptionTopic } from 'okx-node';
 
 import { OkxPriceTrader } from './PriceTrader';
+import { OkxSwapTrader } from './SwapTrader';
 import { OkxTieredTrader } from './TieredTrader';
 import { OkxTrader } from './Trader';
 
@@ -29,6 +30,9 @@ export class OkxTraderMaster extends EventEmitter {
         break;
       case 'tiered':
         trader = new OkxTieredTrader(traderConfig);
+        break;
+      case 'swap':
+        trader = new OkxSwapTrader(traderConfig);
         break;
       default:
         break;

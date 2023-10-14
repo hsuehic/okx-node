@@ -143,6 +143,20 @@ export const PositionList = () => {
           />
         </ProCard>
       </ProCard.Group>
+      <ProCard.Group title="Isolated SWAP">
+        <ProCard>
+          <Table<AccountPosition>
+            loading={loading}
+            columns={columnsIsolated}
+            dataSource={dataSource.filter(
+              record =>
+                record.instType === 'SWAP' && record.mgnMode === 'isolated'
+            )}
+            rowKey={'instId'}
+            pagination={false}
+          />
+        </ProCard>
+      </ProCard.Group>
       <ProCard.Group title="Cross Margin">
         <ProCard>
           <Table<AccountPosition>
@@ -151,6 +165,19 @@ export const PositionList = () => {
             dataSource={dataSource.filter(
               record =>
                 record.instType === 'MARGIN' && record.mgnMode === 'cross'
+            )}
+            rowKey={'instId'}
+            pagination={false}
+          />
+        </ProCard>
+      </ProCard.Group>
+      <ProCard.Group title="Cross SWAP">
+        <ProCard>
+          <Table<AccountPosition>
+            loading={loading}
+            columns={columnsCross}
+            dataSource={dataSource.filter(
+              record => record.instType === 'SWAP' && record.mgnMode === 'cross'
             )}
             rowKey={'instId'}
             pagination={false}

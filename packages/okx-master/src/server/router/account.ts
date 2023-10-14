@@ -18,3 +18,10 @@ routerAccount.get('/account/positions', async ctx => {
   const response = await okxRestClient.getPositions({ ...ctx.request.query });
   ctx.body = wrapData(response);
 });
+
+routerAccount.get('/account/max-avail-size', async ctx => {
+  const res = await okxRestClient.getMaxAvailableTradableAmount({
+    ...ctx.request.query,
+  } as unknown as Parameters<typeof okxRestClient.getMaxAvailableTradableAmount>[0]);
+  ctx.body = wrapData(res);
+});

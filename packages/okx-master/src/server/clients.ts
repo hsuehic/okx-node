@@ -21,9 +21,18 @@ export const okxWsClient = OkxWebSocketClient.getInstance({
   market: MARKET,
 });
 
+okxWsClient.verbose = {
+  errorResponse: true,
+  trade: true,
+};
+
 void okxWsClient.privateChannelReady('private').then(() => {
   okxWsClient.subscribe({
     channel: 'orders',
     instType: 'MARGIN',
+  });
+  okxWsClient.subscribe({
+    channel: 'orders',
+    instType: 'SWAP',
   });
 });

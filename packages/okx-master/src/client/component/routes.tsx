@@ -124,14 +124,26 @@ export const appRoutes = [
     element: <Outlet />,
     children: [
       {
-        path: 'price/:instId',
-        name: 'Price Trade',
-        defaultPath: '/trade/price/BTC-USDC',
+        path: 'margin/:instId',
+        name: 'Margin',
+        defaultPath: '/trade/margin/BTC-USDC',
         icon: <DollarOutlined />,
         lazy: async () => {
           const { TraderManager } = await import('./trade');
           return {
             Component: TraderManager,
+          };
+        },
+      },
+      {
+        path: 'swap/:instId',
+        name: 'Perpetual',
+        defaultPath: '/trade/swap/BTC-USDC-SWAP',
+        icon: <DollarOutlined />,
+        lazy: async () => {
+          const { SwapTraderManager } = await import('./trade');
+          return {
+            Component: SwapTraderManager,
           };
         },
       },

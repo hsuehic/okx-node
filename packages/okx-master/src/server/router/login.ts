@@ -9,7 +9,7 @@ import {
 } from 'passport-google-oauth20';
 import { Strategy as LocalStrategy } from 'passport-local';
 
-import { host, isProd } from '../constant';
+import { host } from '../constant';
 import { User } from '../model';
 import { dataSource } from '../services';
 
@@ -102,8 +102,6 @@ export const routerLogin = new Router();
 routerLogin.post('/api/login/password', async (ctx: Context, next: Next) => {
   const promise = new Promise(resolve => {
     passport.authenticate('local', (err, user: User | false) => {
-      console.log(err, user);
-      console.log(isProd);
       if (err) {
         const msg = 'Server internal error';
         ctx.body = {

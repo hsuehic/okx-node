@@ -209,7 +209,6 @@ export const App = () => {
                 </div>
               );
             }}
-            onMenuHeaderClick={e => console.log(e)}
             menuItemRender={(item: MenuDataItem, dom) => {
               const reg = /^https?:/;
               const { path } = item;

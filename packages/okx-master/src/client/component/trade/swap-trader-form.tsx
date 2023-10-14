@@ -1,6 +1,7 @@
 import {
   DrawerForm,
   ProFormDigit,
+  ProFormSelect,
   ProFormText,
 } from '@ant-design/pro-components';
 import { Form, message } from 'antd';
@@ -9,22 +10,28 @@ import { createTrader } from '../api/trader';
 
 export type SpotOrderType = 'limit' | 'market';
 
-export interface TraderFormProps {
+export interface SwapTraderFormProps {
   onOpenChange?: (value: boolean) => void;
   open: boolean;
-  instId: InstId;
+  instId: InstIdSwap;
   price?: number;
   validateTraderName?: (name: string) => undefined | string;
 }
 
-export type OkxTieredTraderParams = Omit<
-  OkxTieredTraderConfig,
-  'type' | 'instId'
->;
+export type OkxSwapTraderParams = Omit<OkxSwapTraderConfig, 'type' | 'instId'>;
 
-export const TieredTraderFormItems = () => {
+export const SwapTraderFormItems = () => {
   return (
     <>
+      <ProFormSelect
+        key={'posSide'}
+        colProps={{ span: 8 }}
+        placeholder={''}
+        name="posSide"
+        label="Position Side"
+        options={['long', 'short']}
+        rules={[{ required: true, message: 'Required' }]}
+      />
       <ProFormDigit
         key={'basePx'}
         colProps={{ span: 8 }}
@@ -81,9 +88,9 @@ export const TieredTraderFormItems = () => {
   );
 };
 
-export const TieredTraderForm = (props: TraderFormProps) => {
+export const SwapTraderForm = (props: SwapTraderFormProps) => {
   const { open, onOpenChange, instId, price, validateTraderName } = props;
-  const [form] = Form.useForm<OkxTieredTraderParams>();
+  const [form] = Form.useForm<OkxSwapTraderParams>();
   const [ccy] = instId.split('-');
   return (
     <DrawerForm
@@ -93,6 +100,7 @@ export const TieredTraderForm = (props: TraderFormProps) => {
       initialValues={{
         basePx: price,
         name: `${ccy}`,
+        posSide: 'long',
       }}
       layout="horizontal"
       labelCol={{
@@ -110,9 +118,9 @@ export const TieredTraderForm = (props: TraderFormProps) => {
       drawerProps={{
         destroyOnClose: true,
       }}
-      onFinish={async (values: OkxTieredTraderParams) => {
+      onFinish={async (values: OkxSwapTraderParams) => {
         try {
-          await createTrader({ ...values, type: 'tiered', instId });
+          await createTrader({ ...values, type: 'swap', instId });
           void message.success('Trader added');
           return true;
         } catch (ex) {
@@ -144,7 +152,7 @@ export const TieredTraderForm = (props: TraderFormProps) => {
           },
         ]}
       />
-      <TieredTraderFormItems />
+      <SwapTraderFormItems />
     </DrawerForm>
   );
 };
