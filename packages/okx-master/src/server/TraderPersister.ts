@@ -19,11 +19,6 @@ export class OkxTraderPersister {
     this._removeHandler = (traderClass: OkxTrader) => {
       void this.saveTrader(traderClass, 'removed');
     };
-    this._initialize();
-  }
-
-  private _initialize() {
-    this._subscribe(true);
   }
 
   private _subscribe(sub = true) {
@@ -78,6 +73,14 @@ export class OkxTraderPersister {
     }
     const traderModels = await _dataSource.manager.findBy(Trader, where);
     return traderModels;
+  }
+
+  public start(): void {
+    this._subscribe(true);
+  }
+
+  public stop(): void {
+    this._subscribe(false);
   }
 
   public dispose(): void {
