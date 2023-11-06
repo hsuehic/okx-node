@@ -66,7 +66,7 @@ export class OkxSwapTrader extends BaseTrader {
 
   private _validateSize(tradeSize: number) {
     const newSize = this._tradedSize + tradeSize;
-    return newSize >= this._minSize && newSize <= this._maxSize;
+    return tradeSize < 0 ? newSize >= this._minSize : newSize <= this._maxSize;
   }
 
   private async _initializeBooks() {
