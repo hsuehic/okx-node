@@ -8,6 +8,8 @@ export const CCY_SUPORTED: CryptoCurrency[] = [
   'XRP',
   'ADA',
   'ETC',
+  'LINK',
+  'FIL',
 ];
 export const MARGIN_INST_ID_SUPPORTED: InstIdMargin[] = CCY_SUPORTED.map(
   v => `${v}-USDC`
