@@ -126,3 +126,5 @@ lib/
 
 /packages/*/dist
 /packages/*/static
+
+.DS_Store
