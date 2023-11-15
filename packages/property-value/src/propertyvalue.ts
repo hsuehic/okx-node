@@ -36,12 +36,16 @@ export const getPropertyValue = <T, P extends PropertyPath<T>>(
   path: P
 ): PropertyType<T, P> => {
   const index = path.indexOf('.');
-  if (index >= 0) {
-    const k = path.substring(0, index) as keyof T;
-    const p = obj[k];
-    const r = path.substring(index + 1) as PropertyPath<typeof p>;
-    return getPropertyValue(p, r) as PropertyType<T, P>;
+  if (obj instanceof Object) {
+    if (index >= 0) {
+      const k = path.substring(0, index) as keyof T;
+      const p = obj[k];
+      const r = path.substring(index + 1) as PropertyPath<typeof p>;
+      return getPropertyValue(p, r) as PropertyType<T, P>;
+    } else {
+      return obj[path as keyof T] as PropertyType<T, P>;
+    }
   } else {
-    return obj[path as keyof T] as PropertyType<T, P>;
+    return undefined as PropertyType<T, P>;
   }
 };
