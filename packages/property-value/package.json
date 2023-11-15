@@ -1,6 +1,6 @@
 {
   "name": "property-value",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A template for creating npm packages using TypeScript and VSCode",
   "main": "./dist/cjs/index.js",
   "types": "./dist/cjs/index.d.ts",
@@ -58,11 +58,11 @@
     "codecov"
   ],
   "bugs": {
-    "url": "{}"
+    "url": "https://github.com/hsuehic/okx-node/issues"
   },
-  "homepage": "{}",
+  "homepage": "https://github.com/hsuehic/okx-node/tree/main/packages/property-value",
   "repository": {
-    "type": "{}",
-    "url": "{}"
+    "type": "git",
+    "url": "https://github.com/hsuehic/okx-node"
   }
 }
