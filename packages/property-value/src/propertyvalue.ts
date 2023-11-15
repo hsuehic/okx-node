@@ -1,5 +1,3 @@
-export type ExcludeFalsy<T> = Exclude<T, undefined | null>;
-
 /**
  * Get property paths,
  * e.g.
@@ -8,7 +6,7 @@ export type ExcludeFalsy<T> = Exclude<T, undefined | null>;
  */
 export type PropertyPath<T, K extends keyof T = keyof T> = K extends string
   ? T[K] extends Record<string, any> | undefined | null
-    ? `${K}.${PropertyPath<ExcludeFalsy<T[K]>, keyof ExcludeFalsy<T[K]>>}`
+    ? `${K}.${PropertyPath<NonNullable<T[K]>, keyof NonNullable<T[K]>>}`
     : K
   : never;
 
@@ -23,8 +21,8 @@ export type PropertyType<
   P extends PropertyPath<T>
 > = P extends `${infer K}.${infer R}`
   ? K extends keyof T
-    ? R extends PropertyPath<ExcludeFalsy<T[K]>>
-      ? PropertyType<ExcludeFalsy<T[K]>, R>
+    ? R extends PropertyPath<NonNullable<T[K]>>
+      ? PropertyType<NonNullable<T[K]>, R>
       : never
     : never
   : P extends keyof T
