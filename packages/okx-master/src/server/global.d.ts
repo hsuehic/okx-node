@@ -62,7 +62,9 @@ type CryptoCurrency =
   | 'DOGE'
   | 'FIL'
   | 'ADA'
-  | 'ETC';
+  | 'ETC'
+  | 'LINK'
+  | 'FIL';
 type Quote = 'USDC' | 'USDT';
 
 type InstIdMargin = `${CryptoCurrency}-${Quote}`;
