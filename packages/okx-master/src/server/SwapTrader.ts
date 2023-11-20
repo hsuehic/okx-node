@@ -7,12 +7,14 @@ export class OkxSwapTrader extends BaseTrader {
   private _px: number;
   private _maxPx: number;
   private _minPx: number;
+  private _basePx: number;
   private _baseSz: number;
   private _gap: number;
   private _factor = 1000;
   private _maxSize: number;
   private _minSize: number;
   private _posSide: 'long' | 'short';
+  private _coefficient = 1;
 
   /**
    * Construct and start high frequency trade
@@ -29,11 +31,13 @@ export class OkxSwapTrader extends BaseTrader {
       maxSize,
       minSize,
       posSide,
+      coefficient,
     } = config;
     this._id = Order.getUuid();
     this._config = config;
     this._instId = instId;
     this._px = basePx * this._factor;
+    this._basePx = this._px;
     this._gap = gap * this._factor;
     this._minPx = this._px - this._gap * levelCount;
     this._maxPx = this._px + this._gap * levelCount;
@@ -41,6 +45,7 @@ export class OkxSwapTrader extends BaseTrader {
     this._minSize = minSize;
     this._baseSz = baseSz;
     this._posSide = posSide;
+    this._coefficient = coefficient;
 
     this.start();
   }
@@ -72,13 +77,17 @@ export class OkxSwapTrader extends BaseTrader {
   private async _initializeBooks() {
     const {
       _orderClient: orderClient,
+      _basePx: basePx,
       _baseSz: baseSz,
       _gap: gap,
       _px: px,
       _factor: factor,
+      _coefficient: coefficient,
     } = this;
-    if (this._validateSize(baseSz)) {
-      const buyPx = px - gap;
+
+    const buyPx = px - gap;
+    const buySz = ((Math.abs(buyPx - basePx) / gap) * coefficient + 1) * baseSz;
+    if (this._validateSize(buySz)) {
       if (this._validatePrice(buyPx)) {
         const buyOrderId = Order.getUuid();
         this._buyOrder = {
@@ -88,15 +97,17 @@ export class OkxSwapTrader extends BaseTrader {
           this._constructPlaceOrderParams(
             buyOrderId,
             'buy',
-            baseSz,
+            buySz,
             buyPx / factor
           );
         await orderClient.placeOrder([buyOrderParams]);
       }
     }
 
-    if (this._validateSize(0 - baseSz)) {
-      const sellPx = px + gap;
+    const sellPx = px + gap;
+    const sellSz =
+      ((Math.abs(sellPx - basePx) / gap) * coefficient + 1) * baseSz;
+    if (this._validateSize(0 - sellSz)) {
       if (this._validatePrice(sellPx)) {
         const sellOrdId = Order.getUuid();
         this._sellOrder = {
@@ -106,7 +117,7 @@ export class OkxSwapTrader extends BaseTrader {
           this._constructPlaceOrderParams(
             sellOrdId,
             'sell',
-            baseSz,
+            sellSz,
             sellPx / factor
           );
         await orderClient.placeOrder([sellOrderParams]);
