@@ -64,7 +64,10 @@ type CryptoCurrency =
   | 'ADA'
   | 'ETC'
   | 'LINK'
-  | 'FIL';
+  | 'FIL'
+  | 'DOT'
+  | 'XMR'
+  | 'TON';
 type Quote = 'USDC' | 'USDT';
 
 type InstIdMargin = `${CryptoCurrency}-${Quote}`;

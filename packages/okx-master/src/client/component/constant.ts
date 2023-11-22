@@ -10,6 +10,10 @@ export const CCY_SUPORTED: CryptoCurrency[] = [
   'ETC',
   'LINK',
   'FIL',
+  'DOT',
+  'TON',
+  'ETC',
+  'XMR',
 ];
 export const MARGIN_INST_ID_SUPPORTED: InstIdMargin[] = CCY_SUPORTED.map(
   v => `${v}-USDC`
