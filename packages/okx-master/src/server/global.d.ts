@@ -67,7 +67,8 @@ type CryptoCurrency =
   | 'FIL'
   | 'DOT'
   | 'XMR'
-  | 'TON';
+  | 'TON'
+  | 'WLD';
 type Quote = 'USDC' | 'USDT';
 
 type InstIdMargin = `${CryptoCurrency}-${Quote}`;
