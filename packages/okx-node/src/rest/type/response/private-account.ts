@@ -45,6 +45,8 @@ export interface AccountPosition {
   ccy: string;
   deltaBS: string;
   deltaPA: string;
+  fee: string;
+  fundingFee: string;
   gammaBS: string;
   gammaPA: string;
   imr: string;
@@ -69,6 +71,7 @@ export interface AccountPosition {
   posCcy: string;
   posId: string;
   posSide: string;
+  realizedPnl: string;
   thetaBS: string;
   thetaPA: string;
   tradeId: string;

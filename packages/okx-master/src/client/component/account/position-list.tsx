@@ -49,11 +49,11 @@ const columnsIsolated: TableColumnType<AccountPosition>[] = [
   },
   {
     dataIndex: 'liqPx',
-    title: 'Liquidation Price',
+    title: 'Liq Price',
   },
   {
     dataIndex: 'upl',
-    title: 'Total Change',
+    title: 'Upl',
     render: renderUpl,
   },
   {
@@ -104,17 +104,81 @@ const columnsCross: TableColumnType<AccountPosition>[] = [
   },
   {
     dataIndex: 'liqPx',
-    title: 'Liquidation Price',
+    title: 'Liq Price',
+    render: (v: string) => {
+      return formatPrice(v);
+    },
   },
   {
     dataIndex: 'upl',
-    title: 'Total Change',
+    title: 'Upl',
     render: renderUpl,
   },
   {
     dataIndex: 'uplRatio',
     title: 'UPL Ratio',
     render: renderUplRatio,
+  },
+];
+
+const columnsSwap: TableColumnType<AccountPosition>[] = [
+  {
+    dataIndex: 'posId',
+    title: 'Position Id',
+  },
+  {
+    dataIndex: 'instId',
+    title: 'Instrument Id',
+    render: (value: InstId) => {
+      return <Link to={`/market/inst/${value as string}`}>{value}</Link>;
+    },
+  },
+  {
+    title: 'Side',
+    render(_: unknown, record: AccountPosition) {
+      const { posSide } = record;
+      return posSide;
+    },
+  },
+  {
+    title: 'Pos',
+    render(_: unknown, record: AccountPosition) {
+      const { pos } = record;
+      return pos;
+    },
+  },
+  {
+    dataIndex: 'liqPx',
+    title: 'Liq Price',
+    render: (v: string) => {
+      return formatPrice(v);
+    },
+  },
+  {
+    title: 'Fee',
+    render(_: unknown, record: AccountPosition) {
+      const { fee } = record;
+      return formatPrice(fee);
+    },
+  },
+  {
+    dataIndex: 'fundingFee',
+    title: 'FundingFee',
+    render: (v: string) => {
+      return formatPrice(v);
+    },
+  },
+  {
+    dataIndex: 'upl',
+    title: 'Upl',
+    render: renderUpl,
+  },
+  {
+    dataIndex: 'realizedPnl',
+    title: 'Realized Pnl',
+    render: (v: string) => {
+      return formatPrice(v);
+    },
   },
 ];
 
@@ -147,7 +211,7 @@ export const PositionList = () => {
         <ProCard>
           <Table<AccountPosition>
             loading={loading}
-            columns={columnsIsolated}
+            columns={columnsSwap}
             dataSource={dataSource.filter(
               record =>
                 record.instType === 'SWAP' && record.mgnMode === 'isolated'
