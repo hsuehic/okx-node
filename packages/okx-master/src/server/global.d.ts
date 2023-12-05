@@ -77,18 +77,6 @@ type InstIdSwap = `${InstIdMargin}-SWAP`;
 
 type InstId = InstIdMargin | InstIdSwap;
 
-type CryptoCurrency =
-  | 'BTC'
-  | 'ETH'
-  | 'LTC'
-  | 'XRP'
-  | 'SOL'
-  | 'BCH'
-  | 'DOGE'
-  | 'FIL'
-  | 'ADA'
-  | 'ETC';
-
 type TraderType = 'price' | 'swap' | 'tiered';
 
 type TraderStatus = 'running' | 'stopped' | 'removed';

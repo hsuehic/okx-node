@@ -202,7 +202,7 @@ export const PositionList = () => {
               record =>
                 record.instType === 'MARGIN' && record.mgnMode === 'isolated'
             )}
-            rowKey={'instId'}
+            rowKey={'posId'}
             pagination={false}
           />
         </ProCard>
@@ -216,7 +216,7 @@ export const PositionList = () => {
               record =>
                 record.instType === 'SWAP' && record.mgnMode === 'isolated'
             )}
-            rowKey={'instId'}
+            rowKey={'posId'}
             pagination={false}
           />
         </ProCard>
@@ -230,7 +230,7 @@ export const PositionList = () => {
               record =>
                 record.instType === 'MARGIN' && record.mgnMode === 'cross'
             )}
-            rowKey={'instId'}
+            rowKey={'posId'}
             pagination={false}
           />
         </ProCard>
@@ -243,7 +243,7 @@ export const PositionList = () => {
             dataSource={dataSource.filter(
               record => record.instType === 'SWAP' && record.mgnMode === 'cross'
             )}
-            rowKey={'instId'}
+            rowKey={'posId'}
             pagination={false}
           />
         </ProCard>
