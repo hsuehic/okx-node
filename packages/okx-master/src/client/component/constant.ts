@@ -12,7 +12,6 @@ export const CCY_SUPORTED: CryptoCurrency[] = [
   'FIL',
   'DOT',
   'TON',
-  'ETC',
   'XMR',
   'WLD',
 ];
