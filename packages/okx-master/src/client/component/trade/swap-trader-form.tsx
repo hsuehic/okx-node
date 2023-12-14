@@ -29,7 +29,7 @@ export const SwapTraderFormItems = () => {
         placeholder={''}
         name="posSide"
         label="Position Side"
-        options={['long', 'short']}
+        options={['net', 'long', 'short']}
         rules={[{ required: true, message: 'Required' }]}
       />
       <ProFormDigit
@@ -100,7 +100,7 @@ export const SwapTraderForm = (props: SwapTraderFormProps) => {
       initialValues={{
         basePx: price,
         name: `${ccy}`,
-        posSide: 'long',
+        posSide: 'net',
       }}
       layout="horizontal"
       labelCol={{
