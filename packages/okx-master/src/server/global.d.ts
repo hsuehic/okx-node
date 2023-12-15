@@ -68,6 +68,7 @@ type CryptoCurrency =
   | 'DOT'
   | 'XMR'
   | 'TON'
+  | 'UNI'
   | 'WLD';
 type Quote = 'USDC' | 'USDT';
 
