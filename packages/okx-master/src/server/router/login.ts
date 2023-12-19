@@ -173,7 +173,7 @@ routerLogin.get(
 
 //#region github oauth2
 const githubCallbackPath = '/oauth2/redirect/github';
-const githubCallbackUrl = `https://okx.ihsueh.com${githubCallbackPath}`;
+const githubCallbackUrl = `https://trader.ihsueh.com${githubCallbackPath}`;
 passport.use(
   new GitHubStrategy(
     {

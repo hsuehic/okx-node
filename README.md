@@ -78,7 +78,7 @@ npm install events -s
 [build-img]: https://github.com/hsuehic/okx-node/actions/workflows/build.yml/badge.svg
 [build-url]: https://github.com/hsuehic/okx-node/actions/workflows/build.yml
 [deploy-img]: https://github.com/hsuehic/okx-node/actions/workflows/deploy.yml/badge.svg
-[deploy-url]: https://okx.ihsueh.com
+[deploy-url]: https://trader.ihsueh.com
 [release-img]: https://github.com/hsuehic/okx-node/actions/workflows/release.yml/badge.svg
 [release-url]: https://github.com/hsuehic/okx-node/actions/workflows/release.yml
 [downloads-img]: https://img.shields.io/npm/dt/okx-node
