@@ -70,7 +70,8 @@ type CryptoCurrency =
   | 'TON'
   | 'UNI'
   | 'WLD'
-  | 'OP';
+  | 'OP'
+  | 'TIA';
 type Quote = 'USDC' | 'USDT';
 
 type InstIdMargin = `${CryptoCurrency}-${Quote}`;
